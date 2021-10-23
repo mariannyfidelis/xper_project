@@ -1,3 +1,5 @@
+import 'package:xper_brasil_projects/services/auth_service.dart';
+
 import '/rotas.dart';
 import 'package:get/get.dart';
 import 'utils/paleta_cores.dart';
@@ -25,6 +27,7 @@ final ThemeData temaPadrao = ThemeData(
 void main() async {
 
   //TODO: AuthService
+  Get.put(AuthService());
   Get.put(MenuControllerDash());
   Get.put(NavigationControllerDash());
   Get.put(ObjetivosPrincipaisRepository());//
