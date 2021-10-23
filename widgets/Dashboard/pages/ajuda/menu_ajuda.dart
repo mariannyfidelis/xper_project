@@ -13,19 +13,25 @@ class AjudaPageDash extends StatelessWidget {
             child: Text(
               '''
 Instruções Iniciais
+
 Guia de Objetivos da Equipe
+
 1. Depois de definir os OKRs com sua equipe, vá para a guia Objetivos da equipe e insira os objetivos de sua equipe. Use títulos objetivos distintos.
 
 Guia de resultados principais
+
 2. Na coluna Resultado principal, você insere os resultados principais. Lembre-se de que essas são as declarações de sua equipe que serão usadas para atingir a meta, portanto, certifique-se de que os principais resultados sejam mensuráveis.
 
 Guia Dono
+
 3. Na coluna Dono, você insere o nome do dono que ficará responsável por aquele resultado.
 
 Guia Métrica
+
 4. Na coluna Qual a Métrica, você insere o nome do indicador. A métrica é usada para mostrar se o resultado principal está sendo alcançado.
 
 Guia Metas
+
 5. Alvo da coluna Meta é usado para definir qual é o alvo da métrica.
 
 6. Finalmente, atualize manualmente o valor atual na coluna de mesmo nome toda vez que você verificar os OKRs de suas equipes. A coluna Progresso será atualizada automaticamente.	''',
@@ -35,7 +41,8 @@ Guia Metas
           SizedBox(width: 20),
           Container(
             width: 500,
-            child: Text('''O Dashboard 
+            child: Text('''O Dashboard
+             
         Use o Dashboard como sua torre de vigia para obter uma visão geral dos OKRs de sua equipe.
 
 1. Selecione o período de tempo que deseja exibir seja o Ano e/ou Quadrimestre(Quarter) .

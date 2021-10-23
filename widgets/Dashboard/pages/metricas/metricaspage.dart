@@ -1,10 +1,9 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import '/widgets/Dashboard/pages/metricas/metricas_dash.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
-
+import '/widgets/Dashboard/pages/metricas/metricas_dash.dart';
 import '/widgets/Dashboard/responsividade/reposinvidade_dash.dart';
-import 'package:get/get.dart';
 
 class MetricasPageDash extends StatelessWidget {
   @override

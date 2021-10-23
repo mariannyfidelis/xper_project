@@ -10,5 +10,7 @@ class PaletaCores {
   static const Color corLight = Color(0xff363740); //trocada com a dark
   static const Color corLightGrey = Color(0xffA4A6B3);
   static const Color corDark = Color(0xffF7F8FC);
-  static const Color active = Colors.white; //Color(0xff3C19C0);
+  static const Color active = Colors.white;
+
+  static const Color blackO7 = Colors.black26;
 }

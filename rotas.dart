@@ -7,8 +7,8 @@ import '/screens/mensagens_page.dart';
 import '/screens/dashboard_page.dart';
 import 'package:flutter/material.dart';
 import '/screens/redefinicao_senha_page.dart';
-import '/screens/cliente_gerenciador_page.dart';
 import 'screens/projeto_pagina_principal.dart';
+import '/screens/cliente_gerenciador_page.dart';
 
 class Rotas {
   static Route<dynamic> gerarRota(RouteSettings routeSettings) {

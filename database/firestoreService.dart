@@ -1,11 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
-import '/controllers/dados_controller.dart';
+import 'db_firestore.dart';
 import '/models/usuario.dart';
 import '/models/objetivo_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreService {
-  FirebaseFirestore _db = FirebaseFirestore.instance;
+  FirebaseFirestore _db = DBFirestore.get();
 
   Future<void> salvarObjetivo(ObjetivoModel objetivos) => _db
       .collection('Objetivo ')
@@ -32,4 +31,59 @@ class FirestoreService {
         .doc(produtoId)
         .delete();
   }
+
+  // Sobre Projetos
+
+  Future<void> getAllProjects() async{
+
+    //Aqui é uma fotografia de todos os documentos no momento da consulta
+    //Snapshot é diferente de Listen (que fica ouvindo as alterações)
+    QuerySnapshot snapshot = await _db.collection("projetos").get();
+
+    snapshot.docs.forEach((QueryDocumentSnapshot element) {
+      print(element.data());
+    });
+
+    //TODO: transformar o JSON recebido em Objetos da model Projeto
+
+    return;
+  }
+
+  Future<void> getOneProjectByDoc(String codigo) async{
+
+    //Aqui é uma fotografia de todos os documentos no momento da consulta
+    //Snapshot é diferente de Listen (que fica ouvindo as alterações)
+    DocumentSnapshot snapshot = await _db.collection("projetos").doc(codigo).get();
+    print(snapshot.data());
+
+    return;
+  }
+
+  Future<void> getOneProjectByOwner(String codigo) async{
+
+    //TODO:Modificar o código para filtrar pelo dono
+    //Aqui é uma fotografia de todos os documentos no momento da consulta
+    //Snapshot é diferente de Listen (que fica ouvindo as alterações)
+    DocumentSnapshot snapshot = await _db.collection("projetos").doc(codigo).get();
+    print(snapshot.data());
+
+    return;
+  }
+/*
+  Future<void> getOneProjectByOwner(String codigo) async{
+
+    //Aqui é uma fotografia de todos os documentos no momento da consulta
+    //Snapshot é diferente de Listen (que fica ouvindo as alterações)
+    QuerySnapshot snapshot = await _db.collection("projetos").get();
+
+    snapshot.docs.forEach((QueryDocumentSnapshot element) {
+      print(element.data());
+    });
+
+    //TODO: transformar o JSON recebido em Objetos da model Projeto
+
+    return;
+  }
+*/
+
 }

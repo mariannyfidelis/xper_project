@@ -1,12 +1,11 @@
-import 'package:data_table_2/data_table_2.dart';
-import 'package:flutter/material.dart';
-import '/widgets/Dashboard/pages/donos/donos_dash.dart';
-import '/widgets/Dashboard/pages/metricas/metricas_dash.dart';
-import '/widgets/Dashboard/pages/objetivos/objetivos_page_dash.dart';
-import '/widgets/Dashboard/pages/resultados/resultados_page_dash.dart';
-import '/widgets/Dashboard/app_bar/custom_text.dart';
+import 'package:get/get.dart';
+import 'package:xper_brasil_projects/widgets/Dashboard/controller/controllers_dash.dart';
 
 import '/utils/paleta_cores.dart';
+import 'package:flutter/material.dart';
+import 'package:data_table_2/data_table_2.dart';
+import '/widgets/Dashboard/app_bar/custom_text.dart';
+import '/widgets/Dashboard/pages/resultados/resultados_page_dash.dart';
 
 class MetasTable extends StatelessWidget {
   @override
@@ -63,20 +62,24 @@ class MetasTable extends StatelessWidget {
               ),
             ],
             rows: List<DataRow>.generate(
-              resultados.length,
+              Get.find<ControllerProjetoRepository>().listaResultados.length,
               (index) => DataRow(
                 cells: [
                   DataCell(
-                    CustomText(text: objetivos[index]),
+                    CustomText(text:"objetivos")
+                    //CustomText(text: objetivos[index]),
                   ),
                   DataCell(
-                    CustomText(text: resultados[index]),
+                    CustomText(text:"resultados"),
+                    //CustomText(text: resultados[index]),
                   ),
                   DataCell(
-                    CustomText(text: metricas[index]),
+                    CustomText(text:"metricas")
+                    //CustomText(text: metricas[index]),
                   ),
                   DataCell(
-                    CustomText(text: donos[index]),
+                    CustomText(text:"donos")
+                    //CustomText(text: donos[index]),
                   ),
                 ],
               ),

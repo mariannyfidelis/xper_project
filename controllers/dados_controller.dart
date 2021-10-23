@@ -2,12 +2,6 @@ import 'dart:math';
 import '/models/objetivo_model.dart';
 import 'package:flutter/material.dart';
 
-//Definindo graus para cada fatia
-// double objetictive = 6;
-// double p = (100 / objetictive);
-// double graus = (360 * p) / 100;
-//rever o calculo graus = 360/objetivos
-
 class ObjectiveController extends ChangeNotifier {
   int niveis = 1; //pq a lista já tem um elemento
   int nv = 0; //niveis - 1

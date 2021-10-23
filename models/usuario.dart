@@ -27,7 +27,6 @@ class Usuario {
       "tipoUsuario": this.tipoUsuario,
       "ativo": this.ativo
     };
-
     return map;
   }
 }

@@ -1,13 +1,11 @@
-import '/widgets/Dashboard/app_bar/custom_text.dart';
-import '/widgets/Dashboard/pages/authentication/cadastro_cliente_gerenciador.dart';
+import '/models/usuario.dart';
+import '/utils/paleta_cores.dart';
 import 'package:provider/provider.dart';
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-
-import '/models/usuario.dart';
-
-import '/utils/paleta_cores.dart';
+import 'package:data_table_2/data_table_2.dart';
+import '/widgets/Dashboard/app_bar/custom_text.dart';
+import '/widgets/Dashboard/pages/authentication/cadastro_cliente_gerenciador.dart';
 
 /// Example without datasource
 class ClientsTable extends StatelessWidget {
@@ -94,13 +92,19 @@ class ClientsTable extends StatelessWidget {
                   ),
                   DataCell(
                     Container(
-                      child: PopupMenuButton(
-                        itemBuilder: (BuildContext context) => [
-                          PopupMenuItem(
-                            child: Text('Suspender'),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          PopupMenuButton(
+                            itemBuilder: (BuildContext context) => [
+                              PopupMenuItem(
+                                child: Text('Suspender'),
+                              ),
+                              PopupMenuItem(
+                                  child:
+                                      Text('Bloquear Para Edição')), //value: ),
+                            ],
                           ),
-                          PopupMenuItem(
-                              child: Text('Bloquear Para Edição')), //value: ),
                         ],
                       ),
                     ),
