@@ -1,10 +1,13 @@
 import 'dart:typed_data';
-import '/models/usuario.dart';
+import 'package:get/get.dart';
+
 import '/utils/paleta_cores.dart';
+import '/database/db_firestore.dart';
+import '/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -17,49 +20,15 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  //String erroMsg = "";
   bool cadastrarUsuario = false;
-  String erroMsg = "";
   TextEditingController _controllerEmail = TextEditingController();
   TextEditingController _controllerPassword = TextEditingController();
   TextEditingController _controllerName = TextEditingController();
 
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  //ValuesStore v = ValuesStore();
   Uint8List? _arquivoImagemSelecionado;
-
-  void escreverDados() {
-    //FirebaseFirestore firestore = FF
-  }
-
-  void _verificarUsuarioLogado() async {
-    User? usuarioLogado = await _auth.currentUser;
-    if (usuarioLogado != null) {
-      verificaTipoUsuario(usuarioLogado);
-      //Navigator.pushReplacementNamed(context, "/home");
-    }
-  }
-
-  void verificaTipoUsuario(User? user) async {
-    //Verificar e redirecionar para a tela específica
-    String uidUser = user!.uid;
-    DocumentSnapshot us =
-        await _firestore.collection("usuarios").doc("$uidUser").get();
-
-    String tipo = us.get("tipoUsuario");
-    print("xxx tipo do usuário $tipo");
-
-    //QuerySnapshot snapshot =
-    //  await _firestore.collection("usuarios/$uidUser").get();
-    if (tipo == "admin") {
-      Navigator.pushReplacementNamed(context, "/dashboard");
-    } else if (tipo == "gerenciador") {
-      Navigator.pushReplacementNamed(context, "/gerenciador");
-    } else if (tipo == "cliente") {
-      Navigator.pushReplacementNamed(context, "/projetos");
-    }
-  }
+  AuthService controllerAuth = Get.find<AuthService>();
+  FirebaseFirestore _firestore = DBFirestore.get();
 
   void _selecionarImagem() async {
     FilePickerResult? resultado = await FilePicker.platform.pickFiles(
@@ -70,43 +39,6 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _arquivoImagemSelecionado = resultado?.files.single.bytes;
     });
-  }
-
-  void _uploadImagem(Usuario usuario) {
-
-    Uint8List? arquivoSelecionado = _arquivoImagemSelecionado;
-    FirebaseStorage _storage = FirebaseStorage.instance;
-
-    if (arquivoSelecionado != null) {
-      Reference imagePerfilRef = _storage
-          .ref("imagens/perfil/${usuario.idUsuario}/${usuario.idUsuario}.jpg");
-      UploadTask uploadtask = imagePerfilRef.putData(arquivoSelecionado);
-      uploadtask.whenComplete(() async {
-        String urlImagem = await uploadtask.snapshot.ref.getDownloadURL();
-        print("deu certo taí o link $urlImagem!!!");
-        usuario.urlImagem = urlImagem;
-
-        final usuariosRef = _firestore.collection("usuarios");
-        usuariosRef
-            .doc("${usuario.idUsuario}")
-            .set(usuario.toMap())
-            .then((value) {
-          //Rotas para outra tela
-          Navigator.pushReplacementNamed(context, "/projetos");
-        });
-      });
-    } else {
-      String urlImagem = usuario.urlImagem;
-      print("deu certo taí o link $urlImagem!!!");
-      final usuariosRef = _firestore.collection("usuarios");
-      usuariosRef
-          .doc("${usuario.idUsuario}")
-          .set(usuario.toMap())
-          .then((value) {
-        //Rotas para outra tela
-        Navigator.pushReplacementNamed(context, "/projetos");
-      });
-    }
   }
 
   void _validarCampos() async {
@@ -120,24 +52,8 @@ class _LoginPageState extends State<LoginPage> {
           //cadastrar
           if (_arquivoImagemSelecionado != null) {
             if (nome.isNotEmpty && nome.length > 6) {
-              await _auth
-                  .createUserWithEmailAndPassword(
-                email: email,
-                password: senha,
-              )
-                  .then((userCredencial) {
-                String? idUsuario = userCredencial.user?.uid;
-                print("Usuário cadastrado: $idUsuario");
-
-                _auth.currentUser?.sendEmailVerification().then(
-                    (value) => print("enviei um email de verificação ..."));
-
-                //Upload da imagem
-                if (idUsuario != null) {
-                  Usuario usuario = Usuario(idUsuario, nome, email, tipoUsuario: "cliente", ativo: true);
-                  _uploadImagem(usuario);
-                }
-              });
+              controllerAuth.registrarUsuarioEmailSenha(nome, email, senha,
+                  arquivoImagemSelecionado: _arquivoImagemSelecionado);
             } else {
               print("Nome inválido digite 6 ou mais caracteres!");
             }
@@ -146,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
           }
         } else {
           //logar usuário
-          logarEmailSenha(email, senha);
+          controllerAuth.logarEmailSenha(email, senha);
         }
       } else {
         print("Senha inválida !");
@@ -159,7 +75,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _verificarUsuarioLogado();
   }
 
   @override
@@ -300,17 +215,22 @@ class _LoginPageState extends State<LoginPage> {
                                               cadastrarUsuario = valor;
                                             });
                                           }),
-                                      Expanded(child: Text("Cadastro Freemium")),
+                                      Expanded(
+                                          child: Text("Cadastro Freemium")),
                                       //SizedBox(width: 70),
                                       Visibility(
                                         visible: !cadastrarUsuario,
                                         child: OutlinedButton(
-                                            onPressed: () {
-                                              redefinirSenha();
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                                 primary: Colors.white30),
-                                            child: Text("Esqueceu sua senha", style: TextStyle(color: PaletaCores.corPrimaria),),
+                                          onPressed: () {
+                                            controllerAuth.redefinirSenha();
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                              primary: Colors.white30),
+                                          child: Text(
+                                            "Esqueceu sua senha",
+                                            style: TextStyle(
+                                                color: PaletaCores.corPrimaria),
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -322,7 +242,7 @@ class _LoginPageState extends State<LoginPage> {
                                       style: OutlinedButton.styleFrom(
                                           primary: PaletaCores.corPrimaria),
                                       onPressed: () {
-                                        logarContaGoogle();
+                                        controllerAuth.logarContaGoogle();
                                       },
                                       icon: Icon(Icons.login),
                                       label:
@@ -334,7 +254,8 @@ class _LoginPageState extends State<LoginPage> {
                                     visible: false,
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        logout();
+                                        controllerAuth.logout();
+                                        Get.offAll("/");
                                       },
                                       style: ElevatedButton.styleFrom(
                                           primary: PaletaCores.corPrimaria),
@@ -344,7 +265,8 @@ class _LoginPageState extends State<LoginPage> {
                                         child: Text(
                                           "Deslogar",
                                           style: TextStyle(
-                                              fontSize: 18, color: Colors.white),
+                                              fontSize: 18,
+                                              color: Colors.white),
                                         ),
                                       ),
                                     ),
@@ -365,62 +287,4 @@ class _LoginPageState extends State<LoginPage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-
-  void redefinirSenha() {
-    print("Redefina sua senha ...");
-    Navigator.pushReplacementNamed(context, "/redefinicaoSenha");
-  }
-
-  void logarEmailSenha(String email, String senha) async {
-    await _auth
-        .signInWithEmailAndPassword(email: email, password: senha)
-        .then((value) async {
-      print("Logado como: ${value.user?.uid} de email: ${value.user?.email}");
-      User? usuarioLogado = value.user;
-
-      verificaTipoUsuario(usuarioLogado);
-    }).catchError((error) {
-      print(error);
-      print("Aconteceu algum problema ao logar ...");
-      setState(() {
-        erroMsg = "email ou senha incorreta";
-      });
-    });
-  }
-
-  void logarContaGoogle() {
-    var provider = GoogleAuthProvider();
-    //provider.addScope("'https://www.googleapis.com/auth/contacts.readonly'");
-    _auth.signInWithPopup(provider).then((resultado) {
-      var idUsuario = resultado.user?.uid;
-      print("Usuário cadastrado pelo google: $idUsuario");
-      _auth.currentUser
-          ?.sendEmailVerification()
-          .then((value) => print("enviei um email de verificação 2 ..."));
-
-      //Upload da imagem
-      if (idUsuario != null) {
-        Usuario usuario = Usuario(
-          idUsuario,
-          resultado.user!.displayName.toString(),
-          resultado.user!.email.toString(),
-          urlImagem: resultado.user!.photoURL.toString(),
-          tipoUsuario: "cliente",
-          ativo: true,
-        );
-        _uploadImagem(usuario);
-        print("Logado como google email ${resultado.user?.email}");
-      }else{
-
-      }
-    });
-  }
-
-  void logout() {
-    _auth.signOut();
-    _controllerName.text = "";
-    _controllerEmail.text = "";
-    _controllerPassword.text = "";
-  }
-
 }

@@ -2,9 +2,6 @@ import 'dart:collection';
 import 'package:get/get.dart';
 import '/database/db_firestore.dart';
 import '/models/donoResultadoMetricaModel.dart';
-
-//TODO: Implementar o AuthService conforme o vídeo
-//import '/Authenticacao/services/auth_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DonoRepository extends GetxController {
@@ -16,7 +13,6 @@ class DonoRepository extends GetxController {
     )
   ].obs;
   late FirebaseFirestore db;
-  //late AuthService auth; //TODO: Aqui tem que ser o AuthService que temos que ver como funciona.
 
   DonoRepository() {
     _startRepository();

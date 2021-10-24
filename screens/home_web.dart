@@ -23,6 +23,7 @@ class _HomeWebState extends State<HomeWeb> {
 
   @override
   Widget build(BuildContext context) {
+    //TODO - Trocar esse pelo ControllerProjetosRepository
     final listaProjetos = Get.find<ProjectsRepository>();
 
     List<ProjectModel> meusProjetos = listaProjetos.lista;

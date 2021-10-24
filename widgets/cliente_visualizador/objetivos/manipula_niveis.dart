@@ -1,73 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '/controllers/dados_controller.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class ManipulaNiveisPrimarios extends StatefulWidget {
-  ManipulaNiveisPrimarios({Key? key}) : super(key: key);
+class ManipulaOKR extends StatefulWidget {
+  ManipulaOKR({Key? key}) : super(key: key);
   @override
-  _ManipulaNiveisPrimariosState createState() =>
-      _ManipulaNiveisPrimariosState();
+  _ManipulaOKRState createState() =>
+      _ManipulaOKRState();
 }
 
-class _ManipulaNiveisPrimariosState extends State<ManipulaNiveisPrimarios> {
+class _ManipulaOKRState extends State<ManipulaOKR> {
+  late var ct2;
+
   @override
   Widget build(BuildContext context) {
+
     var controller = Provider.of<ObjectiveController>(context, listen: false);
+    ct2 = controller;
 
     return Visibility(
       visible: true,
       child: Row(
         children: [
-          IconButton(
-            splashRadius: 20,
-            onPressed: () {
-              controller.addObjetivo();
-            },
-            icon: Icon(FontAwesomeIcons.plusSquare), //(Icons.add),
-          ),
-          SizedBox(width: 2),
-          IconButton(
-            splashRadius: 20,
-            onPressed: () {
-              controller.delObjetivo();
-            },
-            icon: Icon(FontAwesomeIcons.minusSquare),
-          ),
-          IconButton(
-            splashRadius: 20,
-            onPressed: () {
-              controller.addObjetivoProximo();
-              // setState(() {
-              //   if (objetictive >= 1) {
-              //     objetictive = objetictive - 1;
-              //     p = (100 / objetictive);
-              //     graus = (360 * p) / 100;
-              //     niveis = niveis - 1;
+          ElevatedButton(onPressed: adicionaObjetivo, child: Text("Novo Objetivo", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),)),
+          SizedBox(width: 20),
+          ElevatedButton(onPressed: adicionaResultado, child: Text("Novo Resultado", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),)),
+          SizedBox(width: 20),
+          ElevatedButton(onPressed: adicionaMetrica, child: Text("Nova Métrica", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),)),
 
-              //   }
-              // });
-            },
-            tooltip: "Objetivo próximo - adicionar",
-            icon: Icon(FontAwesomeIcons.plusCircle),
-          ),
-          IconButton(
-            splashRadius: 20,
-            onPressed: () {
-              controller.delObjetivoProximo();
-              // setState(() {
-              //   if (objetictive >= 1) {
-              //     objetictive = objetictive - 1;
-              //     p = (100 / objetictive);
-              //     graus = (360 * p) / 100;
-              //     niveis = niveis - 1;
-              //     criaPaint(lsPaint, true);
-              //   }
-              // });
-            },
-            tooltip: "Objetivo próximo - deletar",
-            icon: Icon(FontAwesomeIcons.minusCircle),
-          ),
+          // IconButton(
+          //   tooltip: "Adiciona objetivo",
+          //   splashRadius: 20,
+          //   onPressed: () {
+          //     controller.addObjetivo();
+          //   },
+          //   icon: Icon(FontAwesomeIcons.plusSquare), //(Icons.add),
+          // ),
+          // SizedBox(width: 2),
+          // IconButton(
+          //   tooltip: "Adiciona resultado",
+          //   splashRadius: 20,
+          //   onPressed: () {
+          //     controller.delObjetivo();
+          //   },
+          //   icon: Icon(FontAwesomeIcons.minusSquare),
+          // ),
+          // IconButton(
+          //   tooltip: "Adiciona métrica",
+          //   splashRadius: 20,
+          //   onPressed: () {
+          //     controller.addObjetivoProximo();
+          //     // setState(() {
+          //     //   if (objetictive >= 1) {
+          //     //     objetictive = objetictive - 1;
+          //     //     p = (100 / objetictive);
+          //     //     graus = (360 * p) / 100;
+          //     //     niveis = niveis - 1;
+          //
+          //     //   }
+          //     // });
+          //   },
+          //   //tooltip: "Objetivo próximo - adicionar",
+          //   icon: Icon(FontAwesomeIcons.plusCircle),
+          // ),
+          // IconButton(
+          //   splashRadius: 20,
+          //   onPressed: () {
+          //     controller.delObjetivoProximo();
+          //     // setState(() {
+          //     //   if (objetictive >= 1) {
+          //     //     objetictive = objetictive - 1;
+          //     //     p = (100 / objetictive);
+          //     //     graus = (360 * p) / 100;
+          //     //     niveis = niveis - 1;
+          //     //     criaPaint(lsPaint, true);
+          //     //   }
+          //     // });
+          //   },
+          //   tooltip: "Objetivo próximo - deletar",
+          //   icon: Icon(FontAwesomeIcons.minusCircle),
+          // ),
           PopupMenuButton(
             tooltip: "Menu de objetivos",
             initialValue: 9,
@@ -200,5 +212,19 @@ class _ManipulaNiveisPrimariosState extends State<ManipulaNiveisPrimarios> {
         ],
       ),
     );
+  }
+
+  void adicionaObjetivo() {
+  debugPrint("Adicionando um novo objetivo ...");
+  ct2.addObjetivo();
+  }
+
+  void adicionaResultado() {
+    debugPrint("Adicionando um novo resultado ...");
+    ct2.addObjetivoProximo();
+  }
+
+  void adicionaMetrica() {
+    debugPrint("Adicionando uma nova métrica ...");
   }
 }

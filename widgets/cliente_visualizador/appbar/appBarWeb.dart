@@ -1,5 +1,6 @@
+import 'package:get/get.dart';
+import '/services/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '/widgets/cliente_visualizador/objetivos/manipula_niveis.dart';
 
 class WebAppBar extends StatelessWidget {
@@ -7,13 +8,19 @@ class WebAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var controllerAuth = Get.find<AuthService>();
     return AppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+          IconButton(
+              onPressed: () => Get.back(),
+              icon: Icon(Icons.home),
+              splashRadius: 14),
+          SizedBox(width: 20),
           Text('Plataforma XPER - WebAppbar'),
           Expanded(child: Container()),
-          ManipulaNiveisPrimarios(),
+          ManipulaOKR(),
           Padding(
             padding: const EdgeInsets.only(bottom: 18.0, top: 18.0),
             child: Container(
@@ -53,9 +60,10 @@ class WebAppBar extends StatelessWidget {
                   elevation: 12,
                   backgroundColor: Colors.red),
               onPressed: () {
-                FirebaseAuth.instance.signOut();
+                //FirebaseAuth.instance.signOut();
+                controllerAuth.logout();
+                //Get.offAll("/");
                 Navigator.popAndPushNamed(context, "/");
-
               },
               child: Text(
                 " Sair ",

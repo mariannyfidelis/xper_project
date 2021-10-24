@@ -2,9 +2,6 @@ import 'dart:collection';
 import 'package:get/get.dart';
 import '/models/metricasModel.dart';
 import '/database/db_firestore.dart';
-
-//TODO: Implementar o AuthService conforme o vídeo
-//import '/Authenticacao/services/auth_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MetricasRepository extends GetxController {
@@ -15,7 +12,6 @@ class MetricasRepository extends GetxController {
     )
   ].obs;
   late FirebaseFirestore db;
-  //late AuthService auth; //TODO: Aqui tem que ser o AuthService que temos que ver como funciona.
 
   MetricasRepository() {
     _startRepository();

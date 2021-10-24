@@ -5,9 +5,6 @@ import '/models/resultadoPrincipalModel.dart';
 import '/models/donoResultadoMetricaModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-//TODO: Implementar o AuthService conforme o vídeo
-//import '/Authenticacao/services/auth_services.dart';
-
 class ResultadoPrincipalRepository extends GetxController {
   List<ResultadosPrincipais> _lista = [
     ResultadosPrincipais(
@@ -18,7 +15,6 @@ class ResultadoPrincipalRepository extends GetxController {
         donoResultado: <DonosResultadoMetricas>[])
   ].obs;
   late FirebaseFirestore db;
-  //late AuthService auth; //TODO: Aqui tem que ser o AuthService que temos que ver como funciona.
 
   ResultadoPrincipalRepository() {
     _startRepository();
@@ -96,7 +92,6 @@ class ResultadoPrincipalRepository extends GetxController {
       'nomeResultado': resultadoPrincipal.nomeResultado,
       'idObjetivoPai': resultadoPrincipal.idObjetivoPai,
       'donoResultado': resultadoPrincipal.donoResultado,
-      //TODO: verficar como inserir lista no firebase
     });
   }
 
