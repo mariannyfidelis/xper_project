@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:xper_brasil_projects/widgets/Dashboard/controller/controllers_dash.dart';
 import 'dash_visual_page.dart';
 import '/utils/paleta_cores.dart';
 import '/models/project_model.dart';
@@ -24,9 +25,9 @@ class _HomeWebState extends State<HomeWeb> {
   @override
   Widget build(BuildContext context) {
     //TODO - Trocar esse pelo ControllerProjetosRepository
-    final listaProjetos = Get.find<ProjectsRepository>();
-
-    List<ProjectModel> meusProjetos = listaProjetos.lista;
+    //final listaProjetos = Get.find<ProjectsRepository>();
+    final listaProjetos = Get.find<ControllerProjetoRepository>();
+    List<ProjectModel> meusProjetos = listaProjetos.listaProjetos;
     late ProjectModel projectAtual;
 
     return Scaffold(
@@ -38,7 +39,7 @@ class _HomeWebState extends State<HomeWeb> {
           SizedBox(width: 10,),
           ElevatedButton(onPressed: () {}, child: Text("Compartilhados comigo"))
         ],
-        title: Expanded(child: Text("Tela Projetos")),
+        title: Text("Tela Projetos"),
       ),
       body: (meusProjetos != null)
           //TODO: Aqui tem que passar os dados para ProjetoPage()
@@ -56,11 +57,14 @@ class _HomeWebState extends State<HomeWeb> {
                               debugPrint("cliquei na linha");
                               Get.to(ProjetoPage());
                             },
-                            child: CustomText(
-                              text: meusProjetos[index].nome,
-                              color: PaletaCores.corPrimaria.withOpacity(.7),
-                              weight: FontWeight.bold,
-                              size: 16,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: CustomText(
+                                text: meusProjetos[index].nome,
+                                color: PaletaCores.corPrimaria.withOpacity(.7),
+                                weight: FontWeight.bold,
+                                size: 16,
+                              ),
                             ),
                           ),
                         ),

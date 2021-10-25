@@ -29,33 +29,33 @@ class ProjectModel{
         });
 
   ProjectModel.fromJson(Map<String, dynamic> json) {
-    idProjeto = json['idProjeto'];
-    nome = json['nome'];
-    proprietario = json['proprietario'];
+    idProjeto = (json['idProjeto'] != null)? json['idProjeto']: "idDefault";
+    nome = (json['nome']!=null) ? json['nome']: "nomeDefault";
+    proprietario = (json['proprietario']!= null) ? json['proprietario']: "proprietarioDefault";
     if (json['objetivosPrincipais'] != null) {
       objetivosPrincipais = <ObjetivosPrincipais>[];
       json['objetivosPrincipais'].forEach((v) {
         objetivosPrincipais!.add(new ObjetivosPrincipais.fromJson(v));
       });
-    }
+    }else{objetivosPrincipais = <ObjetivosPrincipais>[];}
     if (json['resultadosPrincipais'] != null) {
       resultadosPrincipais = <ResultadosPrincipais>[];
       json['resultadosPrincipais'].forEach((v) {
         resultadosPrincipais!.add(new ResultadosPrincipais.fromJson(v));
       });
-    }
+    }else{resultadosPrincipais = <ResultadosPrincipais>[];}
     if (json['metricasPrincipais'] != null) {
       metricasPrincipais = <MetricasPrincipais>[];
       json['metricasPrincipais'].forEach((v) {
         metricasPrincipais!.add(new MetricasPrincipais.fromJson(v));
       });
-    }
+    }else{metricasPrincipais = <MetricasPrincipais>[];}
     if (json['listaDonos'] != null) {
       listaDonos = <DonosResultadoMetricas>[];
       json['listaDonos'].forEach((v) {
         listaDonos!.add(new DonosResultadoMetricas.fromJson(v));
       });
-    }
+    }else{listaDonos = <DonosResultadoMetricas>[];}
     // if (json['metas'] != null) {
     //   metas = <MetasModel>[];
     //   json['metas'].forEach((v) {
@@ -67,7 +67,7 @@ class ProjectModel{
       json['acl'].forEach((v) {
         acl!.add(new ACL.fromJson(v));
       });
-    }
+    }else{acl = <ACL>[];}
   }
 
   Map<String, dynamic> toJson() {

@@ -22,7 +22,6 @@ class AuthService extends GetxController {
   FirebaseAuth _auth = FirebaseAuth.instance.obs.value;
   User? usuario;
   bool isLoging = false.obs.value;
-  bool isLoading = true.obs.value;
   FirebaseFirestore _firestore = DBFirestore.get();
   FirebaseStorage _storage = FirebaseStorage.instance;
 
@@ -38,11 +37,12 @@ class AuthService extends GetxController {
       if (user == null) {
         usuario = null;
         isLoging = false;
+        //isLoading = false;
 
       } else {
         usuario = user;
         isLoging = true;
-        isLoading = false;
+        //isLoading = false;
       }
     });
   }
@@ -50,7 +50,6 @@ class AuthService extends GetxController {
   _getUser() {
     usuario = _auth.currentUser;
     isLoging = true;
-    isLoading = false;
   }
 
   void _uploadImagem(Usuario usuario, Uint8List imagem) {

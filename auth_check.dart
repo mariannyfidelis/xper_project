@@ -23,13 +23,10 @@ class _AuthCheckState extends State<AuthCheck> {
   Widget build(BuildContext context) {
     AuthService authService = Get.find<AuthService>();
     String? tipoUsuario = authService.getTipoUsuario();
-    debugPrint(tipoUsuario);
+    debugPrint("usuário é: ${authService.usuario}");
     debugPrint("isLoging - ${authService.isLoging}");
-    debugPrint("isLoading - ${authService.isLoading}");
 
-    if (authService.isLoading) {
-      return loading();
-    } else if (authService.usuario == null) {
+    if ((authService.isLoging == false) && (authService.usuario == null)) {
       return LoginPage(title: 'Plataforma XPER');
     } else {
       if (tipoUsuario != null) {
@@ -47,9 +44,5 @@ class _AuthCheckState extends State<AuthCheck> {
         return Scaffold(body: Center(child: Container(color: Colors.red)));
       }
     }
-  }
-
-  Widget loading() {
-    return Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

@@ -4,8 +4,8 @@ import '/models/project_model.dart';
 import '/database/db_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ProjectsRepository extends GetxController {
-  List<ProjectModel> _lista = <ProjectModel>[
+class ProjectsRepository2 extends GetxController {
+  List<ProjectModel> _listaProjetos = <ProjectModel>[
     // ProjectModel(
     //     idProjeto: "123dadada",
     //     nome: "Marketing",
@@ -67,17 +67,17 @@ class ProjectsRepository extends GetxController {
 
     for (var doc in snapshot.docs) {
       ProjectModel table = ProjectModel.fromJson(doc.data());
-      _lista.add(table);
+      _listaProjetos.add(table);
     }
     //}
   }
 
   sincronizaListaProjects() {
-    _lista.clear();
+    _listaProjetos.clear();
     _readProjects();
   }
 
-  UnmodifiableListView<ProjectModel> get lista => UnmodifiableListView(_lista);
+  UnmodifiableListView<ProjectModel> get listaProjetos => UnmodifiableListView(_listaProjetos);
 
   saveProjetoALl(List<ProjectModel> projectModel) {
     int i = 1;
@@ -89,8 +89,8 @@ class ProjectsRepository extends GetxController {
               'projetosPrincipais')
           .doc(project.idProjeto.toString())
           .set(project.toJson());
-      if (!_lista.any((atual) => atual.idProjeto == project.idProjeto)) {
-        _lista.add(project);
+      if (!_listaProjetos.any((atual) => atual.idProjeto == project.idProjeto)) {
+        _listaProjetos.add(project);
         print('$i-.1');
         await db
             .collection(
@@ -132,7 +132,7 @@ class ProjectsRepository extends GetxController {
         .collection('projetosPrincipais')
         .doc(projeto.idProjeto)
         .delete();
-    _lista.remove(projeto);
+    _listaProjetos.remove(projeto);
   }
 
   removeProjeto(String idProjeto) async {
@@ -141,7 +141,7 @@ class ProjectsRepository extends GetxController {
         .collection('projetosPrincipais')
         .doc(idProjeto)
         .delete();
-    _lista.removeWhere((element) => element.idProjeto == idProjeto);
+    _listaProjetos.removeWhere((element) => element.idProjeto == idProjeto);
   }
 
   void atualizaProjeto(String idProjeto,
@@ -151,26 +151,26 @@ class ProjectsRepository extends GetxController {
       List? listaAtualizadaMetricas,
       List? listaAtualizadaResultados,
       List? listaAtualizadaACL}) async {
-    int indice = _lista.indexWhere((element) => element.idProjeto == idProjeto);
+    int indice = _listaProjetos.indexWhere((element) => element.idProjeto == idProjeto);
     if (nomeNovoProjetoAtualizado != null) {
-      _lista[indice].nome = nomeNovoProjetoAtualizado;
+      _listaProjetos[indice].nome = nomeNovoProjetoAtualizado;
     }
     //TODO: verificar a atualização de projetos e a implementação dos métodos atualiza
     if (listaAtualizadaOobjetivos != null &&
         listaAtualizadaOobjetivos.isNotEmpty)
       atualizaObjetivosProjeto(
-          idProjeto, indice, _lista, listaAtualizadaOobjetivos);
+          idProjeto, indice, _listaProjetos, listaAtualizadaOobjetivos);
     if (listaAtualizadaDonos != null && listaAtualizadaDonos.isNotEmpty)
-      atualizaDonosProjeto(idProjeto, indice, _lista, listaAtualizadaDonos);
+      atualizaDonosProjeto(idProjeto, indice, _listaProjetos, listaAtualizadaDonos);
     if (listaAtualizadaMetricas != null && listaAtualizadaMetricas.isNotEmpty)
       atualizaMetricasProjeto(
-          idProjeto, indice, _lista, listaAtualizadaMetricas);
+          idProjeto, indice, _listaProjetos, listaAtualizadaMetricas);
     if (listaAtualizadaResultados != null &&
         listaAtualizadaResultados.isNotEmpty)
       atualizaResultadosProjeto(
-          idProjeto, indice, _lista, listaAtualizadaResultados);
+          idProjeto, indice, _listaProjetos, listaAtualizadaResultados);
     if (listaAtualizadaACL != null && listaAtualizadaACL.isNotEmpty)
-      atualizaACLProjeto(idProjeto, indice, _lista, listaAtualizadaACL);
+      atualizaACLProjeto(idProjeto, indice, _listaProjetos, listaAtualizadaACL);
 
     //TODO: Vamos supor ele atualiza a lista toda dentros dos IFs e agora é que
     // vai enviar em uma única requisição POST todos os dados. (mais eficiente)
@@ -179,7 +179,7 @@ class ProjectsRepository extends GetxController {
         //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
         .collection('projetosPrincipais')
         .doc(idProjeto)
-        .update(_lista[indice].toJson()); //
+        .update(_listaProjetos[indice].toJson()); //
     sincronizaListaProjects();
   }
 

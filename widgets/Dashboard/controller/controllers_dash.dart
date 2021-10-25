@@ -20,6 +20,7 @@ NavigationControllerDash navigationController =
 
 class ControllerProjetoRepository extends GetxController {
   //var pModelTeste = <ProjectModel>ProjectModel().obs;
+  List<ProjectModel> _listaProjetos = <ProjectModel>[].obs;
 
   var idProjeto = "".obs;
   var nome = "".obs;
@@ -79,6 +80,7 @@ class ControllerProjetoRepository extends GetxController {
 
   _startRepository() async {
     await _startFirestore();
+    await _readAllProjects();
     await _readProjeto();
   }
 
@@ -460,5 +462,93 @@ class ControllerProjetoRepository extends GetxController {
     } else {
       debugPrint("Não encontrei a métrica !");
     }
+  }
+
+//========================== CRUD PROJETOS =====================================
+
+  UnmodifiableListView<ProjectModel> get listaProjetos => UnmodifiableListView(_listaProjetos);
+
+  _readAllProjects() async {
+    //if (auth.usuario != null && _lista.isEmpty) {
+    final snapshot = await db.collection(
+      //'objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
+        'projetosPrincipais').get(); //verificar com snapshots
+
+    for (var doc in snapshot.docs) {
+      ProjectModel table = ProjectModel.fromJson(doc.data());
+      _listaProjetos.add(table);
+    }
+    //}
+  }
+
+  sincronizaListaProjects() {
+    _listaProjetos.clear();
+    _readAllProjects();
+  }
+
+  saveProjetoALl(List<ProjectModel> projectModel) {
+    int i = 1;
+    projectModel.forEach((project) async {
+      print(i.toString());
+      await db
+          .collection(
+        //'objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
+          'projetosPrincipais')
+          .doc(project.idProjeto.toString())
+          .set(project.toJson());
+      if (!_listaProjetos.any((atual) => atual.idProjeto == project.idProjeto)) {
+        _listaProjetos.add(project);
+        print('$i-.1');
+        await db
+            .collection(
+          //'objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
+            'projetosPrincipais')
+            .doc(project.idProjeto.toString())
+            .set(project.toJson());
+      }
+      i++;
+    });
+  }
+
+  // TODO: substituir e colocar em um menu de um objetivo 3 pontinhos.
+  remove(ProjectModel projeto) async {
+    await db
+    //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
+        .collection('projetosPrincipais')
+        .doc(projeto.idProjeto)
+        .delete();
+    _listaProjetos.remove(projeto);
+  }
+
+  removeProjeto(String idProjeto) async {
+    await db
+    //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
+        .collection('projetosPrincipais')
+        .doc(idProjeto)
+        .delete();
+    _listaProjetos.removeWhere((element) => element.idProjeto == idProjeto);
+  }
+
+  void atualizaProjeto(String idProjeto,
+      {String? nomeNovoProjetoAtualizado,
+        List? listaAtualizadaOobjetivos,
+        List? listaAtualizadaDonos,
+        List? listaAtualizadaMetricas,
+        List? listaAtualizadaResultados,
+        List? listaAtualizadaACL}) async {
+    int indice = _listaProjetos.indexWhere((element) => element.idProjeto == idProjeto);
+    if (nomeNovoProjetoAtualizado != null) {
+      _listaProjetos[indice].nome = nomeNovoProjetoAtualizado;
+    }
+    //TODO: Vamos supor ele atualiza a lista toda dentros dos IFs e agora é que
+    // vai enviar em uma única requisição POST todos os dados. (mais eficiente)
+    //TODO: Atualiza a lista do projeto com todos os dados de uma vez e faz uma única gravação
+
+    await db
+    //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
+        .collection('projetosPrincipais')
+        .doc(idProjeto)
+        .update(_listaProjetos[indice].toJson()); //
+    sincronizaListaProjects();
   }
 }

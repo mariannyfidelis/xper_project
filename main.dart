@@ -29,7 +29,6 @@ void main() async {
   Get.put(AuthService());
   Get.put(MenuControllerDash());
   Get.put(NavigationControllerDash());
-  Get.put(ProjectsRepository());
   Get.put(ControllerProjetoRepository());
 
   await Firebase.initializeApp();
