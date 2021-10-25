@@ -17,10 +17,10 @@ class _AuthCheckState extends State<AuthCheck> {
   String? tipoUsuario;
   late AuthService authService = Get.find<AuthService>();
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {

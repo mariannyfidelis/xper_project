@@ -15,34 +15,34 @@ class ProjectsRepository extends GetxController {
     //     metricasPrincipais: [],
     //     resultadosPrincipais: [],
     //     acl: []),
-    ProjectModel(
-        idProjeto: "2qweqw23133",
-        nome: "Gestão de projetos",
-        proprietario: 'Patrick Fidelis',
-        objetivosPrincipais: [],
-        listaDonos: [],
-        metricasPrincipais: [
-          // MetricasPrincipais(idMetrica: "idmetrica1", nomeMetrica: "Metrica1"),
-          // MetricasPrincipais(idMetrica: "idmetrica2", nomeMetrica: "Metrica2"),
-        ],
-        resultadosPrincipais: [
-          // ResultadosPrincipais(
-          //   idResultado: "idResultado1",
-          //   nomeResultado: "Resultado1",
-          //   idObjetivoPai: "idobj1",
-          //   donoResultado: ["donoResultado1", "dono2"],
-          // ),
-          // ResultadosPrincipais(
-          //     idResultado: "idResultado1",
-          //     nomeResultado: "Resultado1",
-          //     idObjetivoPai: "idobj1",
-          //     donoResultado: ["donoResultado1", "dono2"])
-        ],
-        acl: [
-          // ACL(idDonoResultadoMetrica: "123", permissao: "read"),
-          // ACL(idDonoResultadoMetrica: "xxx", permissao: "write"),
-          // ACL(idDonoResultadoMetrica: "555", permissao: "owner")
-        ]),
+    // ProjectModel(
+    //     idProjeto: "2qweqw23133",
+    //     nome: "Gestão de projetos",
+    //     proprietario: 'Patrick Fidelis',
+    //     objetivosPrincipais: [],
+    //     listaDonos: [],
+    //     metricasPrincipais: [
+    // MetricasPrincipais(idMetrica: "idmetrica1", nomeMetrica: "Metrica1"),
+    // MetricasPrincipais(idMetrica: "idmetrica2", nomeMetrica: "Metrica2"),
+    // ],
+    // resultadosPrincipais: [
+    // ResultadosPrincipais(
+    //   idResultado: "idResultado1",
+    //   nomeResultado: "Resultado1",
+    //   idObjetivoPai: "idobj1",
+    //   donoResultado: ["donoResultado1", "dono2"],
+    // ),
+    // ResultadosPrincipais(
+    //     idResultado: "idResultado1",
+    //     nomeResultado: "Resultado1",
+    //     idObjetivoPai: "idobj1",
+    //     donoResultado: ["donoResultado1", "dono2"])
+    // ],
+    // acl: [
+    // ACL(idDonoResultadoMetrica: "123", permissao: "read"),
+    // ACL(idDonoResultadoMetrica: "xxx", permissao: "write"),
+    // ACL(idDonoResultadoMetrica: "555", permissao: "owner")
+    //       ]),
   ].obs;
   late FirebaseFirestore db;
 
@@ -63,7 +63,7 @@ class ProjectsRepository extends GetxController {
     //if (auth.usuario != null && _lista.isEmpty) {
     final snapshot = await db.collection(
         //'objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-        'projetosPrincipais').get();//verificar com snapshots
+        'projetosPrincipais').get(); //verificar com snapshots
 
     for (var doc in snapshot.docs) {
       ProjectModel table = ProjectModel.fromJson(doc.data());
@@ -187,11 +187,9 @@ class ProjectsRepository extends GetxController {
   void atualizaObjetivosProjeto(String idProjeto, int indice,
       List<ProjectModel> lista, List listaAtualizadaOobjetivos) {}
 
-
   //TODO: implementar metodo atualizaDonosProjeto
   void atualizaDonosProjeto(String idProjeto, int indice,
       List<ProjectModel> lista, List listaAtualizadaDonos) {}
-
 
   //TODO: implementar metodo atualizaMetricasProjeto
   void atualizaMetricasProjeto(String idProjeto, int indice,

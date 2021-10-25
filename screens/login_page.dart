@@ -1,12 +1,10 @@
 import 'dart:typed_data';
 import 'package:get/get.dart';
-
 import '/utils/paleta_cores.dart';
 import '/database/db_firestore.dart';
 import '/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
