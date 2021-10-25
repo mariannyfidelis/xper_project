@@ -2,6 +2,7 @@ import 'dart:core';
 import 'dart:collection';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
+import '/services/auth_service.dart';
 import '/models/project_model.dart';
 import '/models/metricasModel.dart';
 import '/database/db_firestore.dart';
@@ -17,6 +18,11 @@ import '/widgets/Dashboard/controller/navigation_controller_dash.dart';
 MenuControllerDash menuControllerDash = MenuControllerDash.instance;
 NavigationControllerDash navigationController =
     NavigationControllerDash.instance;
+
+//TODO: Como verificar e recuperar o usuário que está autenticado
+var auth = Get.find<AuthService>();
+String idUsuario = auth.usuario!.uid; //'5xmMnHGksrPtVK4rvnEsoYSemrr2';
+//String idProjeto2 = "2qweqw23133"; //não está sendo usado
 
 class ControllerProjetoRepository extends GetxController {
   //var pModelTeste = <ProjectModel>ProjectModel().obs;
@@ -80,19 +86,27 @@ class ControllerProjetoRepository extends GetxController {
 
   _startRepository() async {
     await _startFirestore();
-    await _readAllProjects();
-    await _readProjeto();
+    await readProjects("todos");
+
+    if (listaProjetos.isNotEmpty) {
+      await _readProjeto(_listaProjetos
+          .elementAt(_listaProjetos.length - 1)
+          .idProjeto
+          .toString());
+    }
   }
 
   _startFirestore() {
     db = DBFirestore.get();
   }
 
-  _readProjeto() async {
+  _readProjeto(String idProjeto,
+      {String idUsuario = '5xmMnHGksrPtVK4rvnEsoYSemrr2'}) async {
     //if (auth.usuario != null && _lista.isEmpty) {
-    final snapshot = await db.collection(
-        //'objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-        'projetosPrincipais').doc("2qweqw23133").get();
+    final snapshot = await db
+        .collection('usuarios/$idUsuario/projetos')
+        .doc(idProjeto)
+        .get();
 
     print(snapshot.data());
     late ProjectModel proj;
@@ -144,26 +158,6 @@ class ControllerProjetoRepository extends GetxController {
     //}
   }
 
-  // void addObjects(ObjetivosPrincipais value) {
-  //   _listObjects.add(value);
-  // }
-
-  // void addDono(DonosResultadoMetricas value) {
-  //   _listDonos.add(value);
-  // }
-  //
-  // void addResults(ResultadosPrincipais value) {
-  //   _listResults.add(value);
-  // }
-  //
-  // void addMetrics(MetricasPrincipais value) {
-  //   _listMetrics.add(value);
-  // }
-  //
-  // void addMetas(String value) {
-  //   //listMetas.add(value);
-  // }
-
   //======================= CRUD objetivos =====================================
   UnmodifiableListView<ObjetivosPrincipais> get listaObjectives =>
       UnmodifiableListView(_listObjects);
@@ -172,10 +166,8 @@ class ControllerProjetoRepository extends GetxController {
       {int importancia = 100, int progresso = 100}) async {
     var uuid = Uuid();
 
-    DocumentReference reference = await db
-        //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-        .collection('projetosPrincipais')
-        .doc(idProjeto);
+    DocumentReference reference =
+        await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
 
     ObjetivosPrincipais objetivo = ObjetivosPrincipais(
         idObjetivo: uuid.v4(),
@@ -189,9 +181,10 @@ class ControllerProjetoRepository extends GetxController {
     await reference.update({'objetivosPrincipais': l}); //[l]
   }
 
+  // TODO - sincroniza
   void sincronizaListaObjetivos() {
     _listObjects.clear();
-    _readProjeto();
+    _readProjeto(idProjeto.value);
   }
 
   void atualizaObjetivo(
@@ -204,7 +197,7 @@ class ControllerProjetoRepository extends GetxController {
       _listObjects[indice].nome = nomeObjetivoAtualizado;
       var reference = await db
           //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-          .collection('projetosPrincipais')
+          .collection('usuarios/$idUsuario/projetos')
           .doc(idProjeto);
 
       var l = _listObjects.map((v) => v.toJson()).toList();
@@ -227,7 +220,8 @@ class ControllerProjetoRepository extends GetxController {
       var a = _listObjects.removeAt(indice);
       val.add(a.toJson());
 
-      var reference = await db.collection("projetosPrincipais").doc(idProjeto);
+      var reference = await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
+
       reference.update(
           {"objetivosPrincipais": FieldValue.arrayRemove(val)}).then((_) {
         print("success com projeto repository!");
@@ -242,14 +236,13 @@ class ControllerProjetoRepository extends GetxController {
       UnmodifiableListView(_listResults);
 
   void addOneResultado(String idProjeto, String nomeResultado,
-      {String? idObjetivoPai = "idObjetivoPai", String idMetrica = "idMetrica",
+      {String? idObjetivoPai = "idObjetivoPai",
+      String idMetrica = "idMetrica",
       List<DonosResultadoMetricas?>? donos}) async {
-
     var uuid = Uuid();
 
     DocumentReference reference = await db
-        //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-        .collection('projetosPrincipais')
+        .collection('usuarios/$idUsuario/projetos')
         .doc(idProjeto);
 
     ResultadosPrincipais resultadosPrincipais = ResultadosPrincipais(
@@ -257,10 +250,11 @@ class ControllerProjetoRepository extends GetxController {
         nomeResultado: nomeResultado,
         idObjetivoPai: idObjetivoPai,
         idMetrica: idMetrica,
-        donoResultado: (donos != null) ?
-                              (donos.isEmpty) ? []
-                                               : donos
-                                       : []);
+        donoResultado: (donos != null)
+            ? (donos.isEmpty)
+                ? []
+                : donos
+            : []);
 
     _listResults.add(resultadosPrincipais);
 
@@ -271,7 +265,7 @@ class ControllerProjetoRepository extends GetxController {
 
   void sincronizaListaResultados() {
     _listResults.clear();
-    _readProjeto();
+    _readProjeto(idProjeto.value);
   }
 
   void removeResultado(String idProjeto, String idResultado) async {
@@ -287,7 +281,8 @@ class ControllerProjetoRepository extends GetxController {
       val.add(a.toJson());
       //val.add(_listObjects.elementAt(indice));
 
-      var reference = await db.collection("projetosPrincipais").doc(idProjeto);
+      var reference = await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
+
       reference.update(
           {"resultadosPrincipais": FieldValue.arrayRemove(val)}).then((_) {
         print("success com a remoção de resultado do projeto repository!");
@@ -308,7 +303,7 @@ class ControllerProjetoRepository extends GetxController {
       _listResults[indice].nomeResultado = nomeResultaAtualizado;
       var reference = await db
           //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-          .collection('projetosPrincipais')
+          .collection('usuarios/$idUsuario/projetos')
           .doc(idProjeto);
 
       var l = _listResults.map((v) => v.toJson()).toList();
@@ -327,7 +322,7 @@ class ControllerProjetoRepository extends GetxController {
 
   void sincronizaListaDonos() {
     _listDonos.clear();
-    _readProjeto();
+    _readProjeto(idProjeto.value);
   }
 
   void addOneDono(String idProjeto, String nomeDono, String emailDono) async {
@@ -335,9 +330,8 @@ class ControllerProjetoRepository extends GetxController {
 
     DocumentReference reference = await db
         //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-        .collection('projetosPrincipais')
+        .collection('usuarios/$idUsuario/projetos')
         .doc(idProjeto);
-    //.doc(objetivo.idObjetivo.toString());
 
     DonosResultadoMetricas dono =
         DonosResultadoMetricas(id: uuid.v4(), nome: nomeDono, email: emailDono);
@@ -358,7 +352,7 @@ class ControllerProjetoRepository extends GetxController {
 
       var reference = await db
           //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-          .collection('projetosPrincipais')
+          .collection('usuarios/$idUsuario/projetos')
           .doc(idProjeto);
 
       var l = _listDonos.map((v) => v.toJson()).toList();
@@ -382,7 +376,7 @@ class ControllerProjetoRepository extends GetxController {
       val.add(a.toJson());
       //val.add(_listObjects.elementAt(indice));
 
-      var reference = await db.collection("projetosPrincipais").doc(idProjeto);
+      var reference = await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
       reference.update({"listaDonos": FieldValue.arrayRemove(val)}).then((_) {
         print("success com projeto repository!");
       });
@@ -397,7 +391,7 @@ class ControllerProjetoRepository extends GetxController {
 
   void sincronizaListaMetricas() {
     _listMetrics.clear();
-    _readProjeto();
+    _readProjeto(idProjeto.value);
   }
 
   void addOneMetric(String idProjeto, String nomeAtualizadoMetrica,
@@ -405,8 +399,7 @@ class ControllerProjetoRepository extends GetxController {
     var uuid = Uuid();
 
     DocumentReference reference = await db
-        //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-        .collection('projetosPrincipais')
+        .collection('usuarios/$idUsuario/projetos')
         .doc(idProjeto);
 
     MetricasPrincipais metrica = MetricasPrincipais(
@@ -423,14 +416,13 @@ class ControllerProjetoRepository extends GetxController {
       String idProjeto, String idMetrica, String nomeMetricaAtualizado,
       {double? meta, double? realizado, double? progresso}) async {
     int indice =
-    _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
+        _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
 
     if (indice != -1) {
       _listMetrics[indice].nomeMetrica = nomeMetricaAtualizado;
 
       var reference = await db
-      //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-          .collection('projetosPrincipais')
+          .collection('usuarios/$idUsuario/projetos')
           .doc(idProjeto);
 
       var l = _listMetrics.map((v) => v.toJson()).toList();
@@ -445,7 +437,7 @@ class ControllerProjetoRepository extends GetxController {
 
   removeMetrica(String idProjeto, String idMetrica) async {
     int indice =
-    _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
+        _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
 
     var val = <Map<String, dynamic>>[];
 
@@ -454,7 +446,7 @@ class ControllerProjetoRepository extends GetxController {
       var a = _listMetrics.removeAt(indice);
       val.add(a.toJson());
 
-      var reference = await db.collection("projetosPrincipais").doc(idProjeto);
+      var reference = await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
       reference.update(
           {"metricasPrincipais": FieldValue.arrayRemove(val)}).then((_) {
         print("success com projeto repository!");
@@ -464,26 +456,41 @@ class ControllerProjetoRepository extends GetxController {
     }
   }
 
-//========================== CRUD PROJETOS =====================================
+//========================== CRUD TODOS OS PROJETOS =====================================
 
-  UnmodifiableListView<ProjectModel> get listaProjetos => UnmodifiableListView(_listaProjetos);
+  UnmodifiableListView<ProjectModel> get listaProjetos =>
+      UnmodifiableListView(_listaProjetos);
 
-  _readAllProjects() async {
-    //if (auth.usuario != null && _lista.isEmpty) {
-    final snapshot = await db.collection(
-      //'objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-        'projetosPrincipais').get(); //verificar com snapshots
+  readProjects(String? tipo,
+      {String idUsuario = '5xmMnHGksrPtVK4rvnEsoYSemrr2'}) async {
+    if (tipo != "todos") {
+      final snapshot = await db
+          .collection('usuarios/$idUsuario/projetos')
+          .where('tipoProj', isEqualTo: tipo)
+          .get(); //verificar com snapshots
 
-    for (var doc in snapshot.docs) {
-      ProjectModel table = ProjectModel.fromJson(doc.data());
-      _listaProjetos.add(table);
+      //TODO: Tratar retorno nulo do SNAPSHOT !!!
+      for (var doc in snapshot.docs) {
+        ProjectModel table = ProjectModel.fromJson(doc.data());
+        _listaProjetos.add(table);
+      }
+    } else {
+      final snapshot = await db
+          .collection('usuarios/$idUsuario/projetos')
+          .get(); //verificar com snapshots
+      //TODO: Tratar retorno nulo do SNAPSHOT !!!
+      if (snapshot != null) {
+        for (var doc in snapshot.docs) {
+          ProjectModel table = ProjectModel.fromJson(doc.data());
+          _listaProjetos.add(table);
+        }
+      }
     }
-    //}
   }
 
-  sincronizaListaProjects() {
+  sincronizaListaProjects(String tipoProjeto, String idUsuario) {
     _listaProjetos.clear();
-    _readAllProjects();
+    readProjects(tipoProjeto, idUsuario: idUsuario);
   }
 
   saveProjetoALl(List<ProjectModel> projectModel) {
@@ -492,17 +499,18 @@ class ControllerProjetoRepository extends GetxController {
       print(i.toString());
       await db
           .collection(
-        //'objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-          'projetosPrincipais')
+              //'objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
+              'projetosPrincipais')
           .doc(project.idProjeto.toString())
           .set(project.toJson());
-      if (!_listaProjetos.any((atual) => atual.idProjeto == project.idProjeto)) {
+      if (!_listaProjetos
+          .any((atual) => atual.idProjeto == project.idProjeto)) {
         _listaProjetos.add(project);
         print('$i-.1');
         await db
             .collection(
-          //'objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-            'projetosPrincipais')
+                //'objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
+                'projetosPrincipais')
             .doc(project.idProjeto.toString())
             .set(project.toJson());
       }
@@ -510,45 +518,70 @@ class ControllerProjetoRepository extends GetxController {
     });
   }
 
-  // TODO: substituir e colocar em um menu de um objetivo 3 pontinhos.
-  remove(ProjectModel projeto) async {
-    await db
-    //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-        .collection('projetosPrincipais')
+  void addOneProject(String nome,
+      {String idUsuario = '5xmMnHGksrPtVK4rvnEsoYSemrr2'}) async {
+    var uuid = Uuid();
+    String idProjeto = uuid.v4();
+
+    DocumentReference reference =
+        await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
+
+    ProjectModel newProject = ProjectModel(
+      nome: nome,
+      objetivosPrincipais: [],
+      resultadosPrincipais: [],
+      metricasPrincipais: [],
+      listaDonos: [],
+      idProjeto: idProjeto,
+      proprietario: auth.usuario!.uid,
+      tipoProj: 'privado',
+      acl: [],
+    );
+
+    _listaProjetos.add(newProject);
+
+    await reference.set(newProject.toJson());
+  }
+
+  void atualizaNomeProjeto(String idProjeto, String nomeAtualizado,
+      {String idUsuario = '5xmMnHGksrPtVK4rvnEsoYSemrr2'}) async {
+    // int indice =
+    //     _listProjects.indexWhere((element) => element.idProject == idProject);
+
+    // if (indice != -1) {
+    //   _listObjects[indice].nome = nomeObjetivoAtualizado;
+    var reference =
+        await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
+
+    // var l = _listProjects.map((v) => v.toJson()).toList();
+
+    await reference.update({'nome': nomeAtualizado});
+
+    // } else {
+    //   print("Objetivo não encontrado !");
+    // }
+  }
+
+  void removeProjeto(String idProjeto, String idUsuario) async {
+    var reference =
+        await db.collection("usuarios/$idUsuario/projetos").doc(idProjeto);
+
+    _listaProjetos.removeWhere((element) => element.idProjeto == idProjeto);
+    reference.delete();
+  }
+
+  void remove(ProjectModel projeto,
+      {String idUsuario = '5xmMnHGksrPtVK4rvnEsoYSemrr2'}) async {
+    var reference = await db
+        .collection("usuarios/$idUsuario/projetos")
         .doc(projeto.idProjeto)
         .delete();
     _listaProjetos.remove(projeto);
   }
 
-  removeProjeto(String idProjeto) async {
-    await db
-    //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-        .collection('projetosPrincipais')
-        .doc(idProjeto)
-        .delete();
-    _listaProjetos.removeWhere((element) => element.idProjeto == idProjeto);
-  }
+  void atualizaTudo(String? idProjeto, int index) {
+    _readProjeto(idProjeto!);
 
-  void atualizaProjeto(String idProjeto,
-      {String? nomeNovoProjetoAtualizado,
-        List? listaAtualizadaOobjetivos,
-        List? listaAtualizadaDonos,
-        List? listaAtualizadaMetricas,
-        List? listaAtualizadaResultados,
-        List? listaAtualizadaACL}) async {
-    int indice = _listaProjetos.indexWhere((element) => element.idProjeto == idProjeto);
-    if (nomeNovoProjetoAtualizado != null) {
-      _listaProjetos[indice].nome = nomeNovoProjetoAtualizado;
-    }
-    //TODO: Vamos supor ele atualiza a lista toda dentros dos IFs e agora é que
-    // vai enviar em uma única requisição POST todos os dados. (mais eficiente)
-    //TODO: Atualiza a lista do projeto com todos os dados de uma vez e faz uma única gravação
-
-    await db
-    //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-        .collection('projetosPrincipais')
-        .doc(idProjeto)
-        .update(_listaProjetos[indice].toJson()); //
-    sincronizaListaProjects();
+    //Quando eu termino eu tenho que atualizar todos os lists Objects, results, metrics
   }
 }

@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 import 'database/firestoreService.dart';
 import 'controllers/dados_controller.dart';
 import 'screens/redefinicao_senha_page.dart';
-import '/controllers/projectsRepository.dart';
 import 'screens/cliente_gerenciador_page.dart';
 import 'screens/projeto_pagina_principal.dart';
 import 'package:firebase_core/firebase_core.dart';

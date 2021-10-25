@@ -1,10 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import '/utils/paleta_cores.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
 import '/widgets/Dashboard/responsividade/reposinvidade_dash.dart';
-
-import 'package:get/state_manager.dart';
-import '/utils/paleta_cores.dart';
 
 AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) =>
     AppBar(
@@ -67,16 +65,12 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) =>
             ],
           ),
           Container(width: 1, height: 22, color: PaletaCores.corLightGrey),
-          SizedBox(
-            width: 24,
-          ),
+          SizedBox(width: 24),
           CustomText(
             text: "Plataforma GOX",
             color: PaletaCores.corLightGrey,
           ),
-          SizedBox(
-            width: 16,
-          ),
+          SizedBox(width: 16),
           Container(
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(30)),

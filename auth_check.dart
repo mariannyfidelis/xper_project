@@ -41,7 +41,7 @@ class _AuthCheckState extends State<AuthCheck> {
               body: Center(child: Text("Usuário inexistente :( !")));
         }
       } else {
-        return Scaffold(body: Center(child: Container(color: Colors.red)));
+        return LoginPage(title: 'Plataforma XPER');
       }
     }
   }

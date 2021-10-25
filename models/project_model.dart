@@ -9,6 +9,7 @@ class ProjectModel{
   String? idProjeto;
   String? nome;
   String? proprietario;
+  String? tipoProj;
   List<ObjetivosPrincipais>? objetivosPrincipais;
   List<ResultadosPrincipais>? resultadosPrincipais;
   List<MetricasPrincipais>? metricasPrincipais;
@@ -20,6 +21,7 @@ class ProjectModel{
       {this.idProjeto,
         this.nome,
         this.proprietario,
+        this.tipoProj,
         this.objetivosPrincipais,
         this.resultadosPrincipais,
         this.metricasPrincipais,
@@ -29,21 +31,25 @@ class ProjectModel{
         });
 
   ProjectModel.fromJson(Map<String, dynamic> json) {
-    idProjeto = (json['idProjeto'] != null)? json['idProjeto']: "idDefault";
+    idProjeto = (json['idProjeto'] != null) ? json['idProjeto']: "idDefault";
     nome = (json['nome']!=null) ? json['nome']: "nomeDefault";
     proprietario = (json['proprietario']!= null) ? json['proprietario']: "proprietarioDefault";
+    tipoProj = (json['tipoProj'] != null) ? json['tipoProj']: "tipoProjetoDefault";
+
     if (json['objetivosPrincipais'] != null) {
       objetivosPrincipais = <ObjetivosPrincipais>[];
       json['objetivosPrincipais'].forEach((v) {
         objetivosPrincipais!.add(new ObjetivosPrincipais.fromJson(v));
       });
     }else{objetivosPrincipais = <ObjetivosPrincipais>[];}
+
     if (json['resultadosPrincipais'] != null) {
       resultadosPrincipais = <ResultadosPrincipais>[];
       json['resultadosPrincipais'].forEach((v) {
         resultadosPrincipais!.add(new ResultadosPrincipais.fromJson(v));
       });
     }else{resultadosPrincipais = <ResultadosPrincipais>[];}
+
     if (json['metricasPrincipais'] != null) {
       metricasPrincipais = <MetricasPrincipais>[];
       json['metricasPrincipais'].forEach((v) {
@@ -75,6 +81,7 @@ class ProjectModel{
     data['idProjeto']=this.idProjeto;
     data['nome'] = this.nome;
     data['proprietario'] = this.proprietario;
+    data['tipoProj'] = this.tipoProj;
     if (this.objetivosPrincipais != null) {
       data['objetivosPrincipais'] =
           this.objetivosPrincipais!.map((v) => v.toJson()).toList();
