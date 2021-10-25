@@ -50,7 +50,7 @@ class AuthService extends GetxController {
   _getUser() {
     usuario = _auth.currentUser;
     isLoging = true;
-    isLoging = false;
+    isLoading = false;
   }
 
   void _uploadImagem(Usuario usuario, Uint8List imagem) {

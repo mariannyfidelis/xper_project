@@ -14,9 +14,6 @@ class AuthCheck extends StatefulWidget {
 }
 
 class _AuthCheckState extends State<AuthCheck> {
-  String? tipoUsuario;
-  late AuthService authService = Get.find<AuthService>();
-
   // @override
   // void initState() {
   //   super.initState();
@@ -24,10 +21,17 @@ class _AuthCheckState extends State<AuthCheck> {
 
   @override
   Widget build(BuildContext context) {
+    AuthService authService = Get.find<AuthService>();
+    String? tipoUsuario = authService.getTipoUsuario();
     debugPrint(tipoUsuario);
-    debugPrint("${authService.isLoging}");
-    tipoUsuario = authService.getTipoUsuario();
-    if (authService.isLoging == true) {
+    debugPrint("isLoging - ${authService.isLoging}");
+    debugPrint("isLoading - ${authService.isLoading}");
+
+    if (authService.isLoading) {
+      return loading();
+    } else if (authService.usuario == null) {
+      return LoginPage(title: 'Plataforma XPER');
+    } else {
       if (tipoUsuario != null) {
         if (tipoUsuario == "admin") {
           return Dashboard();
@@ -36,17 +40,16 @@ class _AuthCheckState extends State<AuthCheck> {
         } else if (tipoUsuario == "cliente") {
           return HomeWeb();
         } else {
-          return Scaffold(body: Center(child: Container(color: Colors.red,)));
+          return Scaffold(
+              body: Center(child: Text("Usuário inexistente :( !")));
         }
       } else {
-        return LoginPage(
-          title: 'Plataforma XPER',
-        );
+        return Scaffold(body: Center(child: Container(color: Colors.red)));
       }
-    }else{
-      return LoginPage(
-        title: 'Plataforma XPER',
-      );
     }
+  }
+
+  Widget loading() {
+    return Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
