@@ -45,12 +45,8 @@ class SideMenuDash extends StatelessWidget {
                 )
               ],
             ),
-          SizedBox(
-            height: 40,
-          ),
-          Divider(
-            color: PaletaCores.corLightGrey.withOpacity(.1),
-          ),
+          SizedBox(height: 40),
+          Divider(color: PaletaCores.corLightGrey.withOpacity(.1)),
           Column(
             mainAxisSize: MainAxisSize.min,
             children: sideMenuItems

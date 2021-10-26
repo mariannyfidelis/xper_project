@@ -1,3 +1,5 @@
+import 'package:xper_brasil_projects/screens/meta_cliente_page.dart';
+
 import '/utils/breakpoints.dart';
 import 'package:flutter/material.dart';
 import '/widgets/cliente_visualizador/appbar/appBarWeb.dart';
@@ -73,6 +75,7 @@ class _ProjetoPageState extends State<ProjetoPage> {
                                 ManipulaResponsaveis(),
                                 ManipulaExtensoes(),
                                 TelaCalendario(),
+                                TelaMeta(),
                                 TelaDetalhes(),
                                 EdicaoNotas(),
                               ],

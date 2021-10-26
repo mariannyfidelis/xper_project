@@ -19,18 +19,17 @@ MenuControllerDash menuControllerDash = MenuControllerDash.instance;
 NavigationControllerDash navigationController =
     NavigationControllerDash.instance;
 
-//TODO: Como verificar e recuperar o usuário que está autenticado
 var auth = Get.find<AuthService>();
-String idUsuario = auth.usuario!.uid; //'5xmMnHGksrPtVK4rvnEsoYSemrr2';
-//String idProjeto2 = "2qweqw23133"; //não está sendo usado
+String idUsuario = auth.usuario!.uid;
 
 class ControllerProjetoRepository extends GetxController {
-  //var pModelTeste = <ProjectModel>ProjectModel().obs;
+  //TODO - Verificar o WHERE dessa lista
   List<ProjectModel> _listaProjetos = <ProjectModel>[].obs;
 
   var idProjeto = "".obs;
   var nome = "".obs;
   var proprietario = "".obs;
+  var tipoProj = "".obs;
 
   List<ObjetivosPrincipais> _listObjects = <ObjetivosPrincipais>[
     // ObjetivosPrincipais(
@@ -88,11 +87,30 @@ class ControllerProjetoRepository extends GetxController {
     await _startFirestore();
     await readProjects("todos");
 
+    idProjeto.value = listaProjetos[0].idProjeto!;
+    nome.value = listaProjetos[0].nome!;
+    proprietario.value = listaProjetos[0].proprietario!;
+    tipoProj.value = listaProjetos[0].tipoProj!;
+
     if (listaProjetos.isNotEmpty) {
-      await _readProjeto(_listaProjetos
-          .elementAt(_listaProjetos.length - 1)
-          .idProjeto
-          .toString());
+      listaProjetos[0].objetivosPrincipais!.forEach((element) {
+        _listObjects.clear();
+        _listObjects.add(element);
+      });
+      listaProjetos[0].resultadosPrincipais!.forEach((element) {
+        _listResults.clear();
+        _listResults.add(element);
+      });
+      listaProjetos[0].listaDonos!.forEach((element) {
+        _listDonos.clear();
+        _listDonos.add(element);
+      });
+      listaProjetos[0].metricasPrincipais!.forEach((element) {
+        _listMetrics.clear();
+        _listMetrics.add(element);
+      });
+
+      await _readProjeto(idProjeto.value);
     }
   }
 
@@ -100,74 +118,66 @@ class ControllerProjetoRepository extends GetxController {
     db = DBFirestore.get();
   }
 
-  _readProjeto(String idProjeto,
+  _readProjeto(String id,
       {String idUsuario = '5xmMnHGksrPtVK4rvnEsoYSemrr2'}) async {
-    //if (auth.usuario != null && _lista.isEmpty) {
-    final snapshot = await db
-        .collection('usuarios/$idUsuario/projetos')
-        .doc(idProjeto)
-        .get();
+    final snapshot = await db.collection('projetosPrincipais').doc(id).get();
 
+    print("Fiz um readProject ");
     print(snapshot.data());
     late ProjectModel proj;
     if (snapshot.data() != null) {
       proj = ProjectModel.fromJson(snapshot.data()!);
     }
 
-    //TODO: Erro em converter RxString para String
-    //idProjeto = proj.idProjeto! as RxString;
-    //nome = proj.nome! as RxString;
-    //proprietario = proj.proprietario! as RxString;
+    this.idProjeto.value = proj.idProjeto!;
+    this.nome.value = proj.nome!;
+    this.proprietario.value = proj.proprietario!;
+    this.tipoProj.value = proj.tipoProj!;
 
-    //listObjects = proj.objetivosPrincipais!;
     _listObjects.clear();
     proj.objetivosPrincipais!.forEach((element) {
       _listObjects.add(element);
       print("${element.nome} - ");
     });
 
-    //listResults = proj.resultadosPrincipais!;
     _listResults.clear();
     proj.resultadosPrincipais!.forEach((element) {
       _listResults.add(element);
       print("${element.nomeResultado} - ");
     });
 
-    //listDonos = proj.listaDonos!;
     _listDonos.clear();
     proj.listaDonos!.forEach((element) {
       _listDonos.add(element);
       print("${element.nome} - ");
     });
 
-    //listMetrics = proj.metricasPrincipais!;
     _listMetrics.clear();
     proj.metricasPrincipais!.forEach((element) {
       _listMetrics.add(element);
       print("${element.nomeMetrica} - ");
     });
 
-    //listAcl = proj.acl!;
     _listAcl.clear();
     proj.acl!.forEach((element) {
       _listAcl.add(element);
     });
-    print("${_listObjects.length} ${_listDonos.length}");
-    //TODO: Erro
-    //print("$idProjeto  $nome  $proprietario");
-    //}
+
+    print(
+        "Controller linha 173 - quantos objetivos e donos - ${_listObjects.length} ${_listDonos.length}");
+    print("${this.idProjeto.string} ${this.proprietario.string}");
   }
 
   //======================= CRUD objetivos =====================================
   UnmodifiableListView<ObjetivosPrincipais> get listaObjectives =>
       UnmodifiableListView(_listObjects);
 
-  void addOneObjective(String idProjeto, String nomeObjetivo,
+  void addOneObjective(String nomeObjetivo,
       {int importancia = 100, int progresso = 100}) async {
     var uuid = Uuid();
 
     DocumentReference reference =
-        await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
+        await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     ObjetivosPrincipais objetivo = ObjetivosPrincipais(
         idObjetivo: uuid.v4(),
@@ -181,14 +191,7 @@ class ControllerProjetoRepository extends GetxController {
     await reference.update({'objetivosPrincipais': l}); //[l]
   }
 
-  // TODO - sincroniza
-  void sincronizaListaObjetivos() {
-    _listObjects.clear();
-    _readProjeto(idProjeto.value);
-  }
-
-  void atualizaObjetivo(
-      String idProjeto, String idObjetivo, String nomeObjetivoAtualizado,
+  void atualizaObjetivo(String idObjetivo, String nomeObjetivoAtualizado,
       {int importancia = 100, int progresso = 100}) async {
     int indice =
         _listObjects.indexWhere((element) => element.idObjetivo == idObjetivo);
@@ -197,20 +200,20 @@ class ControllerProjetoRepository extends GetxController {
       _listObjects[indice].nome = nomeObjetivoAtualizado;
       var reference = await db
           //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-          .collection('usuarios/$idUsuario/projetos')
-          .doc(idProjeto);
+          .collection('projetosPrincipais')
+          .doc(this.idProjeto.value);
 
       var l = _listObjects.map((v) => v.toJson()).toList();
 
       await reference.update({'objetivosPrincipais': l});
 
-      sincronizaListaObjetivos();
+      atualizaTudo(this.idProjeto.value);
     } else {
       print("Objetivo não encontrado !");
     }
   }
 
-  removeObjetivo(String idProjeto, String idObjetivo) async {
+  removeObjetivo(String idObjetivo) async {
     int indice =
         _listObjects.indexWhere((element) => element.idObjetivo == idObjetivo);
     var val = <Map<String, dynamic>>[];
@@ -220,7 +223,8 @@ class ControllerProjetoRepository extends GetxController {
       var a = _listObjects.removeAt(indice);
       val.add(a.toJson());
 
-      var reference = await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
+      var reference =
+          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
       reference.update(
           {"objetivosPrincipais": FieldValue.arrayRemove(val)}).then((_) {
@@ -235,15 +239,14 @@ class ControllerProjetoRepository extends GetxController {
   UnmodifiableListView<ResultadosPrincipais> get listaResultados =>
       UnmodifiableListView(_listResults);
 
-  void addOneResultado(String idProjeto, String nomeResultado,
+  void addOneResultado(String nomeResultado,
       {String? idObjetivoPai = "idObjetivoPai",
       String idMetrica = "idMetrica",
       List<DonosResultadoMetricas?>? donos}) async {
     var uuid = Uuid();
 
-    DocumentReference reference = await db
-        .collection('usuarios/$idUsuario/projetos')
-        .doc(idProjeto);
+    DocumentReference reference =
+        await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     ResultadosPrincipais resultadosPrincipais = ResultadosPrincipais(
         idResultado: uuid.v4(),
@@ -263,12 +266,7 @@ class ControllerProjetoRepository extends GetxController {
     await reference.update({'resultadosPrincipais': l}); //[l]
   }
 
-  void sincronizaListaResultados() {
-    _listResults.clear();
-    _readProjeto(idProjeto.value);
-  }
-
-  void removeResultado(String idProjeto, String idResultado) async {
+  void removeResultado(String idResultado) async {
     int indice = _listResults
         .indexWhere((element) => element.idResultado == idResultado);
 
@@ -276,12 +274,11 @@ class ControllerProjetoRepository extends GetxController {
 
     if (indice != -1) {
       print(_listResults[indice]);
-      //_listObjects.removeWhere((element) => element.idObjetivo == idObjetivo);
       var a = _listResults.removeAt(indice);
       val.add(a.toJson());
-      //val.add(_listObjects.elementAt(indice));
 
-      var reference = await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
+      var reference =
+          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
       reference.update(
           {"resultadosPrincipais": FieldValue.arrayRemove(val)}).then((_) {
@@ -292,8 +289,7 @@ class ControllerProjetoRepository extends GetxController {
     }
   }
 
-  void atualizaResultado(
-      String idProjeto, String idResultado, String nomeResultaAtualizado,
+  void atualizaResultado(String idResultado, String nomeResultaAtualizado,
       {String? idObjetivo, List<DonosResultadoMetricas>? dono}) async {
     int indice = _listResults
         .indexWhere((element) => element.idResultado == idResultado);
@@ -301,15 +297,13 @@ class ControllerProjetoRepository extends GetxController {
     if (indice != -1) {
       _listResults[indice].nomeResultado = nomeResultaAtualizado;
       _listResults[indice].nomeResultado = nomeResultaAtualizado;
-      var reference = await db
-          //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-          .collection('usuarios/$idUsuario/projetos')
-          .doc(idProjeto);
+      var reference =
+          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
       var l = _listResults.map((v) => v.toJson()).toList();
 
       await reference.update({'resultadosPrincipais': l});
-      sincronizaListaResultados();
+      atualizaTudo(this.idProjeto.value);
     } else {
       debugPrint("Não encontrei o resultado !");
     }
@@ -320,18 +314,11 @@ class ControllerProjetoRepository extends GetxController {
   UnmodifiableListView<DonosResultadoMetricas> get listaDonos =>
       UnmodifiableListView(_listDonos);
 
-  void sincronizaListaDonos() {
-    _listDonos.clear();
-    _readProjeto(idProjeto.value);
-  }
-
-  void addOneDono(String idProjeto, String nomeDono, String emailDono) async {
+  void addOneDono(String nomeDono, String emailDono) async {
     var uuid = Uuid();
 
-    DocumentReference reference = await db
-        //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-        .collection('usuarios/$idUsuario/projetos')
-        .doc(idProjeto);
+    DocumentReference reference =
+        await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     DonosResultadoMetricas dono =
         DonosResultadoMetricas(id: uuid.v4(), nome: nomeDono, email: emailDono);
@@ -342,30 +329,27 @@ class ControllerProjetoRepository extends GetxController {
     await reference.update({'listaDonos': d}); //[l]
   }
 
-  void atualizaDono(
-      String idProjeto, String id, String nome, String email) async {
+  void atualizaDono(String id, String nome, String email) async {
     int indice = _listDonos.indexWhere((element) => element.id == id);
 
     if (indice != -1) {
       _listDonos[indice].nome = nome;
       _listDonos[indice].email = email;
 
-      var reference = await db
-          //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-          .collection('usuarios/$idUsuario/projetos')
-          .doc(idProjeto);
+      var reference =
+          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
       var l = _listDonos.map((v) => v.toJson()).toList();
 
       await reference.update({'listaDonos': l});
 
-      sincronizaListaObjetivos();
+      atualizaTudo(this.idProjeto.value);
     } else {
       debugPrint("Não encontrei o dono !");
     }
   }
 
-  removeDono(String idProjeto, String id) async {
+  removeDono(String id) async {
     int indice = _listDonos.indexWhere((element) => element.id == id);
     var val2 = <DonosResultadoMetricas>[];
     var val = <Map<String, dynamic>>[];
@@ -376,7 +360,8 @@ class ControllerProjetoRepository extends GetxController {
       val.add(a.toJson());
       //val.add(_listObjects.elementAt(indice));
 
-      var reference = await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
+      var reference =
+          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
       reference.update({"listaDonos": FieldValue.arrayRemove(val)}).then((_) {
         print("success com projeto repository!");
       });
@@ -389,18 +374,12 @@ class ControllerProjetoRepository extends GetxController {
   UnmodifiableListView<MetricasPrincipais> get listaMetricas =>
       UnmodifiableListView(_listMetrics);
 
-  void sincronizaListaMetricas() {
-    _listMetrics.clear();
-    _readProjeto(idProjeto.value);
-  }
-
-  void addOneMetric(String idProjeto, String nomeAtualizadoMetrica,
+  void addOneMetric(String nomeAtualizadoMetrica,
       {double meta = 100, double realizado = 1, double progresso = 0}) async {
     var uuid = Uuid();
 
-    DocumentReference reference = await db
-        .collection('usuarios/$idUsuario/projetos')
-        .doc(idProjeto);
+    DocumentReference reference =
+        await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     MetricasPrincipais metrica = MetricasPrincipais(
         idMetrica: uuid.v4(), nomeMetrica: nomeAtualizadoMetrica);
@@ -412,8 +391,7 @@ class ControllerProjetoRepository extends GetxController {
     await reference.update({'metricasPrincipais': l}); //[l]
   }
 
-  void atualizaMetrica(
-      String idProjeto, String idMetrica, String nomeMetricaAtualizado,
+  void atualizaMetrica(String idMetrica, String nomeMetricaAtualizado,
       {double? meta, double? realizado, double? progresso}) async {
     int indice =
         _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
@@ -421,21 +399,20 @@ class ControllerProjetoRepository extends GetxController {
     if (indice != -1) {
       _listMetrics[indice].nomeMetrica = nomeMetricaAtualizado;
 
-      var reference = await db
-          .collection('usuarios/$idUsuario/projetos')
-          .doc(idProjeto);
+      var reference =
+          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
       var l = _listMetrics.map((v) => v.toJson()).toList();
 
       await reference.update({'metricasPrincipais': l});
 
-      sincronizaListaMetricas();
+      atualizaTudo(this.idProjeto.value);
     } else {
       print("Métrica não encontrada !");
     }
   }
 
-  removeMetrica(String idProjeto, String idMetrica) async {
+  removeMetrica(String idMetrica) async {
     int indice =
         _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
 
@@ -446,7 +423,8 @@ class ControllerProjetoRepository extends GetxController {
       var a = _listMetrics.removeAt(indice);
       val.add(a.toJson());
 
-      var reference = await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
+      var reference =
+          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
       reference.update(
           {"metricasPrincipais": FieldValue.arrayRemove(val)}).then((_) {
         print("success com projeto repository!");
@@ -455,32 +433,84 @@ class ControllerProjetoRepository extends GetxController {
       debugPrint("Não encontrei a métrica !");
     }
   }
+//========================== METAS ATUALIZA E TRAVA ============================
+
+  void travarMeta(String idMetrica, double metaTravada) async {
+    int indice =
+        _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
+
+    if (indice != -1) {
+      _listMetrics[indice].meta = metaTravada;
+
+      var reference =
+          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
+
+      var l = _listMetrics.map((v) => v.toJson()).toList();
+
+      await reference.update({'metricasPrincipais': l});
+
+      atualizaTudo(this.idProjeto.value);
+    } else {
+      print("Métrica não encontrada !");
+    }
+  }
+
+  void atualizarRealizado(String idMetrica, double realizado) async {
+    int indice =
+        _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
+
+    if (indice != -1) {
+      _listMetrics[indice].realizado = realizado;
+
+      var reference = await db.collection('projetosPrincipais').doc(this.idProjeto.value);
+
+      var l = _listMetrics.map((v) => v.toJson()).toList();
+
+      await reference.update({'metricasPrincipais': l});
+
+      atualizaTudo(this.idProjeto.value);
+    } else {
+      print("Métrica não encontrada !");
+    }
+  }
 
 //========================== CRUD TODOS OS PROJETOS =====================================
 
   UnmodifiableListView<ProjectModel> get listaProjetos =>
       UnmodifiableListView(_listaProjetos);
 
-  readProjects(String? tipo,
-      {String idUsuario = '5xmMnHGksrPtVK4rvnEsoYSemrr2'}) async {
+  readProjects(String? tipo) async {
+    _listaProjetos.clear();
+    var snapshot;
     if (tipo != "todos") {
-      final snapshot = await db
-          .collection('usuarios/$idUsuario/projetos')
-          .where('tipoProj', isEqualTo: tipo)
-          .get(); //verificar com snapshots
+      if (tipo == "privado") {
+        snapshot = await db
+            .collection('projetosPrincipais')
+            .where('tipoProj', isEqualTo: tipo)
+            .where("proprietario", isEqualTo: auth.usuario!.uid)
+            .get();
+      } else if (tipo == "compartilhado") {
+        //TODO - Lista de Donos
+        //TODO: Verificar como compartilhar !!!
+        //       .where("listaDonos", arrayContainsAny: Dono.toJson)
+        //       .get();
+        //   'listaDonos', arrayContainsAny: [
+        // {
+        // 'email': 'brunolucas2001@gmail.com',
+        // 'id': 'EsxJseqqSiNUaR7zISUgusvQjZQ2',
+        // 'nome': 'Bruno Lucas'
+        // }
+        // ])
 
-      //TODO: Tratar retorno nulo do SNAPSHOT !!!
-      for (var doc in snapshot.docs) {
-        ProjectModel table = ProjectModel.fromJson(doc.data());
-        _listaProjetos.add(table);
-      }
-    } else {
-      final snapshot = await db
-          .collection('usuarios/$idUsuario/projetos')
-          .get(); //verificar com snapshots
-      //TODO: Tratar retorno nulo do SNAPSHOT !!!
+      } else if (tipo == "publico") {
+        snapshot = await db
+            .collection('projetosPrincipais')
+            .where('tipoProj', isEqualTo: tipo)
+            .get();
+      } else {}
       if (snapshot != null) {
         for (var doc in snapshot.docs) {
+          print("teste");
           ProjectModel table = ProjectModel.fromJson(doc.data());
           _listaProjetos.add(table);
         }
@@ -488,9 +518,9 @@ class ControllerProjetoRepository extends GetxController {
     }
   }
 
-  sincronizaListaProjects(String tipoProjeto, String idUsuario) {
+  sincronizaListaProjects(String tipoProjeto) {
     _listaProjetos.clear();
-    readProjects(tipoProjeto, idUsuario: idUsuario);
+    readProjects(tipoProjeto);
   }
 
   saveProjetoALl(List<ProjectModel> projectModel) {
@@ -518,13 +548,12 @@ class ControllerProjetoRepository extends GetxController {
     });
   }
 
-  void addOneProject(String nome,
-      {String idUsuario = '5xmMnHGksrPtVK4rvnEsoYSemrr2'}) async {
+  void addOneProject(String nome) async {
     var uuid = Uuid();
     String idProjeto = uuid.v4();
 
     DocumentReference reference =
-        await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
+        await db.collection('projetosPrincipais').doc(idProjeto);
 
     ProjectModel newProject = ProjectModel(
       nome: nome,
@@ -543,28 +572,39 @@ class ControllerProjetoRepository extends GetxController {
     await reference.set(newProject.toJson());
   }
 
-  void atualizaNomeProjeto(String idProjeto, String nomeAtualizado,
+  void atualizaNomeProjeto(String idProj, String nomeAtualizado,
       {String idUsuario = '5xmMnHGksrPtVK4rvnEsoYSemrr2'}) async {
-    // int indice =
-    //     _listProjects.indexWhere((element) => element.idProject == idProject);
+    String? tipo;
 
-    // if (indice != -1) {
-    //   _listObjects[indice].nome = nomeObjetivoAtualizado;
-    var reference =
-        await db.collection('usuarios/$idUsuario/projetos').doc(idProjeto);
+    int indice =
+        _listaProjetos.indexWhere((element) => element.idProjeto == idProj);
 
-    // var l = _listProjects.map((v) => v.toJson()).toList();
+    _listaProjetos.forEach((element) {
+      if (element.idProjeto == idProj) {
+        element.nome = nomeAtualizado;
+        debugPrint("tem sim e modifiquei para : [${element.nome}]");
+      }
+    });
+    //_listaProjetos.reactive;
+    if (indice != -1) {
+      _listaProjetos[indice].nome = nomeAtualizado;
+      //tipo = _listaProjetos[indice].tipoProj;
+      debugPrint("tem sim um projeto");
+      this.nome.value = nomeAtualizado;
+      this.tipoProj.value = _listaProjetos[indice].tipoProj!;
 
-    await reference.update({'nome': nomeAtualizado});
+      var reference = await db.collection('projetosPrincipais').doc(idProj);
 
-    // } else {
-    //   print("Objetivo não encontrado !");
-    // }
+      await reference.update({'nome': nomeAtualizado});
+    } else {
+      print("Projeto não encontrado !");
+    }
+
+    sincronizaListaProjects(this.tipoProj.value);
   }
 
   void removeProjeto(String idProjeto, String idUsuario) async {
-    var reference =
-        await db.collection("usuarios/$idUsuario/projetos").doc(idProjeto);
+    var reference = await db.collection("projetosPrincipais").doc(idProjeto);
 
     _listaProjetos.removeWhere((element) => element.idProjeto == idProjeto);
     reference.delete();
@@ -573,15 +613,13 @@ class ControllerProjetoRepository extends GetxController {
   void remove(ProjectModel projeto,
       {String idUsuario = '5xmMnHGksrPtVK4rvnEsoYSemrr2'}) async {
     var reference = await db
-        .collection("usuarios/$idUsuario/projetos")
+        .collection("projetosPrincipais")
         .doc(projeto.idProjeto)
         .delete();
     _listaProjetos.remove(projeto);
   }
 
-  void atualizaTudo(String? idProjeto, int index) {
-    _readProjeto(idProjeto!);
-
-    //Quando eu termino eu tenho que atualizar todos os lists Objects, results, metrics
+  void atualizaTudo(String idProjeto) {
+    _readProjeto(idProjeto);
   }
 }

@@ -16,7 +16,6 @@ class _DonoTableState extends State<DonoTable> {
   TextEditingController novoDonoController = TextEditingController();
   TextEditingController emailnovoDonoController = TextEditingController();
   TextEditingController idDono = TextEditingController();
-  String idProjeto = "2qweqw23133";
 
   @override
   initState() {
@@ -174,7 +173,7 @@ class _DonoTableState extends State<DonoTable> {
               //Get.find<DonoRepository>().removeDono(idDono.text);
 
               Get.find<ControllerProjetoRepository>()
-                  .removeDono(idProjeto, idDono.text);
+                  .removeDono(idDono.text);
 
               novoDonoController.text='';
               Get.back();
@@ -209,16 +208,14 @@ class _DonoTableState extends State<DonoTable> {
           var controlador = Get.find<ControllerProjetoRepository>();
 
           if (opcao == 1) {
-
             controlador.addOneDono(
-                idProjeto, novoDonoController.text, emailnovoDonoController.text);
-
+                novoDonoController.text, emailnovoDonoController.text);
             novoDonoController.text = "";
             emailnovoDonoController.text = "";
           } else if (opcao == 2) {
-            controlador.sincronizaListaDonos();
+            controlador.atualizaTudo(controlador.idProjeto.string);
           } else if (opcao == 3) {
-            controlador.atualizaDono(idProjeto, idDono.text, novoDonoController.text,
+            controlador.atualizaDono(idDono.text, novoDonoController.text,
                 emailnovoDonoController.text);
             novoDonoController.text = '';
             emailnovoDonoController.text = '';

@@ -16,7 +16,7 @@ class _ObjetivosTableState extends State<ObjetivosTable> {
   TextEditingController novoObj = TextEditingController();
   TextEditingController idObj = TextEditingController();
 
-  String idProjeto = "2qweqw23133";
+  //String idProjeto = "2qweqw23133";
 
   @override
   initState() {
@@ -162,7 +162,7 @@ class _ObjetivosTableState extends State<ObjetivosTable> {
         TextButton(
             onPressed: () {
               Get.find<ControllerProjetoRepository>()
-                  .removeObjetivo(idProjeto, "${idObj.text}");
+                  .removeObjetivo("${idObj.text}");
 
               novoObj.text = '';
               Get.back();
@@ -198,13 +198,14 @@ class _ObjetivosTableState extends State<ObjetivosTable> {
         onPressed: () {
           if (tipoOperacao == 1) {
             Get.find<ControllerProjetoRepository>()
-                .addOneObjective(idProjeto, novoObjetivo.text);
+                .addOneObjective(novoObjetivo.text);
             novoObjetivo.text = '';
           } else if (tipoOperacao == 2) {
-            Get.find<ControllerProjetoRepository>().sincronizaListaObjetivos();
+            var controller = Get.find<ControllerProjetoRepository>();
+            controller.atualizaTudo(controller.idProjeto.string);
           } else if (tipoOperacao == 3) {
             Get.find<ControllerProjetoRepository>()
-                .atualizaObjetivo(idProjeto, idObj.text, novoObj.text);
+                .atualizaObjetivo(idObj.text, novoObj.text);
             novoObjetivo.text = '';
             idObj.text = '';
           } else {

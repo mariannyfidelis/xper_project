@@ -35,8 +35,6 @@ Route<dynamic>? generateRoute(RouteSettings settings) {
     case PlanodeAcaoPageRouteDash:
       return _getPageRoute(PlanosPageDash());
     case ProjetoPageRouteDash:
-      //TODO: Mudei aqui para respeitar o que bruno fez
-      //return _getPageRoute(ProjetoPage());
       return _getPageRoute(HomeWeb());
 
     default:

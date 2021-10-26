@@ -6,7 +6,7 @@ class MetricasPrincipais {
   double? realizado;
   double? progresso;
 
-  MetricasPrincipais({this.idMetrica, this.nomeMetrica, this.meta, this.realizado, this.progresso});
+  MetricasPrincipais({this.idMetrica, this.nomeMetrica, this.meta=0.0, this.realizado=0.0, this.progresso});
 
   MetricasPrincipais.fromJson(Map<String, dynamic> json) {
     idMetrica = json['idMetrica'];

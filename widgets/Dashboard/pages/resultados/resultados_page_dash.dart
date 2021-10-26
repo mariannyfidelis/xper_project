@@ -17,12 +17,13 @@ class ResultadosTable extends StatefulWidget {
 class _ResultadosTableState extends State<ResultadosTable> {
   TextEditingController newResultadoController = TextEditingController();
   TextEditingController idResultadoController = TextEditingController();
-  String idProjeto = "2qweqw23133";
+
 
   @override
   Widget build(BuildContext context) {
     var controllerProjeto = Get.find<ControllerProjetoRepository>();
     var objetivosController = controllerProjeto.listaObjectives;
+    String idProjeto = controllerProjeto.idProjeto.string;
 
     ObjetivosPrincipais? selectedValue;
     if (controllerProjeto.listaObjectives.isNotEmpty) {
@@ -102,11 +103,11 @@ class _ResultadosTableState extends State<ResultadosTable> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 20, width: 10),
-                adicionaBotao(1, "Adicionar resultado principal"),
+                adicionaBotao(1, "Adicionar resultado principal", idProjeto),
                 SizedBox(width: 20),
-                adicionaBotao(3, "Atualizar resultado"),
+                adicionaBotao(3, "Atualizar resultado", idProjeto),
                 SizedBox(width: 20),
-                adicionaBotao(2, "Sincronizar os resultados"),
+                adicionaBotao(2, "Sincronizar os resultados", idProjeto),
               ],
             ),
           ),
@@ -176,7 +177,7 @@ class _ResultadosTableState extends State<ResultadosTable> {
                                       .listaResultados[index].idResultado!;
                                   showDialog(
                                     context: context,
-                                    builder: (ctx) => buildAlertDialog(),
+                                    builder: (ctx) => buildAlertDialog(idProjeto),
                                   );
                                 }),
                           ),
@@ -193,7 +194,7 @@ class _ResultadosTableState extends State<ResultadosTable> {
     );
   }
 
-  AlertDialog buildAlertDialog() {
+  AlertDialog buildAlertDialog(String idProjeto) {
     return AlertDialog(
       title: Text("Excluir resultado"),
       content: Text("Tem certeza ?"),
@@ -201,7 +202,7 @@ class _ResultadosTableState extends State<ResultadosTable> {
         TextButton(
             onPressed: () {
               Get.find<ControllerProjetoRepository>()
-                  .removeResultado(idProjeto, idResultadoController.text);
+                  .removeResultado(idResultadoController.text);
               newResultadoController.text = '';
               Get.back();
             },
@@ -215,7 +216,7 @@ class _ResultadosTableState extends State<ResultadosTable> {
     );
   }
 
-  adicionaBotao(int operacao, String textoBotao) {
+  adicionaBotao(int operacao, String textoBotao, String idProjeto) {
     return Container(
       decoration: BoxDecoration(
           border: Border.all(color: PaletaCores.active, width: .5),
@@ -243,15 +244,15 @@ class _ResultadosTableState extends State<ResultadosTable> {
             var donos = <DonosResultadoMetricas>[];
 
             resultadoController2.addOneResultado(
-                idProjeto, newResultadoController.text,
+                newResultadoController.text,
                 idObjetivoPai: idObjetivoPai, donos: donos);
 
             newResultadoController.text = "";
             //objetivoPaiController.text = "";
           } else if (operacao == 2) {
-            resultadoController2.sincronizaListaResultados();
+            resultadoController2.atualizaTudo(idProjeto);
           } else if (operacao == 3) {
-            resultadoController2.atualizaResultado(idProjeto,
+            resultadoController2.atualizaResultado(
                 idResultadoController.text, newResultadoController.text);
 
             idResultadoController.text = '';

@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import '/services/auth_service.dart';
 import 'dash_visual_page.dart';
 import '/utils/paleta_cores.dart';
 import '/models/project_model.dart';
+import '/services/auth_service.dart';
 import 'projeto_pagina_principal.dart';
 import 'package:flutter/material.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
@@ -20,12 +20,14 @@ class _HomeWebState extends State<HomeWeb> {
   TextEditingController emailnovoDonoController = TextEditingController();
   TextEditingController idDono = TextEditingController();
   TextEditingController mensagem = TextEditingController();
+  TextEditingController nomeProjeto = TextEditingController();
+  String nome = '';
   var publico = false;
 
   @override
   Widget build(BuildContext context) {
-    final controllerProjetos = Get.find<ControllerProjetoRepository>();
     final controllerAuth = Get.find<AuthService>();
+    final controllerProjetos = Get.find<ControllerProjetoRepository>();
     List<ProjectModel> meusProjetos = controllerProjetos.listaProjetos;
     late ProjectModel projectAtual;
 
@@ -34,27 +36,27 @@ class _HomeWebState extends State<HomeWeb> {
         actions: [
           ElevatedButton(
               onPressed: () =>
-                  controllerProjetos.sincronizaListaProjects("publico", controllerAuth.usuario!.uid),
+                  controllerProjetos.sincronizaListaProjects("publico"),
               child: Text("Projetos públicos")),
           SizedBox(width: 10),
           ElevatedButton(
               onPressed: () =>
-                  controllerProjetos.sincronizaListaProjects("privado", controllerAuth.usuario!.uid),
+                  controllerProjetos.sincronizaListaProjects("privado"),
               child: Text("Seus projetos")),
           SizedBox(width: 10),
           ElevatedButton(
               onPressed: () =>
-                  controllerProjetos.sincronizaListaProjects("compartilhado", controllerAuth.usuario!.uid),
+                  controllerProjetos.sincronizaListaProjects("compartilhado"),
               child: Text("Compartilhados comigo")),
           SizedBox(width: 10),
           ElevatedButton(
               onPressed: () =>
-                  controllerProjetos.sincronizaListaProjects("todos", controllerAuth.usuario!.uid),
+                  controllerProjetos.sincronizaListaProjects("todos"),
               child: Text("Todos os projetos"))
         ],
         title: Text("Tela Projetos"),
       ),
-      body: (meusProjetos.isNotEmpty)
+      body: (meusProjetos != null)
           //TODO: Aqui tem que passar os dados para ProjetoPage()
           ? Obx(() => ListView.builder(
                 itemCount: meusProjetos.length,
@@ -67,8 +69,7 @@ class _HomeWebState extends State<HomeWeb> {
                           Expanded(
                             child: InkWell(
                               onTap: () {
-                                controllerProjetos.atualizaTudo(
-                                    meusProjetos[index].idProjeto, index);
+                                controllerProjetos.atualizaTudo(meusProjetos[index].idProjeto!);
                                 //TODO - Enviar dados para a mandala
                                 Get.to(ProjetoPage(/*dados do idprojeto*/));
                               },
@@ -87,17 +88,19 @@ class _HomeWebState extends State<HomeWeb> {
                           IconButton(
                               splashRadius: 14,
                               onPressed: () {
-                                controllerProjetos.atualizaNomeProjeto(
+                                alteraNomeProjeto(
                                     meusProjetos[index].idProjeto.toString(),
-                                    "nomeAtualizado", idUsuario: controllerAuth.usuario!.uid);
-                                atualizarNomeProjeto(index);
+                                    meusProjetos[index].nome.toString(),
+                                    controllerAuth.usuario!.uid);
                               },
                               icon: Icon(Icons.edit, size: 20)),
                           IconButton(
                               splashRadius: 14,
                               onPressed: () {
                                 //TODO - Tem que ser no controller para compartilhar o projeto
-                                compartilharProjeto(index);
+                                compartilharProjeto(
+                                    meusProjetos[index].idProjeto.toString(),
+                                    index);
                               },
                               icon: Icon(Icons.share)),
                           IconButton(
@@ -171,9 +174,8 @@ class _HomeWebState extends State<HomeWeb> {
                   vertical: 6,
                 ),
               ),
-              onPressed: () {
-                controllerProjetos.addOneProject("Projeto Padrão", idUsuario: controllerAuth.usuario!.uid);
-              },
+              onPressed: () =>
+                  controllerProjetos.addOneProject("Projeto Padrão"),
               child: CustomText(
                 text: "Criar Novo Projeto",
                 color: PaletaCores.active.withOpacity(.7),
@@ -186,13 +188,54 @@ class _HomeWebState extends State<HomeWeb> {
     );
   }
 
-  //TODO - Implementar atualizarNomeProjeto
-  void atualizarNomeProjeto(int index) {
-    debugPrint("atualizar projeto");
+  void alteraNomeProjeto(
+      String idProjeto, String nomeAntigo, String idUsuario) {
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: Text("Renomear projeto",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  )),
+              contentPadding: EdgeInsets.zero,
+              content: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12.0),
+                    child: TextField(
+                        controller: nomeProjeto,
+                        decoration: InputDecoration(
+                          labelText: "Nome do projeto",
+                          suffixIcon: Icon(Icons.grading),
+                        )),
+                  ),
+                ]),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      if (nomeProjeto.text.isEmpty) {
+                        nome = nomeAntigo;
+                      } else {
+                        nome = nomeProjeto.text;
+                      }
+                      nomeProjeto.text = nome;
+                      Get.find<ControllerProjetoRepository>()
+                          .atualizaNomeProjeto(idProjeto, nomeProjeto.text,
+                              idUsuario: idUsuario);
+
+                      nomeProjeto.text = "";
+                      Get.back();
+                    },
+                    child: Text("Sim")),
+                TextButton(onPressed: () => Get.back(), child: Text("Não"))
+              ],
+            ));
   }
 
   //TODO - Implementar compartilharProjeto
-  void compartilharProjeto(int index) {
+  void compartilharProjeto(String idProjeto, int index) {
     debugPrint("compartilhar projeto");
     showDialog(
         context: context,

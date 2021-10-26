@@ -1,15 +1,16 @@
+import 'meta.dart';
 import 'package:get/get.dart';
-import 'package:xper_brasil_projects/widgets/Dashboard/controller/controllers_dash.dart';
-
 import '/utils/paleta_cores.dart';
 import 'package:flutter/material.dart';
 import 'package:data_table_2/data_table_2.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
-import '/widgets/Dashboard/pages/resultados/resultados_page_dash.dart';
+import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class MetasTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    ControllerProjetoRepository listaProjetos = Get.find<ControllerProjetoRepository>();
+
     return Container(
       margin: EdgeInsets.only(bottom: 30),
       decoration: BoxDecoration(
@@ -33,55 +34,36 @@ class MetasTable extends StatelessWidget {
                 width: 10,
               ),
               CustomText(
-                text: "Metas",
+                text: "Projetos",
                 color: PaletaCores.corLightGrey,
                 weight: FontWeight.bold,
               )
             ],
           ),
-          DataTable2(
-            columnSpacing: 12,
-            horizontalMargin: 12,
-            minWidth: 600,
-            columns: [
-              DataColumn2(
-                label: Text('Objetivos'),
-                size: ColumnSize.L,
-              ),
-              DataColumn2(
-                label: Text('Resultados Principais'),
-                size: ColumnSize.L,
-              ),
-              DataColumn2(
-                label: Text('Metricas'),
-                size: ColumnSize.L,
-              ),
-              DataColumn2(
-                label: Text('Dono'),
-                size: ColumnSize.M,
-              ),
-            ],
-            rows: List<DataRow>.generate(
-              Get.find<ControllerProjetoRepository>().listaResultados.length,
-              (index) => DataRow(
-                cells: [
-                  DataCell(
-                    CustomText(text:"objetivos")
-                    //CustomText(text: objetivos[index]),
-                  ),
-                  DataCell(
-                    CustomText(text:"resultados"),
-                    //CustomText(text: resultados[index]),
-                  ),
-                  DataCell(
-                    CustomText(text:"metricas")
-                    //CustomText(text: metricas[index]),
-                  ),
-                  DataCell(
-                    CustomText(text:"donos")
-                    //CustomText(text: donos[index]),
-                  ),
-                ],
+          Obx(
+                () => DataTable2(
+              columnSpacing: 12,
+              horizontalMargin: 12,
+              minWidth: 600,
+              columns: [
+                DataColumn2(
+                  label: Text(''),
+                  size: ColumnSize.L,
+                ),
+              ],
+              rows: List<DataRow>.generate(
+                listaProjetos.listaProjetos.length, //controller.listMetas.length,
+                    (index) => DataRow(
+                  cells: [
+                    DataCell(
+                        CustomText(
+                          text: listaProjetos.listaProjetos[index].nome,
+                        ), onTap: () {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => Meta()));
+                    }),
+                  ],
+                ),
               ),
             ),
           ),
@@ -90,3 +72,4 @@ class MetasTable extends StatelessWidget {
     );
   }
 }
+

@@ -13,6 +13,7 @@ const PlanodeAcaoPageRouteDash = "Plano de Ação";
 List sideMenuItems = [
   AjudaPageRouteDash,
   OverViewPageRouteDash,
+  ProjetoPageRouteDash,
   ObjetivosDaequipePageRouteDash,
   ResultadosPageRouteDash,
   MetricasPageRouteDash,
@@ -20,6 +21,5 @@ List sideMenuItems = [
   MetasPageRouteDash,
   ClientsPageRouteDash,
   CadastroADMRouteDash,
-  ProjetoPageRouteDash,
   PlanodeAcaoPageRouteDash,
 ];

@@ -16,7 +16,7 @@ class MetricasTable extends StatefulWidget {
 class _MetricasTableState extends State<MetricasTable> {
   TextEditingController newMetrica = TextEditingController();
   TextEditingController idMetrica = TextEditingController();
-  String idProjeto = "2qweqw23133";
+  //String idProjeto = "2qweqw23133";
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +209,7 @@ class _MetricasTableState extends State<MetricasTable> {
         TextButton(
             onPressed: () {
               Get.find<ControllerProjetoRepository>()
-                  .removeMetrica(idProjeto, idMetrica.text);
+                  .removeMetrica(idMetrica.text);
               newMetrica.text = '';
               Get.back();
             },
@@ -242,13 +242,13 @@ class _MetricasTableState extends State<MetricasTable> {
         onPressed: () {
           var controlador = Get.find<ControllerProjetoRepository>();
           if (operacao == 1) {
-            controlador.addOneMetric(idProjeto, newMetrica.text);
+            controlador.addOneMetric(newMetrica.text);
             newMetrica.text = "";
           } else if (operacao == 2) {
-            controlador.sincronizaListaMetricas();
+            controlador.atualizaTudo(controlador.idProjeto.string);
           } else if (operacao == 3) {
             controlador.atualizaMetrica(
-                idProjeto, idMetrica.text, newMetrica.text);
+                idMetrica.text, newMetrica.text);
             newMetrica.text = '';
             idMetrica.text = '';
           } else {

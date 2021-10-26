@@ -86,7 +86,7 @@ class _PlanosTableState extends State<PlanosTable> {
                       metricasController.text.isNotEmpty) {
 
                     controllerProjetoRepository.addOneObjective(
-                        idProjeto, objetivoController.text);
+                        objetivoController.text);
 
                     String objetivoProcura =
                         objetivoController.text.trim().toUpperCase();
@@ -105,11 +105,11 @@ class _PlanosTableState extends State<PlanosTable> {
 
                     //controller.addResults(novoResultado);
                     controllerProjetoRepository.addOneResultado(
-                        idProjeto, resultadoController.text,
+                        resultadoController.text,
                         idObjetivoPai: idObjetivoPai.text);
 
                     //TODO - Onde métrica fica vinculada
-                    controllerProjetoRepository.addOneMetric(idProjeto, metricasController.text);
+                    controllerProjetoRepository.addOneMetric(metricasController.text);
 
                     metricasController.text = "";
                     objetivoController.text = "";
