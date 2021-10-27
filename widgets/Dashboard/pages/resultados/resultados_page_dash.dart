@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
 import '/utils/paleta_cores.dart';
 import 'package:flutter/material.dart';
-import '/models/objetivosPrincipaisModel.dart';
 import '/models/donoResultadoMetricaModel.dart';
 import 'package:data_table_2/data_table_2.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
+import '/widgets/Dashboard/pages/resultados/dropDownObjetivo.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class ResultadosTable extends StatefulWidget {
@@ -18,23 +18,10 @@ class _ResultadosTableState extends State<ResultadosTable> {
   TextEditingController newResultadoController = TextEditingController();
   TextEditingController idResultadoController = TextEditingController();
 
-
   @override
   Widget build(BuildContext context) {
     var controllerProjeto = Get.find<ControllerProjetoRepository>();
-    var objetivosController = controllerProjeto.listaObjectives;
     String idProjeto = controllerProjeto.idProjeto.string;
-
-    ObjetivosPrincipais? selectedValue;
-    if (controllerProjeto.listaObjectives.isNotEmpty) {
-      setState(() {
-        selectedValue = controllerProjeto.listaObjectives[0];
-      });
-    } else {
-      setState(() {
-        selectedValue = null;
-      });
-    }
 
     return Container(
       margin: EdgeInsets.only(bottom: 30),
@@ -69,33 +56,7 @@ class _ResultadosTableState extends State<ResultadosTable> {
               color: PaletaCores.corLightGrey,
               weight: FontWeight.bold),
           SizedBox(height: 20, width: 10),
-          Padding(
-            padding: const EdgeInsets.all(8.0), //selectedValue != null ?
-            child: DropdownButton<ObjetivosPrincipais>(
-              value: selectedValue,
-              onChanged: (value) {
-                setState(() {
-                  //selectedValue = value as ObjetivosPrincipais;
-                  selectedValue = value!;
-                });
-              },
-              items: objetivosController.map((ObjetivosPrincipais objetivo) {
-                return new DropdownMenuItem<ObjetivosPrincipais>(
-                  child: Expanded(
-                    child: Container(
-                      decoration: new BoxDecoration(
-                          borderRadius: new BorderRadius.circular(5.0)),
-                      height: 50.0,
-                      width: 600,
-                      padding: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 0.0),
-                      child: new Text(objetivo.nome.toString()),
-                    ),
-                  ),
-                  value: objetivo,
-                );
-              }).toList(),
-            ),
-          ),
+          DropDownObjetivo(),
           SizedBox(height: 30, width: 10),
           Padding(
             padding: const EdgeInsets.only(top: 14.0, bottom: 18.0),
@@ -177,7 +138,8 @@ class _ResultadosTableState extends State<ResultadosTable> {
                                       .listaResultados[index].idResultado!;
                                   showDialog(
                                     context: context,
-                                    builder: (ctx) => buildAlertDialog(idProjeto),
+                                    builder: (ctx) =>
+                                        buildAlertDialog(idProjeto),
                                   );
                                 }),
                           ),
@@ -234,18 +196,19 @@ class _ResultadosTableState extends State<ResultadosTable> {
         ),
         onPressed: () {
           var resultadoController2 = Get.find<ControllerProjetoRepository>();
-          //TODO: Corrigir para pegar os dados de Donos e Objetivos Pai
+          var objetivoPai = Get.find<DropObjetivoEResultado>().obj.string;
+          //TODO: Corrigir para pegar os dados de Donos
           //var donoController = Get.find<ControllerProjetoRepository>().listaDonos;
           //var objetivoController = Get.find<ControllerProjetoRepository>().listaObjectives;
 
           if (operacao == 1) {
+            debugPrint(objetivoPai);
+            debugPrint("${Get.find<DropObjetivoEResultado>().obj.string}");
             //TODO: Aqui será feito o link entre Objetivos Resultados e Donos
-            var idObjetivoPai = "";
             var donos = <DonosResultadoMetricas>[];
 
-            resultadoController2.addOneResultado(
-                newResultadoController.text,
-                idObjetivoPai: idObjetivoPai, donos: donos);
+            resultadoController2.addOneResultado(newResultadoController.text,
+                idObjetivoPai: objetivoPai, donos: donos);
 
             newResultadoController.text = "";
             //objetivoPaiController.text = "";
@@ -253,7 +216,8 @@ class _ResultadosTableState extends State<ResultadosTable> {
             resultadoController2.atualizaTudo(idProjeto);
           } else if (operacao == 3) {
             resultadoController2.atualizaResultado(
-                idResultadoController.text, newResultadoController.text);
+                idResultadoController.text, newResultadoController.text,
+                idObjetivoPai: objetivoPai);
 
             idResultadoController.text = '';
             newResultadoController.text = '';

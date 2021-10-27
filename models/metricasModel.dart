@@ -5,8 +5,9 @@ class MetricasPrincipais {
   double? meta;
   double? realizado;
   double? progresso;
+  String? idResultado;
 
-  MetricasPrincipais({this.idMetrica, this.nomeMetrica, this.meta=0.0, this.realizado=0.0, this.progresso});
+  MetricasPrincipais({this.idMetrica, this.nomeMetrica, this.idResultado, this.meta=0.0, this.realizado=0.0, this.progresso});
 
   MetricasPrincipais.fromJson(Map<String, dynamic> json) {
     idMetrica = json['idMetrica'];
@@ -14,6 +15,7 @@ class MetricasPrincipais {
     meta = json['meta'];
     realizado = json['realizado'];
     progresso= json['progresso'];
+    idResultado = json['idResultado'];
   }
 
   Map<String, dynamic> toJson() {
@@ -23,6 +25,7 @@ class MetricasPrincipais {
     data['meta'] = this.meta;
     data['realizado'] = this.realizado;
     data['progresso'] = this.progresso;
+    data['idResultado'] = this.idResultado;
     return data;
   }
 }

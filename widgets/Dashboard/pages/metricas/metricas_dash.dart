@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:data_table_2/data_table_2.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
+import '/widgets/Dashboard/pages/metricas/dropDownMetricas.dart';
+import '/widgets/Dashboard/pages/resultados/dropDownObjetivo.dart';
 
 class MetricasTable extends StatefulWidget {
   const MetricasTable({Key? key}) : super(key: key);
@@ -16,25 +18,15 @@ class MetricasTable extends StatefulWidget {
 class _MetricasTableState extends State<MetricasTable> {
   TextEditingController newMetrica = TextEditingController();
   TextEditingController idMetrica = TextEditingController();
-  //String idProjeto = "2qweqw23133";
 
   @override
   Widget build(BuildContext context) {
     ControllerProjetoRepository controllerProjetoRepository =
         Get.find<ControllerProjetoRepository>();
 
-    var metricasController = controllerProjetoRepository.listaMetricas;
-    MetricasPrincipais? selectedValue;
+    // var metricasController = controllerProjetoRepository.listaMetricas;
+    // var resultadosController = controllerProjetoRepository.listaResultados;
 
-    if (metricasController.isNotEmpty) {
-      setState(() {
-        selectedValue = metricasController[0];
-      });
-    } else {
-      setState(() {
-        selectedValue = null;
-      });
-    }
     return Container(
       margin: EdgeInsets.only(bottom: 30),
       decoration: BoxDecoration(
@@ -71,35 +63,8 @@ class _MetricasTableState extends State<MetricasTable> {
               color: PaletaCores.corLightGrey,
               weight: FontWeight.bold),
           SizedBox(height: 20, width: 10),
-          Padding(
-            padding: const EdgeInsets.all(8.0), //selectedValue != null ?
-            child: Obx(
-              () => DropdownButton<MetricasPrincipais>(
-                value: selectedValue,
-                onChanged: (value) {
-                  setState(() {
-                    //selectedValue = value as ObjetivosPrincipais;
-                    selectedValue = value!;
-                  });
-                },
-                items: metricasController.map((MetricasPrincipais metrica) {
-                  return new DropdownMenuItem<MetricasPrincipais>(
-                    child: Expanded(
-                      child: Container(
-                        decoration: new BoxDecoration(
-                            borderRadius: new BorderRadius.circular(5.0)),
-                        height: 50.0,
-                        width: 600,
-                        padding: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 0.0),
-                        child: new Text(metrica.nomeMetrica.toString()),
-                      ),
-                    ),
-                    value: metrica,
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
+          DropDownMetrica(),
+          SizedBox(height: 20, width: 10),
           SizedBox(height: 30, width: 10),
           Padding(
             padding: const EdgeInsets.only(top: 14.0, bottom: 18.0),
@@ -241,14 +206,16 @@ class _MetricasTableState extends State<MetricasTable> {
         ),
         onPressed: () {
           var controlador = Get.find<ControllerProjetoRepository>();
+          var resultadoPai = Get.find<DropObjetivoEResultado>().result.string;
+
           if (operacao == 1) {
-            controlador.addOneMetric(newMetrica.text);
+            controlador.addOneMetric(newMetrica.text, idResultado: resultadoPai);
             newMetrica.text = "";
           } else if (operacao == 2) {
             controlador.atualizaTudo(controlador.idProjeto.string);
           } else if (operacao == 3) {
             controlador.atualizaMetrica(
-                idMetrica.text, newMetrica.text);
+                idMetrica.text, newMetrica.text, idResultado: resultadoPai);
             newMetrica.text = '';
             idMetrica.text = '';
           } else {

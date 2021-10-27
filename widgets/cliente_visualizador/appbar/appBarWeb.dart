@@ -8,7 +8,9 @@ class WebAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     var controllerAuth = Get.find<AuthService>();
+
     return AppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,

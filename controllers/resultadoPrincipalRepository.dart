@@ -11,7 +11,7 @@ class ResultadoPrincipalRepository extends GetxController {
         idResultado: "1",
         nomeResultado: 'Obter certificação ISO 9001',
         idObjetivoPai: "",
-        idMetrica: "",
+        // idMetrica: "",
         donoResultado: <DonosResultadoMetricas>[])
   ].obs;
   late FirebaseFirestore db;
@@ -39,7 +39,7 @@ class ResultadoPrincipalRepository extends GetxController {
           idResultado: doc['idResultado'],
           nomeResultado: doc['nomeResultado'],
           idObjetivoPai: doc['idObjetivoPai'],
-          idMetrica: doc['idMetrica'],
+          // idMetrica: doc['idMetrica'],
           donoResultado: doc['donoResultado']);
       _lista.add(table);
     }
@@ -82,7 +82,7 @@ class ResultadoPrincipalRepository extends GetxController {
         idResultado: reference.id,
         nomeResultado: nomeResultado,
         idObjetivoPai: idObjetivoPai,
-        idMetrica: idMetrica,
+        // idMetrica: idMetrica,
         donoResultado: donos);
 
     _lista.add(resultadoPrincipal);

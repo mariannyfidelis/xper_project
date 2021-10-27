@@ -16,6 +16,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'widgets/Dashboard/controller/controllers_dash.dart';
 import '/widgets/Dashboard/controller/menu_controller_dash.dart';
 import '/widgets/Dashboard/controller/navigation_controller_dash.dart';
+import 'widgets/Dashboard/pages/resultados/dropDownObjetivo.dart';
 
 final ThemeData temaPadrao = ThemeData(
   primarySwatch: Colors.grey,
@@ -29,7 +30,7 @@ void main() async {
   Get.put(MenuControllerDash());
   Get.put(NavigationControllerDash());
   Get.put(ControllerProjetoRepository());
-
+  Get.put(DropObjetivoEResultado());
   await Firebase.initializeApp();
   runApp(MyApp());
 }
@@ -42,9 +43,6 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ObjectiveController()),
-        StreamProvider(
-            create: (context) => firestoreService.getObjetivos(),
-            initialData: null),
         StreamProvider(
             create: (context) => firestoreService.getUsuarios(),
             initialData: null)

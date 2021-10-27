@@ -241,7 +241,7 @@ class ControllerProjetoRepository extends GetxController {
 
   void addOneResultado(String nomeResultado,
       {String? idObjetivoPai = "idObjetivoPai",
-      String idMetrica = "idMetrica",
+      /*String idMetrica = "idMetrica",*/
       List<DonosResultadoMetricas?>? donos}) async {
     var uuid = Uuid();
 
@@ -252,7 +252,7 @@ class ControllerProjetoRepository extends GetxController {
         idResultado: uuid.v4(),
         nomeResultado: nomeResultado,
         idObjetivoPai: idObjetivoPai,
-        idMetrica: idMetrica,
+        // idMetrica: idMetrica,
         donoResultado: (donos != null)
             ? (donos.isEmpty)
                 ? []
@@ -290,13 +290,16 @@ class ControllerProjetoRepository extends GetxController {
   }
 
   void atualizaResultado(String idResultado, String nomeResultaAtualizado,
-      {String? idObjetivo, List<DonosResultadoMetricas>? dono}) async {
+      {String? idObjetivoPai, String? idMetrica="", List<DonosResultadoMetricas>? dono}) async {
+
     int indice = _listResults
         .indexWhere((element) => element.idResultado == idResultado);
 
     if (indice != -1) {
       _listResults[indice].nomeResultado = nomeResultaAtualizado;
-      _listResults[indice].nomeResultado = nomeResultaAtualizado;
+      _listResults[indice].idObjetivoPai = idObjetivoPai;
+      // _listResults[indice].idMetrica = idMetrica;
+
       var reference =
           await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
@@ -375,29 +378,36 @@ class ControllerProjetoRepository extends GetxController {
       UnmodifiableListView(_listMetrics);
 
   void addOneMetric(String nomeAtualizadoMetrica,
-      {double meta = 100, double realizado = 1, double progresso = 0}) async {
+      {String? idResultado, double meta = 100, double realizado = 1, double progresso = 0}) async {
+
     var uuid = Uuid();
+    var id = uuid.v4();
 
     DocumentReference reference =
         await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     MetricasPrincipais metrica = MetricasPrincipais(
-        idMetrica: uuid.v4(), nomeMetrica: nomeAtualizadoMetrica);
+        idMetrica: id, nomeMetrica: nomeAtualizadoMetrica, idResultado: idResultado);
 
     _listMetrics.add(metrica);
 
     var l = _listMetrics.map((v) => v.toJson()).toList();
 
     await reference.update({'metricasPrincipais': l}); //[l]
+
+    //atualizaResultado(idResultado!, nomeResultaAtualizado, idMetrica: id);
+    atualizaTudo(this.idProjeto.string);
   }
 
   void atualizaMetrica(String idMetrica, String nomeMetricaAtualizado,
-      {double? meta, double? realizado, double? progresso}) async {
+      {String? idResultado, double? meta, double? realizado, double? progresso}) async {
+
     int indice =
         _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
 
     if (indice != -1) {
       _listMetrics[indice].nomeMetrica = nomeMetricaAtualizado;
+      _listMetrics[indice].idResultado = idResultado;
 
       var reference =
           await db.collection('projetosPrincipais').doc(this.idProjeto.value);
