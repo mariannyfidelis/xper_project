@@ -10,8 +10,9 @@ class ManipulaNomeObjetivo extends StatefulWidget {
 }
 
 class _ManipulaNomeObjetivoState extends State<ManipulaNomeObjetivo> {
+
   TextEditingController _objetivoController =
-      TextEditingController(text: "  Objetivo 1");
+      TextEditingController(text: " Objetivo 1");
   Color getColor(Set<MaterialState> states) {
     const Set<MaterialState> interactiveStates = <MaterialState>{
       MaterialState.pressed,

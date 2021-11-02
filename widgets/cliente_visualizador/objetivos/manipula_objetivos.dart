@@ -1,8 +1,8 @@
+import 'package:get/get.dart';
+
 import 'arco_automatico_painter.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:touchable/touchable.dart';
-import '/controllers/dados_controller.dart';
 
 class Objetivos extends StatefulWidget {
   Objetivos({Key? key}) : super(key: key);
@@ -22,18 +22,14 @@ class _ObjetivosState extends State<Objetivos> {
         minimum: EdgeInsets.all(30),
         child: Padding(
           padding: const EdgeInsets.all(78.0),
-          child: Consumer<ObjectiveController>(
-            builder: (context, controller, widget) {
-              return CanvasTouchDetector(
-                builder: (context) => CustomPaint(
-                  size: Size(
-                      width,
-                      (height * 0.7833333333333334)
-                          .toDouble()), //You can Replace [WIDTH] with your desired width for Custom Paint and height will be calculated automatically
-                  painter: ArcoAutomatico(context),
-                ),
-              );
-            },
+          child: CanvasTouchDetector(
+            builder: (context) => CustomPaint(
+              size: Size(
+                  width,
+                  (height * 0.87833333333333334)
+                      .toDouble()), //You can Replace [WIDTH] with your desired width for Custom Paint and height will be calculated automatically
+              painter: ArcoAutomatico(context),
+            ),
           ),
         ),
       ),

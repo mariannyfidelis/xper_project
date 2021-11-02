@@ -1,5 +1,6 @@
 import 'dart:core';
 import 'dart:collection';
+import 'dart:math';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
 import '/services/auth_service.dart';
@@ -23,8 +24,13 @@ var auth = Get.find<AuthService>();
 String idUsuario = auth.usuario!.uid;
 
 class ControllerProjetoRepository extends GetxController {
-  //TODO - Verificar o WHERE dessa lista
   List<ProjectModel> _listaProjetos = <ProjectModel>[].obs;
+
+  int ultimoNivelClicado = 1;
+
+  var ultimoObjetivoClicado = "".obs;
+  var ultimoResultadoClicado = "".obs;
+  //String ultimoMetricaClicada = "";
 
   var idProjeto = "".obs;
   var nome = "".obs;
@@ -180,10 +186,14 @@ class ControllerProjetoRepository extends GetxController {
         await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     ObjetivosPrincipais objetivo = ObjetivosPrincipais(
-        idObjetivo: uuid.v4(),
-        importancia: importancia,
-        nome: nomeObjetivo,
-        progresso: progresso);
+      idObjetivo: uuid.v4(),
+      importancia: importancia,
+      nome: nomeObjetivo,
+      progresso: progresso,
+      startAngle: 0,
+      sweepAngle: 360,
+    );
+
     _listObjects.add(objetivo);
 
     var l = _listObjects.map((v) => v.toJson()).toList();
@@ -290,8 +300,9 @@ class ControllerProjetoRepository extends GetxController {
   }
 
   void atualizaResultado(String idResultado, String nomeResultaAtualizado,
-      {String? idObjetivoPai, String? idMetrica="", List<DonosResultadoMetricas>? dono}) async {
-
+      {String? idObjetivoPai,
+      String? idMetrica = "",
+      List<DonosResultadoMetricas>? dono}) async {
     int indice = _listResults
         .indexWhere((element) => element.idResultado == idResultado);
 
@@ -378,8 +389,10 @@ class ControllerProjetoRepository extends GetxController {
       UnmodifiableListView(_listMetrics);
 
   void addOneMetric(String nomeAtualizadoMetrica,
-      {String? idResultado, double meta = 100, double realizado = 1, double progresso = 0}) async {
-
+      {String? idResultado,
+      double meta = 100,
+      double realizado = 1,
+      double progresso = 0}) async {
     var uuid = Uuid();
     var id = uuid.v4();
 
@@ -387,7 +400,9 @@ class ControllerProjetoRepository extends GetxController {
         await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     MetricasPrincipais metrica = MetricasPrincipais(
-        idMetrica: id, nomeMetrica: nomeAtualizadoMetrica, idResultado: idResultado);
+        idMetrica: id,
+        nomeMetrica: nomeAtualizadoMetrica,
+        idResultado: idResultado);
 
     _listMetrics.add(metrica);
 
@@ -400,8 +415,10 @@ class ControllerProjetoRepository extends GetxController {
   }
 
   void atualizaMetrica(String idMetrica, String nomeMetricaAtualizado,
-      {String? idResultado, double? meta, double? realizado, double? progresso}) async {
-
+      {String? idResultado,
+      double? meta,
+      double? realizado,
+      double? progresso}) async {
     int indice =
         _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
 
@@ -472,7 +489,8 @@ class ControllerProjetoRepository extends GetxController {
     if (indice != -1) {
       _listMetrics[indice].realizado = realizado;
 
-      var reference = await db.collection('projetosPrincipais').doc(this.idProjeto.value);
+      var reference =
+          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
       var l = _listMetrics.map((v) => v.toJson()).toList();
 
@@ -631,5 +649,46 @@ class ControllerProjetoRepository extends GetxController {
 
   void atualizaTudo(String idProjeto) {
     _readProjeto(idProjeto);
+  }
+
+  ProjectModel? getProjectModel() {
+    return ProjectModel(
+        proprietario: this.proprietario.value,
+        nome: this.nome.value,
+        idProjeto: this.idProjeto.value,
+        tipoProj: this.tipoProj.value,
+        listaDonos: this._listDonos,
+        objetivosPrincipais: this._listObjects,
+        resultadosPrincipais: this._listResults,
+        metricasPrincipais: this._listMetrics,
+        acl: this._listAcl);
+  }
+
+  int get niveis {
+    if (listaObjectives.isNotEmpty && listaResultados.isNotEmpty) {
+      return 3; //três níveis
+    } else if (listaObjectives.isNotEmpty && listaResultados.isEmpty) {
+      return 2;
+    } else {
+      return 1;
+    }
+  }
+
+  int get nv {
+    return this.niveis - 1;
+  }
+
+  Paint criaPaintObjective() {
+    var r = Random().nextInt(40) + 215;
+    var g = Random().nextInt(40) + 215;
+    var b = Random().nextInt(40) + 215;
+
+    //TODO - Como colocar sombra e elevação
+    Paint p = Paint()
+      ..strokeWidth = 30
+      ..color = Color.fromRGBO(r, g, b, 1)
+      ..style = PaintingStyle.fill
+      ..strokeJoin = StrokeJoin.round;
+    return p;
   }
 }

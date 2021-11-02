@@ -1,6 +1,6 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '/controllers/dados_controller.dart';
+import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class ManipulaOKR extends StatefulWidget {
   ManipulaOKR({Key? key}) : super(key: key);
@@ -10,13 +10,11 @@ class ManipulaOKR extends StatefulWidget {
 }
 
 class _ManipulaOKRState extends State<ManipulaOKR> {
-  late var ct2;
+
+  var mandalaController = Get.find<ControllerProjetoRepository>();
 
   @override
   Widget build(BuildContext context) {
-
-    var controller = Provider.of<ObjectiveController>(context, listen: false);
-    ct2 = controller;
 
     return Visibility(
       visible: true,
@@ -215,16 +213,19 @@ class _ManipulaOKRState extends State<ManipulaOKR> {
   }
 
   void adicionaObjetivo() {
-  debugPrint("Adicionando um novo objetivo ...");
-  ct2.addObjetivo();
+  debugPrint("||| Adicionando um novo objetivo ...");
+  mandalaController.addOneObjective("Novo objetivo ${mandalaController.listaObjectives.length+1}");
   }
 
   void adicionaResultado() {
-    debugPrint("Adicionando um novo resultado ...");
-    ct2.addObjetivoProximo();
+    //TODO - Vincular a um objetivo pai
+    debugPrint("||| Adicionando um novo resultado ...");
+    mandalaController.addOneResultado("Novo resultado ${mandalaController.listaResultados.length+1}");
   }
 
   void adicionaMetrica() {
-    debugPrint("Adicionando uma nova métrica ...");
+    //TODO - Vincular a um resultado pai
+    debugPrint("||| Adicionando uma nova métrica ...");
+    mandalaController.addOneMetric("Nova métrica ${mandalaController.listaMetricas.length+1}");
   }
 }

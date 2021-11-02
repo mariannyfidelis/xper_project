@@ -47,7 +47,6 @@ class _LoginPageState extends State<LoginPage> {
     if (email.isNotEmpty && email.contains("@")) {
       if (senha.isNotEmpty && senha.length > 6) {
         if (cadastrarUsuario) {
-          //cadastrar
           if (_arquivoImagemSelecionado != null) {
             if (nome.isNotEmpty && nome.length > 6) {
               controllerAuth.registrarUsuarioEmailSenha(nome, email, senha,
