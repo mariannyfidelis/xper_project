@@ -179,7 +179,7 @@ class ControllerProjetoRepository extends GetxController {
       UnmodifiableListView(_listObjects);
 
   void addOneObjective(String nomeObjetivo,
-      {int importancia = 100, int progresso = 100}) async {
+      {int importancia = 100, double progresso = 100}) async {
     var uuid = Uuid();
 
     DocumentReference reference =

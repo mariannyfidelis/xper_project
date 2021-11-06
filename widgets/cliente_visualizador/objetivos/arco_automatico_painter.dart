@@ -640,3 +640,24 @@ class ArcoAutomatico extends CustomPainter {
     return oldDelegate != this;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
