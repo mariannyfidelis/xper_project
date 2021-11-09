@@ -1,10 +1,8 @@
-//import 'anexos_page.dart';
+import 'anexos_page.dart';
 import 'package:get/get.dart';
 import '/utils/paleta_cores.dart';
-import 'package:provider/provider.dart';
+import '/screens/anexos_page.dart';
 import 'package:flutter/material.dart';
-import '/controllers/dados_controller.dart';
-import '/controllers/metricasRepository.dart';
 import 'package:data_table_2/data_table_2.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
@@ -18,14 +16,15 @@ class TelaMeta extends StatefulWidget {
 
 class _TelaMetaState extends State<TelaMeta> {
   String _dataVencimento = "";
-  ControllerProjetoRepository listaMetricas = Get.find<ControllerProjetoRepository>();
+  ControllerProjetoRepository listaMetricas =
+  Get.find<ControllerProjetoRepository>();
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ObjectiveController>(
-        builder: (context, controller, widget) {
-      return Visibility(
-        visible: controller.visivel,
+    var mandalaController = Get.find<ControllerProjetoRepository>();
+    return Obx(
+          () => Visibility(
+        visible: mandalaController.visivel.value,
         child: Padding(
           padding: const EdgeInsets.only(top: 20.0),
           child: Container(
@@ -60,7 +59,7 @@ class _TelaMetaState extends State<TelaMeta> {
                       child: ElevatedButton(
                         child: Icon(Icons.attach_file),
                         onPressed: () {
-                          //Get.to(AnexoPage());
+                          Get.to(AnexoPage());
                         },
                       ),
                     ),
@@ -70,8 +69,8 @@ class _TelaMetaState extends State<TelaMeta> {
             ),
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 }
 
@@ -96,7 +95,7 @@ class _MetaClienteState extends State<MetaCliente> {
     TextEditingController idMetrica = TextEditingController();
 
     ControllerProjetoRepository listaMetricas =
-        Get.find<ControllerProjetoRepository>();
+    Get.find<ControllerProjetoRepository>();
 
     listaMetricas.listaMetricas.forEach((element) {
       controladorRealizado.add(new TextEditingController());
@@ -138,7 +137,7 @@ class _MetaClienteState extends State<MetaCliente> {
                       ),
                     ],
                     border:
-                        Border.all(color: PaletaCores.corLightGrey, width: .5)),
+                    Border.all(color: PaletaCores.corLightGrey, width: .5)),
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -156,7 +155,7 @@ class _MetaClienteState extends State<MetaCliente> {
                       ],
                     ),
                     Obx(
-                      () => DataTable2(
+                          () => DataTable2(
                         columnSpacing: 12,
                         horizontalMargin: 12,
                         minWidth: 600,
@@ -180,7 +179,7 @@ class _MetaClienteState extends State<MetaCliente> {
                         ],
                         rows: List<DataRow>.generate(
                           listaMetricas.listaMetricas.length,
-                          (index) => DataRow(
+                              (index) => DataRow(
                             cells: [
                               DataCell(
                                 CustomText(
@@ -210,21 +209,32 @@ class _MetaClienteState extends State<MetaCliente> {
                                           .toString();
                                       Get.find<ControllerProjetoRepository>()
                                           .atualizarRealizado(
-                                              idMetrica.text,
-                                              double.parse(
-                                                  controladorRealizado[index]
-                                                      .text));
+                                          idMetrica.text,
+                                          double.parse(
+                                              controladorRealizado[index]
+                                                  .text));
+                                      Get.find<ControllerProjetoRepository>()
+                                          .atualizaObjetivoMandala(
+                                          'a94afec7-fbad-4e39-809e-8eac0420b466',
+                                          progresso: gerarProgresso(
+                                              listaMetricas
+                                                  .listaMetricas[index]
+                                                  .realizado1!,
+                                              listaMetricas
+                                                  .listaMetricas[index]
+                                                  .meta1!)
+                                              .toDouble());
                                     },
                                   ),
                                   IconButton(
                                       icon: Icon(Icons.update),
                                       onPressed: () {
                                         if (listaMetricas.listaMetricas[index]
-                                                .realizado !=
+                                            .realizado1 !=
                                             null) {
                                           controladorRealizado[index].text =
                                               listaMetricas.listaMetricas[index]
-                                                  .realizado
+                                                  .realizado1
                                                   .toString();
                                         }
                                       }),
@@ -233,12 +243,12 @@ class _MetaClienteState extends State<MetaCliente> {
                               DataCell(
                                 CustomText(
                                     text: listaMetricas
-                                        .listaMetricas[index].meta
+                                        .listaMetricas[index].meta1
                                         .toString()),
                               ),
                               DataCell(CustomText(
                                   text:
-                                      '${gerarProgresso(listaMetricas.listaMetricas[index].realizado!, listaMetricas.listaMetricas[index].meta!)} %')),
+                                  '${gerarProgresso(listaMetricas.listaMetricas[index].realizado1!, listaMetricas.listaMetricas[index].meta1!)} %')),
                             ],
                           ),
                         ),
@@ -279,30 +289,6 @@ class _MetaClienteState extends State<MetaCliente> {
                 ),
               )),
           SizedBox(width: 12),
-          // Container(
-          //     decoration: BoxDecoration(
-          //         border: Border.all(color: PaletaCores.active, width: .5),
-          //         color: PaletaCores.corLight,
-          //         borderRadius: BorderRadius.circular(20)),
-          //     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          //     child: ElevatedButton(
-          //       style: ElevatedButton.styleFrom(
-          //         primary: PaletaCores.corLight,
-          //         elevation: 0,
-          //         padding: EdgeInsets.symmetric(
-          //           horizontal: 12,
-          //           vertical: 6,
-          //         ),
-          //       ),
-          //       onPressed: () {
-
-          //       },
-          //       child: CustomText(
-          //         text: "Travar Metas",
-          //         color: PaletaCores.active.withOpacity(.7),
-          //         weight: FontWeight.bold,
-          //       ),
-          //     )),
         ],
       ),
     );

@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:get/get.dart';
 import '/models/project_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:touchable/touchable.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
 
@@ -15,6 +14,36 @@ class ArcoAutomatico extends CustomPainter {
   double degToRad(double deg) => deg * (pi / 180.0);
 
   double radToDeg(double rad) => rad * (180.0 / pi);
+
+  void drawObjetivos3(TouchyCanvas canvas, Size size) {
+    var orangeCircleCenter = Offset(size.width / 2, size.height / 2 + 100);
+    canvas.drawCircle(
+        orangeCircleCenter, 80, Paint()..color = Colors.orangeAccent,
+        onTapDown: (_) {
+      print("cliquei orange");
+    });
+    canvas.drawCircle(
+      orangeCircleCenter,
+      50,
+      Paint()..color = Colors.green,
+      onTapDown: (_) {
+        print("cliquei green");
+      }, /*hitTestBehavior: HitTestBehavior.translucent*/
+    );
+    canvas.drawCircle(
+      orangeCircleCenter,
+      30,
+      Paint()..color = Colors.blue,
+      onTapDown: (_) {
+        print("cliquei no blue");
+      }, /*hitTestBehavior: HitTestBehavior.translucent*/
+    );
+    canvas
+        .drawCircle(orangeCircleCenter, 20, Paint()..color = Colors.deepPurple,
+            onTapDown: (_) {
+      print("cliquei purple");
+    }, hitTestBehavior: HitTestBehavior.opaque);
+  }
 
   void desenhaPrimeiroObjetivoPrimario(
       TouchyCanvas canvas, Offset c, double radius, Size size, int dist) {
@@ -50,6 +79,144 @@ class ArcoAutomatico extends CustomPainter {
       print("cliquei no white ...");
     });
     */
+  }
+
+  void drawObjetivos2(TouchyCanvas canvas, Size size) {
+    /*controller.changeSize(size);
+    final c = Offset(size.width / 2, size.height / 2);
+    final radius = size.width * 0.8;
+    List<ObjetivoModel> objetivos = controller.objs;
+
+    if (objetivos.isEmpty) {
+      desenhaPrimeiroObjetivoPrimario(canvas, c, radius, size, 0);
+      var cnivel = controller.niveis;
+      controller.niveis++;
+      controller.nv = cnivel;
+      controller.ultimoNivelClicado = cnivel;
+      print("desenhei o primeiro");
+    } else {
+      print("tamanho da lista - ${objetivos.length}");
+      if (size != controller.size) {
+        print('tela de tamanho diferente');
+        controller.changeSize(size);
+      } else {
+        List<Path> paths = [];
+        List<Paint> paints = [];
+        List<Rect> ovals = [];
+        for (var objetivo in objetivos) {
+          print("${objetivo.name} - ${objetivo.nivel} - ${objetivo.nivelPai}");
+
+          final oval = Rect.fromCenter(
+            center: c,
+            width: (radius / niveis) * (niveis - nv),
+            height: (radius / niveis) * (niveis - nv),
+          );
+          Path p = Path();
+          p.moveTo(size.width / 2, size.height / 2);
+          p.addArc(oval, degToRad(objetivo.startAngle),
+              degToRad(objetivo.sweepAngle));
+          p.lineTo(size.width / 2, size.height / 2);
+          p.close();
+
+          Paint? paint = objetivo.paint;
+          paths.add(p);
+          paints.add(paint!);
+          ovals.add(oval);
+        }
+
+        for (var objetivo in objetivos) {
+          Path? p = objetivo.path;
+          Paint? pt = objetivo.paint;
+          canvas.drawPath(p!, pt!, onTapDown: (details) {
+            print("Nivel clicado - ${objetivo.nivel}");
+          });
+        }
+      }
+    }
+*/
+    // //Cada nível tem um retângulo (oval)
+    // final oval = Rect.fromCenter(
+    //   center: c,
+    //   width: (radius / niveis) * (niveis - nv),
+    //   height: (radius / niveis) * (niveis - nv),
+    // );
+
+    // final oval2 = Rect.fromCenter(
+    //   center: c,
+    //   width: (radius / niveis) * (niveis - nv) - 100,
+    //   height: (radius / niveis) * (niveis - nv) - 100,
+    // );
+
+    // final oval3 = Rect.fromCenter(
+    //   center: c,
+    //   width: (radius / niveis) * (niveis - nv) - 200,
+    //   height: (radius / niveis) * (niveis - nv) - 200,
+    // );
+
+    // Path p6 = Path();
+    // p6.moveTo(size.width / 2, size.height / 2);
+    // p6.addArc(oval2, degToRad(0), degToRad(360));
+    // p6.lineTo(size.width / 2, size.height / 2);
+    // p6.close();
+
+    // Path p7 = Path();
+    // p7.moveTo(size.width / 2, size.height / 2);
+    // p7.addArc(oval3, degToRad(0), degToRad(360));
+    // p7.lineTo(size.width / 2, size.height / 2);
+    // p7.close();
+
+    // Path p = Path();
+    // p.moveTo(size.width / 2, size.height / 2);
+    // p.addArc(oval, 0, (pi / 2) / 2);
+    // p.lineTo(size.width / 2, size.height / 2);
+    // p.close();
+
+    // Path p2 = Path();
+    // p2.moveTo(size.width / 2, size.height / 2);
+    // p2.addArc(oval, degToRad(45), degToRad(45));
+    // p2.lineTo(size.width / 2, size.height / 2);
+    // p2.close();
+
+    // Path p3 = Path();
+    // p3.moveTo(size.width / 2, size.height / 2);
+    // p3.addArc(oval, degToRad(90), degToRad(90));
+    // p3.lineTo(size.width / 2, size.height / 2);
+    // p3.close();
+
+    // Path p4 = Path();
+    // p4.moveTo(size.width / 2, size.height / 2);
+    // p4.addArc(oval, degToRad(180), degToRad(90));
+    // p4.lineTo(size.width / 2, size.height / 2);
+    // p4.close();
+
+    // Path p5 = Path();
+    // p5.moveTo(size.width / 2, size.height / 2);
+    // p5.addArc(oval, degToRad(270), degToRad(90));
+    // p5.lineTo(size.width / 2, size.height / 2);
+    // p5.close();
+
+    // //canvas.drawPath(p, Paint()..color = Colors.orangeAccent);
+    // canvas.drawPath(p, Paint()..color = Colors.blueAccent, onTapDown: (_) {
+    //   print("cliquei no blueAccent ...");
+    // });
+    // canvas.drawPath(p2, Paint()..color = Colors.pink, onTapDown: (_) {
+    //   print("cliquei no pink ...");
+    // });
+    // canvas.drawPath(p3, Paint()..color = Colors.yellowAccent, onTapDown: (_) {
+    //   print("cliquei no yellow ...");
+    // });
+    // canvas.drawPath(p4, Paint()..color = Colors.orangeAccent, onTapDown: (_) {
+    //   print("cliquei no orange ...");
+    // });
+    // canvas.drawPath(p5, Paint()..color = Colors.greenAccent, onTapDown: (_) {
+    //   print("cliquei no verde ...");
+    // });
+    // canvas.drawPath(p6, Paint()..color = Colors.white, onTapDown: (_) {
+    //   print("cliquei no branco ...");
+    // });
+    // canvas.drawPath(p7, Paint()..color = Colors.black, onTapDown: (_) {
+    //   print("cliquei no preto ...");
+    // });
   }
 
   void drawObjetivos(TouchyCanvas canvas, Size size) {
@@ -178,7 +345,7 @@ class ArcoAutomatico extends CustomPainter {
     double width = size.width / 2;
     double height = size.height / 2;
     final c = Offset(width, height);
-    final radius = size.width * 0.8;
+    final radius = size.width * 0.9;
 
     final linePaint = Paint() //Cor da linha
       ..color = Colors.white //Color.fromRGBO(56, 56, 56, 1) //white
@@ -241,11 +408,9 @@ class ArcoAutomatico extends CustomPainter {
       //   print("xx Ultimo nivel clicado - $ultimoNivelClicado");
       // });
 
-      canvas.drawArc(oval, anguloInicio, anguloFinal, true, paint,
-          onTapDown: (evento) {
-            mandalaController.indice.value = -1;
-            mandalaController.indiceResult.value = -1;
-          });
+      canvas.drawArc(oval, anguloInicio, anguloFinal, true, paint, onTapDown: (evento){
+
+      });
       //canvas.drawCircle(c, radius, paintC);
 
       //Desenhar os objetivos e não tem resultado ainda cadastrado
@@ -276,7 +441,6 @@ class ArcoAutomatico extends CustomPainter {
             center: c, width: (radius / 1), height: (radius / 1));
 
         double sweep = degToRad(360 / numeroDeObjetivos);
-
         anguloInicio = degToRad(0);
         //double anguloFinal = degToRad(360);
 
@@ -300,28 +464,16 @@ class ArcoAutomatico extends CustomPainter {
           listaLines.add(p2);
           listPaintObjetivos.add(paint2);
         }
-
         //Desenhar os dois níveis
         //Uma repetição para desenhar
         for (int o = 0; o < numeroDeObjetivos; o++) {
           canvas.drawPath(listPathObjetivos[o], listPaintObjetivos[o],
               onTapDown: (tapDownDetails) {
-                mandalaController.ultimoNivelClicado.value = 2;
-                mandalaController.ultimoObjetivoClicado.value =
-                    mandalaController.listaObjectives[o].idObjetivo.toString();
-                mandalaController.nomeObjMandala.value =
-                    mandalaController.listaObjectives[o].nome.toString();
-                mandalaController.progressoObj.value =
-                    mandalaController.listaObjectives[o].progresso!.toDouble();
-                mandalaController.data.value =
-                mandalaController.listaObjectives[o].dataVencimento!;
-                mandalaController.listaObjectives[o].dataVencimento!;
-                mandalaController.indice.value = o;
-
-                print(
-                    "xx pedaço clicado - ${mandalaController.ultimoObjetivoClicado.value}");
-                print("xx Ultimo nivel clicado - 2");
-              });
+            mandalaController.ultimoObjetivoClicado.value = mandalaController.listaObjectives[o].idObjetivo.toString();
+            print(
+                "xx pedaço clicado - ${mandalaController.ultimoObjetivoClicado.value}");
+            print("xx Ultimo nivel clicado - 2");
+          });
         }
 
         listaLines.forEach((element) {
@@ -330,7 +482,9 @@ class ArcoAutomatico extends CustomPainter {
 
         //Desenha o nível mais interno
         canvas.drawPath(p, paint);
-      } else if (numeroDeResultados > 0) {
+      }
+      else if (numeroDeResultados > 0) {
+
         double anguloInicio = degToRad(0);
         double anguloFinal = degToRad(360);
 
@@ -409,22 +563,11 @@ class ArcoAutomatico extends CustomPainter {
           debugPrint("Entrei no resultado ${r + 1}");
           canvas.drawPath(listPathResultados[r], listPaintResultados[r],
               onTapDown: (tapDownDetails) {
-                mandalaController.ultimoNivelClicado.value = 3;
-                mandalaController.ultimoResultadoClicado.value = mandalaController
-                    .listaResultados
-                    .elementAt(r)
-                    .idResultado
-                    .toString();
-                mandalaController.nomeResultMandala.value =
-                    mandalaController.listaResultados[r].nomeResultado.toString();
-                mandalaController.progressoResult.value =
-                    mandalaController.listaResultados[r].progresso!.toDouble();
-                mandalaController.indiceResult.value = r;
-
-                print(
-                    "xx pedaço clicado - ${mandalaController.ultimoResultadoClicado}");
-                print("xx Ultimo nivel clicado - 3");
-              }, paintStyleForTouch: PaintingStyle.stroke);
+            mandalaController.ultimoResultadoClicado.value = mandalaController.listaResultados.elementAt(r).idResultado.toString();
+            print(
+                "xx pedaço clicado - ${mandalaController.ultimoResultadoClicado}");
+            print("xx Ultimo nivel clicado - 3");
+          });
         }
         listaLinesResults.forEach((element) {
           canvas.drawLine(c, element, linePaint);
@@ -434,24 +577,14 @@ class ArcoAutomatico extends CustomPainter {
         for (int o = 0; o < numeroDeObjetivos; o++) {
           canvas.drawPath(listPathObjetivos[o], listPaintObjetivos[o],
               onTapDown: (tapDownDetails) {
-                mandalaController.ultimoNivelClicado.value = 2;
-                mandalaController.ultimoObjetivoClicado.value =
-                    mandalaController.listaObjectives[o].idObjetivo.toString();
-                mandalaController.nomeObjMandala.value =
-                    mandalaController.listaObjectives[o].nome.toString();
-                mandalaController.progressoObj.value =
-                    mandalaController.listaObjectives[o].progresso!.toDouble();
-                mandalaController.data.value =
-                mandalaController.listaObjectives[o].dataVencimento!;
-                mandalaController.indice.value = o;
-
+                mandalaController.ultimoObjetivoClicado.value = mandalaController.listaObjectives[o].idObjetivo.toString();
                 print(
                     "xx pedaço clicado - ${mandalaController.ultimoObjetivoClicado.value}");
-                //     mandalaController.ultimoNivelClicado = o;
-                // print(
-                //     "xx pedaço clicado - ${mandalaController.ultimoNivelClicado}");
-                print("xx Ultimo nivel clicado - 2");
-              });
+            //     mandalaController.ultimoNivelClicado = o;
+            // print(
+            //     "xx pedaço clicado - ${mandalaController.ultimoNivelClicado}");
+            print("xx Ultimo nivel clicado - 2");
+          });
         }
 
         listaLines.forEach((element) {
@@ -459,15 +592,18 @@ class ArcoAutomatico extends CustomPainter {
         });
 
         //Desenha o nível mais interno
-        canvas.drawPath(p, paint, onSecondaryTapDown: (evento) {
+        canvas.drawPath(p, paint, onSecondaryTapDown: (evento){
           print(evento);
           print("cliquei secondary");
-        }, onTapDown: (evento) {
+        },
+        onTapDown: (evento){
           print(evento);
           print("cliquei tap down");
-        }, onPanDown: (tapdetail) {
-          print("orange circle swiped");
-        });
+        },
+            onPanDown:(tapdetail){
+              print("orange circle swiped");
+            }
+        );
       }
     } else {
       // Nenhum objetivo ou nulo
@@ -475,26 +611,27 @@ class ArcoAutomatico extends CustomPainter {
     }
   }
 
-  // drawCirculoCentral() {}
-  // drawSectorsResultados(
-  //     TouchyCanvas canvas,
-  //     Rect rectResults,
-  //     int numeroResultados,
-  //     double width,
-  //     double height,
-  //     double radius,
-  //     double anguloInicio,
-  //     Offset c,
-  //     List listPathResults,
-  //     List listaLinesResults,
-  //     List listPaintResults) {
-  //   double sweep = degToRad(360 / numeroResultados);
-  //   var mandalaController = Get.find<ControllerProjetoRepository>();
-  // }
+  drawCirculoCentral() {}
+  drawSectorsResultados(
+      TouchyCanvas canvas,
+      Rect rectResults,
+      int numeroResultados,
+      double width,
+      double height,
+      double radius,
+      double anguloInicio,
+      Offset c,
+      List listPathResults,
+      List listaLinesResults,
+      List listPaintResults) {
+    double sweep = degToRad(360 / numeroResultados);
+    var mandalaController = Get.find<ControllerProjetoRepository>();
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
     var myCanvas = TouchyCanvas(context, canvas);
+    //drawObjetivos(myCanvas, size);
     drawObject(myCanvas, size);
   }
 

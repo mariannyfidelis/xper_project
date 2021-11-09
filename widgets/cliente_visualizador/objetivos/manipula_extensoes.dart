@@ -1,16 +1,16 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '/controllers/dados_controller.dart';
+import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class ManipulaExtensoes extends StatelessWidget {
   const ManipulaExtensoes({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ObjectiveController>(
-        builder: (context, controller, widget) {
-      return Visibility(
-        visible: controller.visivel,
+    var mandalaController = Get.find<ControllerProjetoRepository>();
+    return Obx(
+          () => Visibility(
+        visible: mandalaController.visivel.value,
         child: Padding(
           padding: const EdgeInsets.only(top: 20.0),
           child: Container(
@@ -22,23 +22,37 @@ class ManipulaExtensoes extends StatelessWidget {
                 SizedBox(width: 20),
                 Container(
                   width: 250,
-                  child: TextField(
+                  child:
+                  // child: Row(
+                  //   children: [
+                  TextField(
                     textAlign: TextAlign.justify,
                     textAlignVertical: TextAlignVertical.center,
                     decoration: InputDecoration(
                         icon: Icon(Icons.extension, size: 20),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(10),
                         )),
                     maxLength: 450,
                     keyboardType: TextInputType.text,
                   ),
-                )
+                  /**/
+                  //   ],
+                  // ),
+                ),
+                IconButton(
+                    splashRadius: 15,
+                    onPressed: mandalaController.adicionarExtensao,
+                    icon: Icon(Icons.add, size: 20)),
+                IconButton(
+                    splashRadius: 15,
+                    onPressed: mandalaController.buscarExtensao,
+                    icon: Icon(Icons.search, size: 20)),
               ],
             ),
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 }

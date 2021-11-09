@@ -1,5 +1,3 @@
-import 'package:get/get.dart';
-
 import 'arco_automatico_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:touchable/touchable.dart';

@@ -70,7 +70,7 @@ class WebAppBar extends StatelessWidget {
               child: Text(
                 " Sair ",
                 style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               )),
         ),
       ],

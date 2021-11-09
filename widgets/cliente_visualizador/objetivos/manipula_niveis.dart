@@ -5,26 +5,38 @@ import '/widgets/Dashboard/controller/controllers_dash.dart';
 class ManipulaOKR extends StatefulWidget {
   ManipulaOKR({Key? key}) : super(key: key);
   @override
-  _ManipulaOKRState createState() =>
-      _ManipulaOKRState();
+  _ManipulaOKRState createState() => _ManipulaOKRState();
 }
 
 class _ManipulaOKRState extends State<ManipulaOKR> {
-
   var mandalaController = Get.find<ControllerProjetoRepository>();
 
   @override
   Widget build(BuildContext context) {
-
     return Visibility(
       visible: true,
       child: Row(
         children: [
-          ElevatedButton(onPressed: adicionaObjetivo, child: Text("Novo Objetivo", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),)),
+          ElevatedButton(
+              onPressed: adicionaObjetivo,
+              child: Text(
+                "Novo Objetivo",
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              )),
           SizedBox(width: 20),
-          ElevatedButton(onPressed: adicionaResultado, child: Text("Novo Resultado", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),)),
+          ElevatedButton(
+              onPressed: adicionaResultado,
+              child: Text(
+                "Novo Resultado",
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              )),
           SizedBox(width: 20),
-          ElevatedButton(onPressed: adicionaMetrica, child: Text("Nova Métrica", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),)),
+          ElevatedButton(
+              onPressed: adicionaMetrica,
+              child: Text(
+                "Nova Métrica",
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              )),
 
           // IconButton(
           //   tooltip: "Adiciona objetivo",
@@ -81,6 +93,15 @@ class _ManipulaOKRState extends State<ManipulaOKR> {
           PopupMenuButton(
             tooltip: "Menu de objetivos",
             initialValue: 9,
+            onSelected: ((value) {
+              if (value == 2) {
+                (mandalaController.ultimoNivelClicado == 2)
+                    ? mandalaController.removeObjetivo(
+                    mandalaController.ultimoObjetivoClicado.value)
+                    : mandalaController.removeResultado(
+                    mandalaController.ultimoResultadoClicado.value);
+              }
+            }),
             child: Center(child: Icon(Icons.arrow_drop_down)),
             itemBuilder: (context) {
               return [
@@ -113,7 +134,7 @@ class _ManipulaOKRState extends State<ManipulaOKR> {
                     children: [
                       Icon(Icons.remove_circle),
                       SizedBox(width: 16),
-                      Text('Excluir objetivo')
+                      Text('Excluir objetivo'),
                     ],
                   ),
                 ),
@@ -213,19 +234,22 @@ class _ManipulaOKRState extends State<ManipulaOKR> {
   }
 
   void adicionaObjetivo() {
-  debugPrint("||| Adicionando um novo objetivo ...");
-  mandalaController.addOneObjective("Novo objetivo ${mandalaController.listaObjectives.length+1}");
+    debugPrint("||| Adicionando um novo objetivo ...");
+    mandalaController.addOneObjective(
+        "Novo objetivo ${mandalaController.listaObjectives.length + 1}");
   }
 
   void adicionaResultado() {
-    //TODO - Vincular a um objetivo pai
     debugPrint("||| Adicionando um novo resultado ...");
-    mandalaController.addOneResultado("Novo resultado ${mandalaController.listaResultados.length+1}");
+    mandalaController.addOneResultado(
+        "Novo resultado ${mandalaController.listaResultados.length + 1}",
+        idObjetivoPai: mandalaController.ultimoObjetivoClicado.value);
   }
 
   void adicionaMetrica() {
-    //TODO - Vincular a um resultado pai
     debugPrint("||| Adicionando uma nova métrica ...");
-    mandalaController.addOneMetric("Nova métrica ${mandalaController.listaMetricas.length+1}");
+    mandalaController.addOneMetric(
+        "Nova métrica ${mandalaController.listaMetricas.length + 1} do ${mandalaController.nomeResultMandala}",
+        idResultado: mandalaController.ultimoResultadoClicado.value);
   }
 }

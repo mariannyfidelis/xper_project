@@ -26,52 +26,62 @@ String idUsuario = auth.usuario!.uid;
 class ControllerProjetoRepository extends GetxController {
   List<ProjectModel> _listaProjetos = <ProjectModel>[].obs;
 
-  double degToRad(double deg) => deg * (pi / 180.0);
+  int ultimoNivelClicado = 1;
 
-  double radToDeg(double rad) => rad * (180.0 / pi);
-
-  var ultimoNivelClicado = 1.obs;
-  var indice = (-1).obs;
-  var indiceResult = (-1).obs;
-  var filtragem = "publico".obs;
-  var iconsProjeto = false.obs;
-
-//==================== Objetivos mandala ======================
   var ultimoObjetivoClicado = "".obs;
-  var nomeObjMandala = ''.obs;
-  var progressoObj = 0.0.obs;
-  var sweepAngle = 0.obs;
-  var data = Timestamp.fromDate(DateTime.now()).obs;
+  var ultimoResultadoClicado = "".obs;
   //String ultimoMetricaClicada = "";
 
-  //===================Results mandala===================
-  var ultimoResultadoClicado = "".obs;
-  var nomeResultMandala = ''.obs;
-  var progressoResult = 0.0.obs;
-
-  //===================Projeto===========================
   var idProjeto = "".obs;
   var nome = "".obs;
   var proprietario = "".obs;
   var tipoProj = "".obs;
 
-  var visivel = true.obs;
-  var botaoProjeto = false.obs;
-  var clicou = false.obs;
-  var detalhes = "ocultar detalhes".obs;
-  var iconDetalhes = Icons.arrow_drop_up_rounded.obs;
+  List<ObjetivosPrincipais> _listObjects = <ObjetivosPrincipais>[
+    // ObjetivosPrincipais(
+    //     idObjetivo: "idObjetivo",
+    //     nome: "nome",
+    //     progresso: 100,
+    //     importancia: 100),
+    // ObjetivosPrincipais(
+    //     idObjetivo: "idObjetivo2",
+    //     nome: "nome2",
+    //     progresso: 100,
+    //     importancia: 100)
+  ].obs;
 
-  var _objetivoController = TextEditingController().obs;
+  List<DonosResultadoMetricas> _listDonos = <DonosResultadoMetricas>[
+    // DonosResultadoMetricas(
+    //   id: "1",
+    //   nome: 'Marianny Fidelis',
+    //   email: "mariannyfidelis@hotmail",
+    // )
+  ].obs;
 
-  List<ObjetivosPrincipais> _listObjects = <ObjetivosPrincipais>[].obs;
+  List<ResultadosPrincipais> _listResults = <ResultadosPrincipais>[
+    // ResultadosPrincipais(
+    //   idResultado: "idResultado1",
+    //   nomeResultado: "Resultado1",
+    //   idObjetivoPai: "idobj1",
+    //   donoResultado: ["donoResultado1", "dono2"],
+    // ),
+    // ResultadosPrincipais(
+    //     idResultado: "idResultado1",
+    //     nomeResultado: "Resultado1",
+    //     idObjetivoPai: "idobj1",
+    //     donoResultado: ["donoResultado1", "dono2"])
+  ].obs;
 
-  List<DonosResultadoMetricas> _listDonos = <DonosResultadoMetricas>[].obs;
+  List<MetricasPrincipais> _listMetrics = <MetricasPrincipais>[
+    // MetricasPrincipais(idMetrica: "idmetrica1", nomeMetrica: "Metrica1"),
+    // MetricasPrincipais(idMetrica: "idmetrica2", nomeMetrica: "Metrica2"),
+  ].obs;
 
-  List<ResultadosPrincipais> _listResults = <ResultadosPrincipais>[].obs;
-
-  List<MetricasPrincipais> _listMetrics = <MetricasPrincipais>[].obs;
-
-  List<ACL> _listAcl = <ACL>[].obs;
+  List<ACL> _listAcl = <ACL>[
+    // ACL(idDonoResultadoMetrica: "123", permissao: "read"),
+    // ACL(idDonoResultadoMetrica: "xxx", permissao: "write"),
+    // ACL(idDonoResultadoMetrica: "555", permissao: "owner")
+  ].obs;
 
   late FirebaseFirestore db;
 
@@ -169,53 +179,26 @@ class ControllerProjetoRepository extends GetxController {
       UnmodifiableListView(_listObjects);
 
   void addOneObjective(String nomeObjetivo,
-      {int importancia = 100,
-      double progresso = 100,
-      double? meta = 0.0,
-      double? realizado = 0.0,
-      Timestamp? dataVencimento}) async {
+      {int importancia = 100, double progresso = 100}) async {
     var uuid = Uuid();
 
     DocumentReference reference =
         await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     ObjetivosPrincipais objetivo = ObjetivosPrincipais(
-        idObjetivo: uuid.v4(),
-        importancia: importancia,
-        nome: nomeObjetivo,
-        progresso: progresso,
-        meta: meta,
-        realizado: realizado,
-        startAngle: 0,
-        sweepAngle: 360,
-        dataVencimento: Timestamp.fromDate(DateTime.now()));
+      idObjetivo: uuid.v4(),
+      importancia: importancia,
+      nome: nomeObjetivo,
+      progresso: progresso,
+      startAngle: 0,
+      sweepAngle: 360,
+    );
 
     _listObjects.add(objetivo);
 
-    //Tem que recalcular tudo
-    double sweepFatia = 360 / _listObjects.length;
-    double startAngle = 0;
-
-    for (var objetivo in _listObjects) {
-      objetivo.setStartAngle(startAngle);
-      objetivo.setSweepAngle(sweepFatia);
-      //TODO - falta configurar aqui o progresso e a importância
-      startAngle += sweepFatia;
-
-      var l_resultados = _listResults.where((element) => element.idObjetivoPai == objetivo.idObjetivo);
-      var tamanhoPedacoResultado =
-      (l_resultados.length == 0) ? 1 : l_resultados.length;
-      var sweepResultFatia = sweepFatia/tamanhoPedacoResultado;
-      var startAngleFilho = startAngle;
-      for (var lr in l_resultados){
-        lr.setStartAngle(startAngleFilho);
-        lr.setSweepAngle(sweepResultFatia);
-        startAngleFilho += sweepResultFatia;
-      }
-    }
     var l = _listObjects.map((v) => v.toJson()).toList();
-    var r = _listResults.map((v) => v.toJson()).toList();
-    await reference.update({'objetivosPrincipais': l, 'resultadosPrincipais': r});
+
+    await reference.update({'objetivosPrincipais': l}); //[l]
   }
 
   void atualizaObjetivo(String idObjetivo, String nomeObjetivoAtualizado,
@@ -244,67 +227,21 @@ class ControllerProjetoRepository extends GetxController {
     int indice =
         _listObjects.indexWhere((element) => element.idObjetivo == idObjetivo);
     var val = <Map<String, dynamic>>[];
-    var valR = <Map<String, dynamic>>[];
-    var valM = <Map<String, dynamic>>[];
 
     if (indice != -1) {
-      var vinculo =
-          _listResults.where((element) => element.idObjetivoPai == idObjetivo);
-
-      for (var result in vinculo) {
-        valR.add(result.toJson());
-        var metrics = _listMetrics
-            .where((element) => element.idResultado == result.idResultado);
-        for (var metric in metrics) {
-          valM.add(metric.toJson());
-        }
-      }
-      for (var result in vinculo) {
-        _listMetrics.removeWhere(
-            (element) => element.idResultado == result.idResultado);
-      }
-
-      _listResults
-          .removeWhere((element) => element.idObjetivoPai == idObjetivo);
-      var reference =
-          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
-
+      print(_listObjects[indice]);
       var a = _listObjects.removeAt(indice);
       val.add(a.toJson());
 
-      double sweepFatia = 360 / _listObjects.length;
-      double startAngle = 0;
+      var reference =
+          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
-      for (var objetivo in _listObjects) {
-        objetivo.setStartAngle(startAngle);
-        objetivo.setSweepAngle(sweepFatia);
-
-        var l_resultados = _listResults.where((element) => element.idObjetivoPai == objetivo.idObjetivo);
-        var tamanhoPedacoResultado =
-        (l_resultados.length == 0) ? 1 : l_resultados.length;
-        var sweepResultFatia = sweepFatia/tamanhoPedacoResultado;
-        var startAngleFilho = startAngle;
-        for (var lr in l_resultados){
-          lr.setStartAngle(startAngleFilho);
-          lr.setSweepAngle(sweepResultFatia);
-          startAngleFilho += sweepResultFatia;
-        }
-        startAngle += sweepFatia;
-      }
-
-      reference.update({
-        "objetivosPrincipais": FieldValue.arrayRemove(val),
-        "metricasPrincipais": FieldValue.arrayRemove(valM),
-        "resultadosPrincipais": FieldValue.arrayRemove(valR)
-      }).then((_) {
-        print("___success com projeto repository!");
+      reference.update(
+          {"objetivosPrincipais": FieldValue.arrayRemove(val)}).then((_) {
+        print("success com projeto repository!");
       });
-      var l = _listObjects.map((v) => v.toJson()).toList();
-      var r = _listResults.map((v) => v.toJson()).toList();
-      await reference.update({'objetivosPrincipais': l, 'resultadosPrincipais': r});
-      //await reference.update({'objetivosPrincipais': l});
     } else {
-      debugPrint("___Não encontrei o objetivo !");
+      debugPrint("Não encontrei o objetivo !");
     }
   }
 
@@ -333,33 +270,6 @@ class ControllerProjetoRepository extends GetxController {
             : []);
 
     _listResults.add(resultadosPrincipais);
-    int indiceObjetivo = _listObjects.indexWhere(
-        (element) => element.idObjetivo == idObjetivoPai); //Calcular o índice
-    var vinculoresult = _listResults.where((element) =>
-        element.idObjetivoPai == idObjetivoPai); //Calcular os resultados irmãos
-
-    //Se não tiver irmão ganhará um pedaço todo!
-    var tamanhoPedacoResultado =
-        (vinculoresult.length == 0) ? 1 : vinculoresult.length;
-
-    if (indiceObjetivo != -1) {
-      var startPai = _listObjects[indiceObjetivo].startAngle;
-      var sweepPai = _listObjects[indiceObjetivo].sweepAngle;
-      var finalPai = startPai + sweepPai;
-      var fatiaResult = finalPai - startPai;
-
-      double sweepFatia = (fatiaResult / tamanhoPedacoResultado);
-      double startAngle = startPai;
-
-      for (var result in _listResults) {
-        if (result.idObjetivoPai == idObjetivoPai) {
-          //TODO - falta configurar aqui o progresso e a importância
-          result.setStartAngle(startAngle);
-          result.setSweepAngle(sweepFatia);
-          startAngle += sweepFatia;
-        }
-      }
-    }
 
     var l = _listResults.map((v) => v.toJson()).toList();
 
@@ -367,72 +277,23 @@ class ControllerProjetoRepository extends GetxController {
   }
 
   void removeResultado(String idResultado) async {
-    var idObjetivoPai;
     int indice = _listResults
         .indexWhere((element) => element.idResultado == idResultado);
+
     var val = <Map<String, dynamic>>[];
-    var valM = <Map<String, dynamic>>[];
 
     if (indice != -1) {
-      idObjetivoPai = _listResults[indice].idObjetivoPai;
-
-      var vinculoMetrica =
-          _listMetrics.where((element) => element.idResultado == idResultado);
-
-      for (var metric in vinculoMetrica) {
-        valM.add(metric.toJson());
-      }
-      _listMetrics.removeWhere((element) => element.idResultado == idResultado);
-
-      //Esse aqui
+      print(_listResults[indice]);
       var a = _listResults.removeAt(indice);
       val.add(a.toJson());
 
       var reference =
-      await db.collection('projetosPrincipais').doc(this.idProjeto.value);
+          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
-      reference.update({
-        "resultadosPrincipais": FieldValue.arrayRemove(val),
-        "metricasPrincipais": FieldValue.arrayRemove(valM),
-      }).then((_) {
-        print("remoção de resultado do projeto repository!");
-
-        //TODO - Pode ser que seja preciso pegar todo o cálculo de
-        //ângulo e colocar aqui dentro do THEN
+      reference.update(
+          {"resultadosPrincipais": FieldValue.arrayRemove(val)}).then((_) {
+        print("success com a remoção de resultado do projeto repository!");
       });
-      //Esse aqui
-
-      //Deve-se atualizar os dados dos ângulos de desenho
-      var vinculoresult = _listResults.where((element) =>
-          element.idObjetivoPai ==
-          idObjetivoPai); //Calcular os resultados irmãos
-
-      int indiceObjetivo = _listObjects
-          .indexWhere((element) => element.idObjetivo == idObjetivoPai);
-      //Se não tiver irmão ganhará um pedaço todo!
-      var tamanhoPedacoResultado =
-          (vinculoresult.length == 0) ? 1 : vinculoresult.length;
-
-      if (indiceObjetivo != -1) {
-        var startPai = _listObjects[indiceObjetivo].startAngle;
-        var sweepPai = _listObjects[indiceObjetivo].sweepAngle;
-        var finalPai = startPai + sweepPai;
-        var fatiaResult = finalPai - startPai;
-
-        double sweepFatia = (fatiaResult / tamanhoPedacoResultado);
-        double startAngle = startPai;
-        for (var result in _listResults) {
-          if (result.idObjetivoPai == idObjetivoPai) {
-            result.setStartAngle(startAngle);
-            result.setSweepAngle(sweepFatia);
-            startAngle += sweepFatia;
-            //sweep += sweep_fatia
-          }
-        }
-      }
-
-      var l = _listResults.map((v) => v.toJson()).toList();
-      await reference.update({'resultadosPrincipais': l});
     } else {
       debugPrint("Não encontrei o resultado !");
     }
@@ -601,21 +462,12 @@ class ControllerProjetoRepository extends GetxController {
   }
 //========================== METAS ATUALIZA E TRAVA ============================
 
-  void travarMetaMetrica(
-      int? periodo, String idMetrica, double metaTravada) async {
+  void travarMeta(String idMetrica, double metaTravada) async {
     int indice =
         _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
 
     if (indice != -1) {
-      if (periodo == 1) {
-        _listMetrics[indice].meta1 = metaTravada;
-      } else if (periodo == 2) {
-        _listMetrics[indice].meta2 = metaTravada;
-      } else if (periodo == 3) {
-        _listMetrics[indice].meta3 = metaTravada;
-      } else if (periodo == 4) {
-        _listMetrics[indice].meta4 = metaTravada;
-      } else {}
+      //_listMetrics[indice].meta = metaTravada;
 
       var reference =
           await db.collection('projetosPrincipais').doc(this.idProjeto.value);
@@ -630,102 +482,12 @@ class ControllerProjetoRepository extends GetxController {
     }
   }
 
-  void travaMetaResul(String idResultado, double meta) async {
-    int indice = _listResults
-        .indexWhere((element) => element.idResultado == idResultado);
-
-    if (indice != -1) {
-      _listResults[indice].meta = meta;
-
-      var reference =
-          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
-
-      var l = _listResults.map((v) => v.toJson()).toList();
-
-      await reference.update({'resultadosPrincipais': l});
-
-      atualizaTudo(this.idProjeto.value);
-    } else {
-      print("Métrica não encontrada !");
-    }
-  }
-
-  void travaMetaObj(String idObj, double meta) async {
-    int indice =
-        _listObjects.indexWhere((element) => element.idObjetivo == idObj);
-
-    if (indice != -1) {
-      _listObjects[indice].meta = meta;
-
-      var reference =
-          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
-
-      var l = _listObjects.map((v) => v.toJson()).toList();
-
-      await reference.update({'objetivosPrincipais': l});
-
-      atualizaTudo(this.idProjeto.value);
-    } else {
-      print("Métrica não encontrada !");
-    }
-  }
-
-  metasResulMetric(String? idResultado) {
-    final vinculo =
-        _listMetrics.where((element) => element.idResultado == idResultado);
-
-    double metaResult = 0;
-
-    for (final vin in vinculo) {
-      print(vin.nomeMetrica);
-      metaResult += vin.meta1! + vin.meta2! + vin.meta3! + vin.meta4!;
-      print('${vin.meta1!}, ${vin.meta2!}, ${vin.meta3!}, ${vin.meta4!}');
-    }
-    print('objetivo total $metaResult');
-    return metaResult;
-  }
-
-  metaObjetivos(String idObjetivo) {
-    final vinculo =
-        _listResults.where((element) => element.idObjetivoPai == idObjetivo);
-
-    double metaObj = 0;
-
-    for (final vin in vinculo) {
-      print(vin.nomeResultado);
-      metaObj += vin.meta!;
-      print(vin.meta!);
-    }
-    print('objetivo total $metaObj');
-    return metaObj;
-  }
-
-  // metaDonos(String id, String email, String nome) {
-  //   final vinculo = _listObjects.where((element) =>
-  //       element.donos ==
-  //       element.donos!.where((element) => element.email == email));
-  //   print(vinculo);
-  //   double metaObj = 0;
-  //   // if (vinculo != null) {
-  //   //   print('objetivo encontrado');
-  //   for (final vin in vinculo) {
-  //     print(vin.nome);
-  //     metaObj += vin.meta!;
-  //     print(vin.meta!);
-  //     print('objetivo total $metaObj');
-  //   }
-  //   // } else
-  //   //   print('nao achei');
-
-  //   return metaObj;
-  // }
-
   void atualizarRealizado(String idMetrica, double realizado) async {
     int indice =
         _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
 
     if (indice != -1) {
-      _listMetrics[indice].realizado1 = realizado;
+      //_listMetrics[indice].realizado = realizado;
 
       var reference =
           await db.collection('projetosPrincipais').doc(this.idProjeto.value);
@@ -752,7 +514,7 @@ class ControllerProjetoRepository extends GetxController {
       if (tipo == "privado") {
         snapshot = await db
             .collection('projetosPrincipais')
-            //.where('tipoProj', isEqualTo: tipo)
+            .where('tipoProj', isEqualTo: tipo)
             .where("proprietario", isEqualTo: auth.usuario!.uid)
             .get();
       } else if (tipo == "compartilhado") {
@@ -851,7 +613,7 @@ class ControllerProjetoRepository extends GetxController {
         debugPrint("tem sim e modifiquei para : [${element.nome}]");
       }
     });
-
+    //_listaProjetos.reactive;
     if (indice != -1) {
       _listaProjetos[indice].nome = nomeAtualizado;
       //tipo = _listaProjetos[indice].tipoProj;
@@ -928,173 +690,5 @@ class ControllerProjetoRepository extends GetxController {
       ..style = PaintingStyle.fill
       ..strokeJoin = StrokeJoin.round;
     return p;
-  }
-
-  //==============================================CRUD MANDALA========================================================
-  void atualizaObjetivoMandala(String idObjetivo,
-      {String? nomeObjetivo,
-      //TODO: mudar de importancia para progresso geral
-      int? importancia,
-      double? progresso,
-      double? metaObj = 0.0,
-      double? realizado = 0.0}) async {
-    int indice =
-        _listObjects.indexWhere((element) => element.idObjetivo == idObjetivo);
-
-    if (indice != -1) {
-      if (nomeObjetivo != null) {
-        _listObjects[indice].nome = nomeObjetivo;
-        var reference = await db
-            //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-            .collection('projetosPrincipais')
-            .doc(this.idProjeto.value);
-
-        var l = _listObjects.map((v) => v.toJson()).toList();
-
-        await reference.update({'objetivosPrincipais': l});
-      }
-      if (progresso != null) {
-        _listObjects[indice].progresso = progresso;
-        var reference = await db
-            //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-            .collection('projetosPrincipais')
-            .doc(this.idProjeto.value);
-
-        var l = _listObjects.map((v) => v.toJson()).toList();
-
-        await reference.update({'objetivosPrincipais': l});
-      }
-
-      atualizaTudo(this.idProjeto.value);
-    } else {
-      print("Objetivo não encontrado !");
-    }
-  }
-
-  //=============================================SUSPENDER USER====================================================
-  mudarAtivo(
-    bool ativo,
-    String idDoCara,
-  ) {
-    var reference = db.collection('usuarios').doc(idDoCara);
-
-    (ativo)
-        ? reference.update({'ativo': false})
-        : reference.update({'ativo': true});
-  }
-
-  mudarEdit(
-    bool editor,
-    String idDoCara,
-  ) {
-    var reference = db.collection('usuarios').doc(idDoCara);
-
-    (editor)
-        ? reference.update({'editor': false})
-        : reference.update({'editor': true});
-  }
-
-  void changeVisibilidade() {
-    visivel.value = !visivel.value;
-    clicou.value = !clicou.value;
-    if (!visivel.value) {
-      detalhes.value = "mostrar detalhes";
-      iconDetalhes.value = Icons.arrow_drop_down_rounded;
-    } else {
-      detalhes.value = "ocultar detalhes";
-      iconDetalhes.value = Icons.arrow_drop_up_rounded;
-    }
-  }
-
-  void changeDataVencimento(
-      Timestamp dateTime, ObjetivosPrincipais objetivoModel) {
-    objetivoModel.setDataVencimento(dateTime);
-  }
-
-  void atualizaPedaco(String nomeAtualizado) {
-    if (ultimoNivelClicado.value == 2) {
-      atualizaObjetivoMandala(ultimoObjetivoClicado.value,
-          nomeObjetivo: nomeAtualizado);
-    } else if (ultimoNivelClicado.value == 3) {
-      atualizaResultado(ultimoResultadoClicado.value, nomeAtualizado);
-    } else {}
-  }
-
-  TextEditingController get objetivoController {
-    _objetivoController.value.text = (ultimoNivelClicado.value <= 2)
-        ? (ultimoNivelClicado.value == 2)
-            ? nomeObjMandala.value
-            : nome.value
-        : nomeResultMandala.value;
-
-    return _objetivoController.value;
-  }
-
-  void mudaNome(String nomeAtualizado) {
-    _objetivoController.value.text = nomeAtualizado;
-  }
-
-  gerarProgresso(
-      double realizado1,
-      double realizado2,
-      double realizado3,
-      double realizado4,
-      double meta1,
-      double meta2,
-      double meta3,
-      double meta4) {
-    if (meta1 + meta2 + meta3 + meta4 != 0) {
-      double progresso = ((realizado1 + realizado2 + realizado3 + realizado4) /
-              (meta1 + meta2 + meta3 + meta4)) *
-          100;
-      return progresso;
-    } else {
-      return 0;
-    }
-  }
-
-  ocultaCriarProjeto(String tipo) {
-    if (tipo == 'cliente' && filtragem.value != "privado") {
-      botaoProjeto.value = false;
-    } else {
-      (tipo == 'cliente')
-          ? (_listaProjetos
-                      .where((element) =>
-                          element.proprietario == auth.usuario!.uid)
-                      .length ==
-                  0)
-              ? botaoProjeto.value = true
-              : botaoProjeto.value = false
-          : botaoProjeto.value = true;
-    }
-
-    print(
-        'BBB ${listaProjetos.where((element) => element.proprietario == auth.usuario!.uid).length}');
-    return botaoProjeto.value;
-  }
-
-  visivelEditarProjeto() {
-    if (filtragem.value != "privado") {
-      iconsProjeto.value = false;
-    } else {
-      iconsProjeto.value = true;
-    }
-    return iconsProjeto.value;
-  }
-
-  void adicionarExtensao() {}
-
-  void buscarExtensao() {}
-
-  void adicionarResponsavel() {}
-
-  void buscarResponsavel() {}
-
-  void setStartAngle(int o, double anguloInicio) {
-    _listObjects[o].setStartAngle(anguloInicio);
-  }
-
-  void setSweepAngle(int o, double sweep) {
-    _listObjects[o].setSweepAngle(sweep);
   }
 }

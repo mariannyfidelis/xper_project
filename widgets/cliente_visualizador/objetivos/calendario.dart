@@ -1,6 +1,7 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '/controllers/dados_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class TelaCalendario extends StatefulWidget {
   const TelaCalendario({Key? key}) : super(key: key);
@@ -10,14 +11,14 @@ class TelaCalendario extends StatefulWidget {
 }
 
 class _TelaCalendarioState extends State<TelaCalendario> {
+  var mandalaController = Get.find<ControllerProjetoRepository>();
   String _dataVencimento = "";
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ObjectiveController>(
-        builder: (context, controller, widget) {
-      return Visibility(
-        visible: controller.visivel,
+    return Obx(
+      () => Visibility(
+        visible: mandalaController.visivel.value,
         child: Row(
           children: [
             Text("Vencimento      "),
@@ -26,35 +27,43 @@ class _TelaCalendarioState extends State<TelaCalendario> {
               iconSize: 20,
               onPressed: () {
                 //Mudança de estado da data de Vencimento
-                showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2025, 12, 25))
-                    .then((value) {
-                  //print("Data vencimento - ${value!.day.toString()}");
-                  _dataVencimento =
-                      "${value!.day}/${value.month}/${value.year}";
-                  print("Data vencimento - $_dataVencimento");
-                  controller.changeDataVencimento(
-                      value, controller.getObjetivos().first);
-                });
+                (mandalaController.indice.value != -1)
+                    ? showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime(2025, 12, 25))
+                        .then((value) {
+                        //print("Data vencimento - ${value!.day.toString()}");
+                        _dataVencimento =
+                            "${value!.day}/${value.month}/${value.year}";
+                        print("Data vencimento - $_dataVencimento");
+                        mandalaController.changeDataVencimento(
+                            Timestamp.fromDate(value),
+                            mandalaController.listaObjectives[
+                                mandalaController.indice.value]);
+                      })
+                    // ignore: unnecessary_statements
+                    : () {};
               },
               icon: Icon(Icons.date_range
                   //size: 15
                   ),
             ),
             SizedBox(width: 12),
-            Text(
-              "${controller.objs[0].dataFormatada}",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white,
-              ),
-            )
+            Obx(() => Text(
+                  (mandalaController.listaObjectives.length > 0 &&
+                          mandalaController.indice.value != -1)
+                      ? "${mandalaController.listaObjectives[mandalaController.indice.value].dataFormatada}"
+                      : "",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ))
           ],
         ),
-      );
-    });
+      ),
+    );
   }
 }
