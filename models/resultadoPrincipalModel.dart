@@ -7,8 +7,9 @@ class ResultadosPrincipais {
   double? meta;
   double? realizado;
   double? progresso;
-  late double startAngle;
-  late double sweepAngle;
+  double startAngle=0.0;
+  double sweepAngle=360.0;
+  late String paint;
 
   ResultadosPrincipais({
     required this.idResultado,
@@ -19,8 +20,9 @@ class ResultadosPrincipais {
     this.meta = 0.0,
     this.realizado = 0.0,
     this.progresso = 0.0,
-    this.startAngle = 0,
-    this.sweepAngle = 360,
+    this.startAngle= 0.0,
+    this.sweepAngle= 360.0,
+    this.paint="255-242-242-242"
   });
 
   ResultadosPrincipais.fromJson(Map<String, dynamic> json) {
@@ -31,8 +33,9 @@ class ResultadosPrincipais {
     realizado = json['realizado'];
     meta = json['meta'];
     progresso = json['progresso'];
-    this.startAngle = (json['startAngle'] != null) ? json['startAngle'] : 0;
-    this.sweepAngle = (json['sweepAngle'] != null) ? json['sweepAngle'] : 0;
+    startAngle = (json['startAngle'] != null) ? json['startAngle'] : 0.0;
+    sweepAngle = (json['sweepAngle'] != null) ? json['sweepAngle'] : 0.0;
+    paint = (json['paint'] != null) ? (json['paint']) : "255-242-242-242";
     // idMetrica = json['idMetrica'];
   }
 
@@ -47,6 +50,7 @@ class ResultadosPrincipais {
     data['progresso'] = this.progresso;
     data['startAngle'] = this.startAngle;
     data['sweepAngle'] = this.sweepAngle;
+    data['paint'] = this.paint;
     // data['idMetrica'] = this.idObjetivoPai;
     return data;
   }

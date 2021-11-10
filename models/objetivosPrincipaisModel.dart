@@ -10,7 +10,7 @@ class ObjetivosPrincipais {
   late double startAngle;
   late double sweepAngle;
   late Timestamp? dataVencimento;
-  //late Color paint;
+  late String paint;
 
   ObjetivosPrincipais(
       {required this.idObjetivo,
@@ -21,8 +21,8 @@ class ObjetivosPrincipais {
         this.realizado = 0.0,
         this.startAngle = 0,
         this.sweepAngle = 360,
-        this.dataVencimento
-        //required this.paint
+        this.dataVencimento,
+        this.paint="255-242-242-242"
       });
 
   ObjetivosPrincipais.fromJson(Map<String, dynamic> json) {
@@ -37,7 +37,7 @@ class ObjetivosPrincipais {
     this.dataVencimento = (json['dataVencimento'] != null)
         ? json['dataVencimento']
         : Timestamp.fromDate(DateTime.now());
-    //this.paint = (json['paint'] != null) ? (json['paint']) : Colors.white30;
+    this.paint = (json['paint'] != null) ? (json['paint']) : "255-242-242-242";
   }
 
   Map<String, dynamic> toJson() {
@@ -51,7 +51,7 @@ class ObjetivosPrincipais {
     data['meta'] = this.meta;
     data['realizado'] = this.realizado;
     data['dataVencimento'] = this.dataVencimento; //dataFormatada;
-    //data['paint'] = this.paint;
+    data['paint'] = this.paint;
     return data;
   }
 

@@ -216,7 +216,7 @@ class _ResultadosTableState extends State<ResultadosTable> {
             resultadoController2.atualizaTudo(idProjeto);
           } else if (operacao == 3) {
             resultadoController2.atualizaResultado(
-                idResultadoController.text, newResultadoController.text,
+                idResultadoController.text, nomeResultaAtualizado: newResultadoController.text,
                 idObjetivoPai: objetivoPai);
 
             idResultadoController.text = '';

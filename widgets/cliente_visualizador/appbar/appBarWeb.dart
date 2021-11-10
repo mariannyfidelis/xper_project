@@ -8,7 +8,6 @@ class WebAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     var controllerAuth = Get.find<AuthService>();
 
     return AppBar(
@@ -26,16 +25,18 @@ class WebAppBar extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 18.0, top: 18.0),
             child: Container(
-                height: 30,
-                width: 250,
-                child: TextField(
-                    textAlign: TextAlign.start,
-                    textAlignVertical: TextAlignVertical.center,
-                    cursorHeight: 15,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30)),
-                    ))),
+              height: 25,
+              width: 250,
+              child: TextField(
+                textAlign: TextAlign.start,
+                textAlignVertical: TextAlignVertical.center,
+                cursorHeight: 15,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -70,7 +71,7 @@ class WebAppBar extends StatelessWidget {
               child: Text(
                 " Sair ",
                 style:
-                TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               )),
         ),
       ],

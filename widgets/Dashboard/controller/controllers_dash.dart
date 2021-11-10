@@ -202,12 +202,13 @@ class ControllerProjetoRepository extends GetxController {
       //TODO - falta configurar aqui o progresso e a importância
       startAngle += sweepFatia;
 
-      var l_resultados = _listResults.where((element) => element.idObjetivoPai == objetivo.idObjetivo);
+      var l_resultados = _listResults
+          .where((element) => element.idObjetivoPai == objetivo.idObjetivo);
       var tamanhoPedacoResultado =
-      (l_resultados.length == 0) ? 1 : l_resultados.length;
-      var sweepResultFatia = sweepFatia/tamanhoPedacoResultado;
+          (l_resultados.length == 0) ? 1 : l_resultados.length;
+      var sweepResultFatia = sweepFatia / tamanhoPedacoResultado;
       var startAngleFilho = startAngle;
-      for (var lr in l_resultados){
+      for (var lr in l_resultados) {
         lr.setStartAngle(startAngleFilho);
         lr.setSweepAngle(sweepResultFatia);
         startAngleFilho += sweepResultFatia;
@@ -215,7 +216,8 @@ class ControllerProjetoRepository extends GetxController {
     }
     var l = _listObjects.map((v) => v.toJson()).toList();
     var r = _listResults.map((v) => v.toJson()).toList();
-    await reference.update({'objetivosPrincipais': l, 'resultadosPrincipais': r});
+    await reference
+        .update({'objetivosPrincipais': l, 'resultadosPrincipais': r});
   }
 
   void atualizaObjetivo(String idObjetivo, String nomeObjetivoAtualizado,
@@ -279,12 +281,13 @@ class ControllerProjetoRepository extends GetxController {
         objetivo.setStartAngle(startAngle);
         objetivo.setSweepAngle(sweepFatia);
 
-        var l_resultados = _listResults.where((element) => element.idObjetivoPai == objetivo.idObjetivo);
+        var l_resultados = _listResults
+            .where((element) => element.idObjetivoPai == objetivo.idObjetivo);
         var tamanhoPedacoResultado =
-        (l_resultados.length == 0) ? 1 : l_resultados.length;
-        var sweepResultFatia = sweepFatia/tamanhoPedacoResultado;
+            (l_resultados.length == 0) ? 1 : l_resultados.length;
+        var sweepResultFatia = sweepFatia / tamanhoPedacoResultado;
         var startAngleFilho = startAngle;
-        for (var lr in l_resultados){
+        for (var lr in l_resultados) {
           lr.setStartAngle(startAngleFilho);
           lr.setSweepAngle(sweepResultFatia);
           startAngleFilho += sweepResultFatia;
@@ -301,7 +304,8 @@ class ControllerProjetoRepository extends GetxController {
       });
       var l = _listObjects.map((v) => v.toJson()).toList();
       var r = _listResults.map((v) => v.toJson()).toList();
-      await reference.update({'objetivosPrincipais': l, 'resultadosPrincipais': r});
+      await reference
+          .update({'objetivosPrincipais': l, 'resultadosPrincipais': r});
       //await reference.update({'objetivosPrincipais': l});
     } else {
       debugPrint("___Não encontrei o objetivo !");
@@ -325,6 +329,8 @@ class ControllerProjetoRepository extends GetxController {
         idResultado: uuid.v4(),
         nomeResultado: nomeResultado,
         idObjetivoPai: idObjetivoPai,
+        startAngle: 0.0,
+        sweepAngle: 360.0,
         // idMetrica: idMetrica,
         donoResultado: (donos != null)
             ? (donos.isEmpty)
@@ -332,13 +338,16 @@ class ControllerProjetoRepository extends GetxController {
                 : donos
             : []);
 
+    debugPrint("${resultadosPrincipais.startAngle}");
+    debugPrint("${resultadosPrincipais.sweepAngle}");
+
     _listResults.add(resultadosPrincipais);
+
     int indiceObjetivo = _listObjects.indexWhere(
         (element) => element.idObjetivo == idObjetivoPai); //Calcular o índice
     var vinculoresult = _listResults.where((element) =>
         element.idObjetivoPai == idObjetivoPai); //Calcular os resultados irmãos
 
-    //Se não tiver irmão ganhará um pedaço todo!
     var tamanhoPedacoResultado =
         (vinculoresult.length == 0) ? 1 : vinculoresult.length;
 
@@ -389,7 +398,7 @@ class ControllerProjetoRepository extends GetxController {
       val.add(a.toJson());
 
       var reference =
-      await db.collection('projetosPrincipais').doc(this.idProjeto.value);
+          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
       reference.update({
         "resultadosPrincipais": FieldValue.arrayRemove(val),
@@ -438,17 +447,26 @@ class ControllerProjetoRepository extends GetxController {
     }
   }
 
-  void atualizaResultado(String idResultado, String nomeResultaAtualizado,
-      {String? idObjetivoPai,
+  void atualizaResultado(String idResultado,
+      {String? nomeResultaAtualizado,
+      String? idObjetivoPai,
       String? idMetrica = "",
+      String? cor = "255-242-242-242",
       List<DonosResultadoMetricas>? dono}) async {
     int indice = _listResults
         .indexWhere((element) => element.idResultado == idResultado);
 
     if (indice != -1) {
-      _listResults[indice].nomeResultado = nomeResultaAtualizado;
       _listResults[indice].idObjetivoPai = idObjetivoPai;
       // _listResults[indice].idMetrica = idMetrica;
+
+      if (nome != null) {
+        _listResults[indice].nomeResultado = nomeResultaAtualizado;
+      }
+
+      if (cor != null) {
+        _listResults[indice].paint = cor;
+      }
 
       var reference =
           await db.collection('projetosPrincipais').doc(this.idProjeto.value);
@@ -916,28 +934,41 @@ class ControllerProjetoRepository extends GetxController {
     return this.niveis - 1;
   }
 
-  Paint criaPaintObjective() {
-    var r = Random().nextInt(40) + 215;
-    var g = Random().nextInt(40) + 215;
-    var b = Random().nextInt(40) + 215;
+  Paint criaPaintObjective({String? converteCor}) {
+    var r,g,b,a;
+    if (converteCor == null) {
+      r = Random().nextInt(40) + 215;
+      g = Random().nextInt(40) + 215;
+      b = Random().nextInt(40) + 215;
+      a = 255;
+    } else {
+      var listaRGB = converteCor.split("-");
+      a = int.parse(listaRGB[0]);
+      r = int.parse(listaRGB[1]);
+      g = int.parse(listaRGB[2]);
+      b = int.parse(listaRGB[3]);
+    }
 
     //TODO - Como colocar sombra e elevação
     Paint p = Paint()
       ..strokeWidth = 30
-      ..color = Color.fromRGBO(r, g, b, 1)
+      ..color = Color.fromARGB(a, r, g, b)//RGBO(r, g, b, a)
       ..style = PaintingStyle.fill
       ..strokeJoin = StrokeJoin.round;
     return p;
   }
 
   //==============================================CRUD MANDALA========================================================
-  void atualizaObjetivoMandala(String idObjetivo,
-      {String? nomeObjetivo,
-      //TODO: mudar de importancia para progresso geral
-      int? importancia,
-      double? progresso,
-      double? metaObj = 0.0,
-      double? realizado = 0.0}) async {
+  void atualizaObjetivoMandala(
+    String idObjetivo, {
+    String? nomeObjetivo,
+    //TODO: mudar de importancia para progresso geral
+    int? importancia,
+    double? progresso,
+    double? metaObj = 0.0,
+    double? realizado = 0.0,
+    String? cor = "255-242-242-242",
+  }) async {
     int indice =
         _listObjects.indexWhere((element) => element.idObjetivo == idObjetivo);
 
@@ -960,6 +991,17 @@ class ControllerProjetoRepository extends GetxController {
             .collection('projetosPrincipais')
             .doc(this.idProjeto.value);
 
+        var l = _listObjects.map((v) => v.toJson()).toList();
+
+        await reference.update({'objetivosPrincipais': l});
+      }
+      if (cor != null) {
+        var reference = await db
+            //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
+            .collection('projetosPrincipais')
+            .doc(this.idProjeto.value);
+
+        _listObjects[indice].paint = cor;
         var l = _listObjects.map((v) => v.toJson()).toList();
 
         await reference.update({'objetivosPrincipais': l});
@@ -1016,7 +1058,16 @@ class ControllerProjetoRepository extends GetxController {
       atualizaObjetivoMandala(ultimoObjetivoClicado.value,
           nomeObjetivo: nomeAtualizado);
     } else if (ultimoNivelClicado.value == 3) {
-      atualizaResultado(ultimoResultadoClicado.value, nomeAtualizado);
+      atualizaResultado(ultimoResultadoClicado.value,
+          nomeResultaAtualizado: nomeAtualizado);
+    } else {}
+  }
+
+  void atualizaCor(String corAtualizada) {
+    if (ultimoNivelClicado.value == 2) {
+      atualizaObjetivoMandala(ultimoObjetivoClicado.value, cor: corAtualizada);
+    } else if (ultimoNivelClicado.value == 3) {
+      atualizaResultado(ultimoResultadoClicado.value, cor: corAtualizada);
     } else {}
   }
 
