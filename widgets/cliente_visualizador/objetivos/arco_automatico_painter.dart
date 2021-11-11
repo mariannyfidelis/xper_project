@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 import 'package:get/get.dart';
 import '/models/project_model.dart';
 import 'package:flutter/material.dart';
@@ -311,7 +312,7 @@ class ArcoAutomatico extends CustomPainter {
     }
   }
 
-  void drawObject(TouchyCanvas canvas, Size size) {
+  void drawObject(TouchyCanvas canvas, Canvas cv, Size size) {
     double width = size.width / 2;
     double height = size.height / 2;
     final c = Offset(width, height);
@@ -321,6 +322,12 @@ class ArcoAutomatico extends CustomPainter {
       ..color = Colors.white
       ..strokeWidth = 4.0
       ..style = PaintingStyle.stroke;
+
+    final styleText2 = TextStyle(
+      color: Colors.black,
+      fontWeight: FontWeight.bold,
+      fontSize: 30.0,
+    );
 
     var mandalaController = Get.find<ControllerProjetoRepository>();
     int numeroDeObjetivos = mandalaController.listaObjectives.length;
@@ -359,10 +366,19 @@ class ArcoAutomatico extends CustomPainter {
         ..strokeWidth = 4.0
         ..style = PaintingStyle.stroke;
 
+      final styleText = TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+        fontSize: 30.0,
+      );
+
       canvas.drawPath(p, paint, onTapDown: (evento) {
         mandalaController.indice.value = -1;
         mandalaController.indiceResult.value = -1;
       });
+
+      drawTextCentered(cv, c, "Projeto Mandala", styleText, radius*0.5);
+      //drawTextArc(cv, Offset(size.width/2, size.height/2), 300, 0, "Projeto Mandala", styleText);
 
       canvas.drawShadow(p, Colors.white, 5, true);
       // canvas.drawArc(oval, anguloInicio, anguloFinal, true, paint,
@@ -438,6 +454,8 @@ class ArcoAutomatico extends CustomPainter {
                 "xx pedaço clicado - ${mandalaController.ultimoObjetivoClicado.value}");
             print("xx Ultimo nivel clicado - 2");
           });
+
+          drawLabels(cv, c, radius, degToRad(listaObjetivos[o].startAngle), degToRad(listaObjetivos[o].sweepAngle), listaObjetivos[o].nome!, styleText2);
         }
 
         listaLines.forEach((element) {
@@ -446,6 +464,8 @@ class ArcoAutomatico extends CustomPainter {
 
         //Desenha o nível mais interno
         canvas.drawPath(p, paint);
+        drawTextCentered(cv, c, "Projeto Mandala", styleText2, radius*0.5);
+
       } else if (numeroDeResultados > 0) {
         anguloInicio = degToRad(0);
         anguloFinal = degToRad(360);
@@ -557,6 +577,7 @@ class ArcoAutomatico extends CustomPainter {
                 "xx pedaço clicado - ${mandalaController.ultimoObjetivoClicado.value}");
             print("xx Ultimo nivel clicado - 2");
           });
+
         }
 
         listaLines.forEach((element) {
@@ -583,11 +604,62 @@ class ArcoAutomatico extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     var myCanvas = TouchyCanvas(context, canvas);
-    drawObject(myCanvas, size);
+
+    drawObject(myCanvas, canvas, size);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return oldDelegate != this;
   }
+
+  TextPainter measureText(String text, TextStyle style, double maxWidth, TextAlign align){
+    final textSpan = TextSpan(text: text, style: style);
+    final tp = TextPainter(textScaleFactor: 0.75,maxLines: 4,text: textSpan, textAlign: align, textDirection: TextDirection.ltr);
+    tp.layout(minWidth: 0, maxWidth: maxWidth);
+    return tp;
+  }
+
+  void drawLabels(Canvas canvas, Offset c, double radius, startAngle, sweepAngle, String text, TextStyle styleText2){
+    
+    final r = radius * 0.35;
+    final dx =  r * cos(startAngle + sweepAngle/2.0);
+    final dy = r * sin(startAngle+sweepAngle/2.0);
+    final position = c + Offset(dx,dy);
+    drawTextCentered(canvas, position, text, styleText2, 150.0);
+
+
+  }
+
+  Size drawTextCentered(Canvas canvas, Offset position, String text, TextStyle style, double maxWidth){
+    
+    final tp = measureText(text, style, maxWidth, TextAlign.center);
+    final pos = position + Offset(-tp.width/2.0, -tp.height/2.0);
+    tp.paint(canvas, pos);
+    return tp.size;
+  }
+
+
+  TextPainter measureText2(Canvas canvas, String text, TextStyle style){
+    final textSpan = TextSpan(text: text, style: style);
+    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+    textPainter.layout(minWidth: 0, maxWidth: double.maxFinite);
+    return textPainter;
+  }
+
+  void drawTextArc(Canvas canvas, Offset arcCenter, double radius, double a, String text, style){
+    final pos = Offset(0, radius);
+    text.split('').forEach((c) {
+      final tp = measureText2(canvas, c , style);
+      final w = tp.width + 1.0;
+      final double alpha =  asin(w/(2*radius));
+      //canvas.save();
+      canvas.translate(arcCenter.dx, arcCenter.dy);
+      a+=alpha;
+      tp.paint(canvas, pos+ Offset(-w/2.0, 0.0));
+      canvas.restore();
+    });
+
+  }
+
 }
