@@ -9,7 +9,8 @@ import '/widgets/Dashboard/app_bar/custom_text.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class HomeWeb extends StatefulWidget {
-  const HomeWeb({Key? key}) : super(key: key);
+  final String? tipo;
+  const HomeWeb({Key? key, this.tipo}) : super(key: key);
 
   @override
   _HomeWebState createState() => _HomeWebState();
@@ -29,35 +30,42 @@ class _HomeWebState extends State<HomeWeb> {
     final controllerAuth = Get.find<AuthService>();
     final controllerProjetos = Get.find<ControllerProjetoRepository>();
     List<ProjectModel> meusProjetos = controllerProjetos.listaProjetos;
-    late ProjectModel projectAtual;
+    //late ProjectModel projectAtual;
 
     return Scaffold(
       appBar: AppBar(
         actions: [
           ElevatedButton(
-              onPressed: () =>
-                  controllerProjetos.sincronizaListaProjects("publico"),
+              onPressed: () {
+                controllerProjetos.sincronizaListaProjects("publico");
+                controllerProjetos.filtragem.value = "publico";
+              },
               child: Text("Projetos públicos")),
           SizedBox(width: 10),
           ElevatedButton(
-              onPressed: () =>
-                  controllerProjetos.sincronizaListaProjects("privado"),
+              onPressed: () {
+                controllerProjetos.sincronizaListaProjects("privado");
+                controllerProjetos.filtragem.value = "privado";
+              },
               child: Text("Seus projetos")),
           SizedBox(width: 10),
           ElevatedButton(
-              onPressed: () =>
-                  controllerProjetos.sincronizaListaProjects("compartilhado"),
+              onPressed: () {
+                controllerProjetos.sincronizaListaProjects("compartilhado");
+                controllerProjetos.filtragem.value = "compartilhar";
+              },
               child: Text("Compartilhados comigo")),
           SizedBox(width: 10),
           ElevatedButton(
-              onPressed: () =>
-                  controllerProjetos.sincronizaListaProjects("todos"),
+              onPressed: () {
+                controllerProjetos.sincronizaListaProjects("todos");
+                controllerProjetos.filtragem.value = "todos";
+              },
               child: Text("Todos os projetos"))
         ],
         title: Text("Tela Projetos"),
       ),
       body: (meusProjetos != null)
-          //TODO: Aqui tem que passar os dados para ProjetoPage()
           ? Obx(() => ListView.builder(
                 itemCount: meusProjetos.length,
                 itemBuilder: (context, index) => Padding(
@@ -69,7 +77,8 @@ class _HomeWebState extends State<HomeWeb> {
                           Expanded(
                             child: InkWell(
                               onTap: () {
-                                controllerProjetos.atualizaTudo(meusProjetos[index].idProjeto!);
+                                controllerProjetos.atualizaTudo(
+                                    meusProjetos[index].idProjeto!);
                                 //TODO - Enviar dados para a mandala
                                 Get.to(ProjetoPage(/*dados do idprojeto*/));
                               },
@@ -85,32 +94,57 @@ class _HomeWebState extends State<HomeWeb> {
                               ),
                             ),
                           ),
-                          IconButton(
-                              splashRadius: 14,
-                              onPressed: () {
-                                alteraNomeProjeto(
-                                    meusProjetos[index].idProjeto.toString(),
-                                    meusProjetos[index].nome.toString(),
-                                    controllerAuth.usuario!.uid);
-                              },
-                              icon: Icon(Icons.edit, size: 20)),
-                          IconButton(
-                              splashRadius: 14,
-                              onPressed: () {
-                                //TODO - Tem que ser no controller para compartilhar o projeto
-                                compartilharProjeto(
-                                    meusProjetos[index].idProjeto.toString(),
-                                    index);
-                              },
-                              icon: Icon(Icons.share)),
-                          IconButton(
-                              splashRadius: 14,
-                              onPressed: () {
-                                controllerProjetos.removeProjeto(
-                                    meusProjetos[index].idProjeto.toString(),
-                                    controllerAuth.usuario!.uid);
-                              },
-                              icon: Icon(Icons.delete)),
+                          Obx(() => Visibility(
+                                visible:
+                                    controllerProjetos.visivelEditarProjeto(),
+                                child: IconButton(
+                                  splashRadius: 14,
+                                  onPressed: () {
+                                    alteraNomeProjeto(
+                                        meusProjetos[index]
+                                            .idProjeto
+                                            .toString(),
+                                        meusProjetos[index].nome.toString(),
+                                        controllerAuth.usuario!.uid);
+                                  },
+                                  icon: Icon(Icons.edit, size: 20),
+                                ),
+                              )),
+                          Obx(() => Visibility(
+                              visible:
+                                  controllerProjetos.visivelEditarProjeto(),
+                              child: IconButton(
+                                splashRadius: 14,
+                                onPressed: () {
+                                  //TODO - Tem que ser no controller para compartilhar o projeto
+                                  compartilharProjeto(
+                                      meusProjetos[index].idProjeto.toString(),
+                                      index);
+                                },
+                                icon: Icon(Icons.share),
+                              ))),
+                          Obx(() => Visibility(
+                              visible:
+                                  controllerProjetos.visivelEditarProjeto(),
+                              child: IconButton(
+                                  splashRadius: 14,
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (ctx) => buildAlertDialog(
+                                          meusProjetos[index]
+                                              .idProjeto
+                                              .toString(),
+                                          controllerAuth.usuario!.uid),
+                                    );
+
+                                    // controllerProjetos.removeProjeto(
+                                    //     meusProjetos[index]
+                                    //         .idProjeto
+                                    //         .toString(),
+                                    //     controllerAuth.usuario!.uid);
+                                  },
+                                  icon: Icon(Icons.delete)))),
                         ],
                       ),
                       Divider(color: PaletaCores.blackO7)
@@ -148,8 +182,10 @@ class _HomeWebState extends State<HomeWeb> {
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => DashVisual()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => DashVisual(
+                          tipo: widget.tipo,
+                        )));
               },
               child: CustomText(
                 text: "Dashboard Visual",
@@ -165,26 +201,51 @@ class _HomeWebState extends State<HomeWeb> {
                 color: PaletaCores.corLight,
                 borderRadius: BorderRadius.circular(20)),
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: PaletaCores.corLight,
-                elevation: 0,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-              ),
-              onPressed: () =>
-                  controllerProjetos.addOneProject("Projeto Padrão"),
-              child: CustomText(
-                text: "Criar Novo Projeto",
-                color: PaletaCores.active.withOpacity(.7),
-                weight: FontWeight.bold,
-              ),
-            ),
+            child: Obx(() => Visibility(
+                  visible: controllerProjetos.ocultaCriarProjeto(widget.tipo!),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: PaletaCores.corLight,
+                      elevation: 0,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                    ),
+                    onPressed: () =>
+                        controllerProjetos.addOneProject("Projeto Padrão"),
+                    child: CustomText(
+                      text: "Criar Novo Projeto",
+                      color: PaletaCores.active.withOpacity(.7),
+                      weight: FontWeight.bold,
+                    ),
+                  ),
+                )),
           ),
         ],
       ),
+    );
+  }
+
+  AlertDialog buildAlertDialog(String idProjeto, String usuario) {
+    return AlertDialog(
+      title: Text("Excluir Projeto"),
+      content: Text("Tem certeza ?"),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Get.find<ControllerProjetoRepository>()
+                  .removeProjeto(idProjeto, usuario);
+
+              Get.back();
+            },
+            child: Text("Sim")),
+        TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: Text("Não"))
+      ],
     );
   }
 
@@ -236,7 +297,6 @@ class _HomeWebState extends State<HomeWeb> {
 
   //TODO - Implementar compartilharProjeto
   void compartilharProjeto(String idProjeto, int index) {
-    debugPrint("compartilhar projeto");
     showDialog(
         context: context,
         builder: (ctx) => AlertDialog(

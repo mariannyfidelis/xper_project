@@ -1,11 +1,14 @@
+import 'package:get/get.dart';
 import '/screens/home_web.dart';
 import '/utils/paleta_cores.dart';
 import 'package:flutter/material.dart';
 import '/screens/projeto_pagina_principal.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
+import '/widgets/Dashboard/controller/controllers_dash2.dart';
 
 class DashVisual extends StatefulWidget {
-  const DashVisual({Key? key}) : super(key: key);
+  final String? tipo;
+  const DashVisual({Key? key, this.tipo}) : super(key: key);
 
   @override
   _DashVisualState createState() => _DashVisualState();
@@ -14,9 +17,8 @@ class DashVisual extends StatefulWidget {
 class _DashVisualState extends State<DashVisual> {
   @override
   Widget build(BuildContext context) {
-    //TODO: verificar o provider.of por get find
+    final controllerProjetos = Get.find<ControllerProjetoRepository>();
 
-    //Get.find<Qual repository>();
     return Scaffold(
       appBar: AppBar(
         title: Text("Dashboard Virtual"),
@@ -35,7 +37,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('Diretoria',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -59,7 +61,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('Comercial',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -83,7 +85,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('TI',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -107,7 +109,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('Insights',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -115,7 +117,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('45',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -124,7 +126,7 @@ class _DashVisualState extends State<DashVisual> {
                   onPressed: () {},
                   child: Text('clique para ver',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 85,
@@ -132,7 +134,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('Ações',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -140,7 +142,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('123',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -149,7 +151,7 @@ class _DashVisualState extends State<DashVisual> {
                   onPressed: () {},
                   child: Text('clique para ver',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 )
               ],
             ),
@@ -162,7 +164,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('Insights',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -170,7 +172,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('15',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -179,7 +181,7 @@ class _DashVisualState extends State<DashVisual> {
                   onPressed: () {},
                   child: Text('clique para ver',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 85,
@@ -187,7 +189,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('Ações',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -195,7 +197,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('23',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -204,7 +206,7 @@ class _DashVisualState extends State<DashVisual> {
                   onPressed: () {},
                   child: Text('clique para ver',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 )
               ],
             ),
@@ -217,7 +219,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('Insights',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -225,7 +227,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('35',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -234,7 +236,7 @@ class _DashVisualState extends State<DashVisual> {
                   onPressed: () {},
                   child: Text('clique para ver',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 85,
@@ -242,7 +244,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('Ações',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -250,7 +252,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('12',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -259,7 +261,7 @@ class _DashVisualState extends State<DashVisual> {
                   onPressed: () {},
                   child: Text('clique para ver',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 )
               ],
             ),
@@ -272,7 +274,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('Projetos',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -280,7 +282,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('123',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -289,7 +291,7 @@ class _DashVisualState extends State<DashVisual> {
                   onPressed: () {},
                   child: Text('clique para ver',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 )
               ],
             ),
@@ -302,7 +304,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('Projetos',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -310,7 +312,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('23',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -319,7 +321,7 @@ class _DashVisualState extends State<DashVisual> {
                   onPressed: () {},
                   child: Text('clique para ver',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 )
               ],
             ),
@@ -332,7 +334,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('Projetos',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -340,7 +342,7 @@ class _DashVisualState extends State<DashVisual> {
                 Center(
                   child: Text('12',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
                 SizedBox(
                   height: 12,
@@ -349,7 +351,7 @@ class _DashVisualState extends State<DashVisual> {
                   onPressed: () {},
                   child: Text('clique para ver',
                       style:
-                      TextStyle(color: PaletaCores.corLight, fontSize: 20)),
+                          TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 )
               ],
             ),
@@ -409,37 +411,39 @@ class _DashVisualState extends State<DashVisual> {
               ),
               onPressed: () {},
               child: CustomText(
-                text: "Dashboard Vizual",
+                text: "Dashboard Visual",
                 color: PaletaCores.active.withOpacity(.7),
                 weight: FontWeight.bold,
               ),
             ),
           ),
-          SizedBox(
-            width: 12,
-          ),
+          SizedBox(width: 12),
           Container(
             decoration: BoxDecoration(
                 border: Border.all(color: PaletaCores.active, width: .5),
                 color: PaletaCores.corLight,
                 borderRadius: BorderRadius.circular(20)),
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: PaletaCores.corLight,
-                elevation: 0,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-              ),
-              onPressed: () {},
-              child: CustomText(
-                text: "Criar Novo Projeto",
-                color: PaletaCores.active.withOpacity(.7),
-                weight: FontWeight.bold,
-              ),
-            ),
+            child: Obx(() => Visibility(
+                visible: controllerProjetos.ocultaCriarProjeto(widget.tipo!),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: PaletaCores.corLight,
+                    elevation: 0,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                  ),
+                  onPressed: () {
+                    controllerProjetos.addOneProject("Projeto Padrão");
+                  },
+                  child: CustomText(
+                    text: "Criar Novo Projeto",
+                    color: PaletaCores.active.withOpacity(.7),
+                    weight: FontWeight.bold,
+                  ),
+                ))),
           ),
         ],
       ),

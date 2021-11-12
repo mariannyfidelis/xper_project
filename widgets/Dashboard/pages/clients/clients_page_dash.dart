@@ -7,7 +7,6 @@ import 'package:data_table_2/data_table_2.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
 import '/widgets/Dashboard/pages/authentication/cadastro_cliente_gerenciador.dart';
 
-/// Example without datasource
 class ClientsTable extends StatelessWidget {
   const ClientsTable();
 
