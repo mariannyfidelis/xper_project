@@ -15,8 +15,8 @@ import 'screens/projeto_pagina_principal.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'widgets/Dashboard/controller/controllers_dash.dart';
 import '/widgets/Dashboard/controller/menu_controller_dash.dart';
-import '/widgets/Dashboard/controller/navigation_controller_dash.dart';
 import 'widgets/Dashboard/pages/resultados/dropDownObjetivo.dart';
+import '/widgets/Dashboard/controller/navigation_controller_dash.dart';
 
 final ThemeData temaPadrao = ThemeData(
   primarySwatch: Colors.grey,

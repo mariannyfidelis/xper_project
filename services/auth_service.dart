@@ -2,11 +2,11 @@ import 'dart:typed_data';
 import 'package:get/get.dart';
 import '/models/usuario.dart';
 import '/screens/home_web.dart';
+import '/screens/tela_de_aviso.dart';
 import '/database/db_firestore.dart';
 import '/screens/dashboard_page.dart';
 import 'package:flutter/material.dart';
 import '/screens/redefinicao_senha_page.dart';
-import '/screens/cliente_gerenciador_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -28,7 +28,6 @@ class AuthService extends GetxController {
   AuthService() {
     _authCheck();
   }
-
 
   _authCheck() {
     _auth.authStateChanges().listen((User? user) {
@@ -95,7 +94,9 @@ class AuthService extends GetxController {
   }
 
   String? registrarUsuarioEmailSenha(String nome, String email, String senha,
-      {Uint8List? arquivoImagemSelecionado, String tipoUsuario = "cliente"}) {
+      {Uint8List? arquivoImagemSelecionado,
+      String tipoUsuario = "cliente",
+      String? gestor}) {
     String? idUsuario;
 
     try {
@@ -113,7 +114,7 @@ class AuthService extends GetxController {
 
         if (idUsuario != null) {
           Usuario usuario = Usuario(idUsuario!, nome, email,
-              tipoUsuario: tipoUsuario, ativo: true);
+              gestor: gestor!, tipoUsuario: tipoUsuario, ativo: true);
           _uploadImagem(usuario, arquivoImagemSelecionado!);
           criaEstruturaPasta(idUsuario!);
         } else {
@@ -229,14 +230,17 @@ class AuthService extends GetxController {
         await DBFirestore.get().collection("usuarios").doc("$uidUser").get();
 
     String tipoUsuario = us.get("tipoUsuario");
+    bool ativo = us.get("ativo");
     print("xxx tipo do usuário $tipoUsuario");
 
-    if (tipoUsuario == "admin") {
-      Get.to(Dashboard());
-    } else if (tipoUsuario == "gerenciador") {
-      Get.to(GerenciadorPage());
-    } else if (tipoUsuario == "cliente") {
-      Get.to(HomeWeb());
+    if (tipoUsuario == "admin" && ativo == true) {
+      Get.to(Dashboard(tipo: "admin"));
+    } else if (tipoUsuario == "gerenciador" && ativo == true) {
+      Get.to(Dashboard(tipo: "gerenciador"));
+    } else if (tipoUsuario == "cliente" && ativo == true) {
+      Get.to(HomeWeb(tipo: "cliente"));
+    } else if (ativo == false) {
+      Get.to(TelaDeAviso());
     } else {
       Get.to(Scaffold(body: Center(child: CircularProgressIndicator())));
     }
@@ -251,7 +255,7 @@ class AuthService extends GetxController {
     // }
   }
 
-  FirebaseAuth getUser(){
+  FirebaseAuth getUser() {
     return _auth;
   }
 
@@ -320,5 +324,50 @@ class AuthService extends GetxController {
     //   print("deu certo taí o link $urlImagem!!!");
     //   usuario.urlImagem = urlImagem;
     // });
+  }
+
+  String? registrarDono(String nome, String email, String senha,
+      {String tipoUsuario = "cliente"}) {
+    String? idUsuario;
+
+    try {
+      _auth
+          .createUserWithEmailAndPassword(
+        email: email,
+        password: senha,
+      )
+          .then((userCredencial) {
+        _getUser();
+        print("Usuário criado pelo auth-service: $usuario");
+        //idUsuario = userCredencial.user?.uid;
+        idUsuario = usuario!.uid;
+        print("Usuário cadastrado: $idUsuario");
+
+        if (idUsuario != null) {
+          Usuario usuario = Usuario(idUsuario!, nome, email,
+              tipoUsuario: tipoUsuario, ativo: true);
+
+          criaEstruturaPasta(idUsuario!);
+        } else {
+          print("Id veio nulo pro LoginPage .... :(");
+        }
+        // _auth.currentUser
+        //     ?.sendEmailVerification()
+        //     .then((value) => print("enviei um email de verificação ..."));
+
+        return idUsuario;
+      });
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        throw AuthException("A senha é fraca !");
+      } else if (e.code == "wrong-password") {
+        throw AuthException("Senha incorreta. Tente novamente");
+      } else if (e.code == "user-not-found") {
+        throw AuthException("Email não encontrado. Cadastra-se!");
+      } else if (e.code == "email-already-in-use") {
+        throw AuthException("Este email já está cadastrado !");
+      }
+    }
+    //_getUser();
   }
 }

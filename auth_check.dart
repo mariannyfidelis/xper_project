@@ -4,7 +4,6 @@ import 'screens/login_page.dart';
 import 'screens/dashboard_page.dart';
 import '/services/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'screens/cliente_gerenciador_page.dart';
 
 class AuthCheck extends StatefulWidget {
   const AuthCheck({Key? key}) : super(key: key);
@@ -31,11 +30,15 @@ class _AuthCheckState extends State<AuthCheck> {
     } else {
       if (tipoUsuario != null) {
         if (tipoUsuario == "admin") {
-          return Dashboard();
+          return Dashboard(
+            tipo: 'admin',
+          );
         } else if (tipoUsuario == "gerenciador") {
-          return GerenciadorPage();
+          return Dashboard(tipo: 'gerenciador');
         } else if (tipoUsuario == "cliente") {
-          return HomeWeb();
+          return HomeWeb(tipo: "cliente");
+        } else if (tipoUsuario == "suspenso") {
+          return LoginPage(title: 'Plataforma XPER');
         } else {
           return Scaffold(
               body: Center(child: Text("Usuário inexistente :( !")));

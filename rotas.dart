@@ -9,6 +9,7 @@ import '/screens/cliente_gerenciador_page.dart';
 
 class Rotas {
   static Route<dynamic> gerarRota(RouteSettings routeSettings) {
+
     //final args = routeSettings.arguments;
 
     switch (routeSettings.name) {
