@@ -5,18 +5,29 @@ class Usuario {
   late String urlImagem;
   late String tipoUsuario;
   late bool ativo;
+  late bool editor;
+  late String gestor;
 
-  Usuario(this.idUsuario, this.nome, this.email,
-      {this.urlImagem = "", this.tipoUsuario = "client", this.ativo = true});
+  Usuario(
+    this.idUsuario,
+    this.nome,
+    this.email, {
+    this.urlImagem = "",
+    this.tipoUsuario = "client",
+    this.ativo = true,
+    this.editor = true,
+    this.gestor = "",
+  });
 
   Usuario.fromFirestore(Map<String, dynamic> firestore)
-      //mudei de user para firestore
-      : idUsuario = firestore["idUsuario"], //tirei o { e o this
+      : idUsuario = firestore["idUsuario"],
         nome = firestore["nome"],
         email = firestore["email"],
         urlImagem = firestore["urlImagem"],
         tipoUsuario = firestore["tipoUsuario"],
-        ativo = firestore["ativo"];
+        ativo = firestore["ativo"],
+        editor = firestore["editor"],
+        gestor = firestore["gestor"];
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
@@ -25,7 +36,9 @@ class Usuario {
       "email": this.email,
       "urlImagem": this.urlImagem,
       "tipoUsuario": this.tipoUsuario,
-      "ativo": this.ativo
+      "ativo": this.ativo,
+      "editor": this.editor,
+      "gestor": this.gestor
     };
     return map;
   }
