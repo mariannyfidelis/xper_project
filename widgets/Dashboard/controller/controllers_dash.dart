@@ -40,9 +40,7 @@ class ControllerProjetoRepository extends GetxController {
   var ultimoObjetivoClicado = "".obs;
   var nomeObjMandala = ''.obs;
   var progressoObj = 0.0.obs;
-  var sweepAngle = 0.obs;
   var data = Timestamp.fromDate(DateTime.now()).obs;
-  //String ultimoMetricaClicada = "";
 
   //===================Results mandala===================
   var ultimoResultadoClicado = "".obs;
@@ -115,11 +113,9 @@ class ControllerProjetoRepository extends GetxController {
   }
 
   _readProjeto(String id,
-      {String idUsuario = '5xmMnHGksrPtVK4rvnEsoYSemrr2'}) async {
+      {String idUsuario = ''}) async {
     final snapshot = await db.collection('projetosPrincipais').doc(id).get();
 
-    print("Fiz um readProject ");
-    print(snapshot.data());
     late ProjectModel proj;
     if (snapshot.data() != null) {
       proj = ProjectModel.fromJson(snapshot.data()!);
@@ -159,9 +155,6 @@ class ControllerProjetoRepository extends GetxController {
       _listAcl.add(element);
     });
 
-    print(
-        "Controller linha 173 - quantos objetivos e donos - ${_listObjects.length} ${_listDonos.length}");
-    print("${this.idProjeto.string} ${this.proprietario.string}");
   }
 
   //======================= CRUD objetivos =====================================
@@ -393,7 +386,6 @@ class ControllerProjetoRepository extends GetxController {
       }
       _listMetrics.removeWhere((element) => element.idResultado == idResultado);
 
-      //Esse aqui
       var a = _listResults.removeAt(indice);
       val.add(a.toJson());
 

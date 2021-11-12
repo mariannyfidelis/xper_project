@@ -16,7 +16,6 @@ class _ObjetivosTableState extends State<ObjetivosTable> {
   TextEditingController novoObj = TextEditingController();
   TextEditingController idObj = TextEditingController();
 
-  //String idProjeto = "2qweqw23133";
 
   @override
   initState() {

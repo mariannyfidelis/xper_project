@@ -50,7 +50,7 @@ class _ProjetoPageState extends State<ProjetoPage> {
                 maxWidth: 1700, /*maxHeight: 900*/
               ),
               child: Container(
-                color: Color.fromRGBO(56, 56, 56, 1), //  Colors.blueGrey,
+                color: Color.fromARGB(255,56, 56, 56), //  Colors.blueGrey,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
