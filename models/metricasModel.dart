@@ -9,6 +9,7 @@ class MetricasPrincipais {
   double? realizado2;
   double? realizado3;
   double? realizado4;
+  String? unidadeMedida;
   double? progresso;
   String? idResultado;
 
@@ -24,6 +25,7 @@ class MetricasPrincipais {
         this.realizado2 = 0.0,
         this.realizado3 = 0.0,
         this.realizado4 = 0.0,
+        this.unidadeMedida = 'Unidade Padrão',
         this.progresso});
 
   MetricasPrincipais.fromJson(Map<String, dynamic> json) {
@@ -39,6 +41,7 @@ class MetricasPrincipais {
     realizado4 = json['realizado4'];
     progresso = json['progresso'];
     idResultado = json['idResultado'];
+    unidadeMedida = json['unidadeMedida'];
   }
 
   Map<String, dynamic> toJson() {
@@ -55,6 +58,7 @@ class MetricasPrincipais {
     data['realizado4'] = this.realizado4;
     data['progresso'] = this.progresso;
     data['idResultado'] = this.idResultado;
+    data['unidadeMedida'] = this.unidadeMedida;
     return data;
   }
 }

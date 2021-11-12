@@ -10,20 +10,21 @@ class ObjetivosPrincipais {
   late double startAngle;
   late double sweepAngle;
   late Timestamp? dataVencimento;
+  List<dynamic>? arquivos = [];
   late String paint;
 
   ObjetivosPrincipais(
       {required this.idObjetivo,
-        required this.nome,
-        required this.progresso,
-        required this.importancia,
-        this.meta = 0.0,
-        this.realizado = 0.0,
-        this.startAngle = 0,
-        this.sweepAngle = 360,
-        this.dataVencimento,
-        this.paint="255-242-242-242"
-      });
+      required this.nome,
+      required this.progresso,
+      required this.importancia,
+      this.meta = 0.0,
+      this.realizado = 0.0,
+      this.startAngle = 0,
+      this.sweepAngle = 360,
+      this.dataVencimento,
+      this.arquivos,
+      this.paint = "255-242-242-242"});
 
   ObjetivosPrincipais.fromJson(Map<String, dynamic> json) {
     this.idObjetivo = (json['id_objetivo'] != null) ? json['id_objetivo'] : "";
@@ -62,6 +63,11 @@ class ObjetivosPrincipais {
       value = DateTime.now();
       return "defina a data";
     }
+
+    if (value.day < 10 && (value.month >= 10)) {
+      return "0${value.day}/${value.month}/${value.year}";
+    }
+
     if (value.day < 10 && (value.month < 10)) {
       return "0${value.day}/0${value.month}/${value.year}";
     }
