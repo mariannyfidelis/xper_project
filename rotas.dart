@@ -1,8 +1,6 @@
-import 'models/usuario.dart';
 import '/screens/home_page.dart';
 import '/utils/paleta_cores.dart';
 import '/screens/login_page.dart';
-import '/screens/mensagens_page.dart';
 import '/screens/dashboard_page.dart';
 import 'package:flutter/material.dart';
 import '/screens/redefinicao_senha_page.dart';
@@ -11,7 +9,7 @@ import '/screens/cliente_gerenciador_page.dart';
 
 class Rotas {
   static Route<dynamic> gerarRota(RouteSettings routeSettings) {
-    final args = routeSettings.arguments;
+    //final args = routeSettings.arguments;
 
     switch (routeSettings.name) {
       case "/":
@@ -32,11 +30,6 @@ class Rotas {
       case "/redefinicaoSenha":
         return MaterialPageRoute(builder: (_) {
           return RedefinicaoSenhaPage();
-        });
-
-      case "/mensagens":
-        return MaterialPageRoute(builder: (_) {
-          return MensagensPage(args as Usuario);
         });
 
       case "/projetos":

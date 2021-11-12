@@ -5,9 +5,7 @@ import '/database/db_firestore.dart';
 import '/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key, required this.title}) : super(key: key);
@@ -80,196 +78,190 @@ class _LoginPageState extends State<LoginPage> {
     double larguraTela = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(widget.title),
-      ),
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   title: Text(widget.title),
+      // ),
       body: SingleChildScrollView(
         child: Container(
           color: PaletaCores.corPrimaria,
           width: larguraTela,
           height: alturaTela,
-          child: Observer(builder: (context) {
-            return Stack(
-              children: <Widget>[
-                Positioned(
-                  child: Container(
-                    height: alturaTela * 0.4,
-                    width: larguraTela,
-                    color: PaletaCores.corPrimaria,
-                  ),
+          child: Stack(
+            children: <Widget>[
+              Positioned(
+                child: Container(
+                  height: alturaTela * 0.4,
+                  width: larguraTela,
+                  color: PaletaCores.corPrimaria,
                 ),
-                Center(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: EdgeInsets.all(30.0),
-                      child: Card(
-                        elevation: 10,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
+              ),
+              Center(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.all(30.0),
+                    child: Card(
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
                         ),
-                        child: Container(
-                          width: 650,
-                          height: alturaTela * 0.7,
-                          child: Padding(
-                            padding: EdgeInsets.all(36),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  Visibility(
-                                    visible: cadastrarUsuario,
-                                    child: ClipOval(
-                                      child: _arquivoImagemSelecionado != null
-                                          ? Image.memory(
-                                              _arquivoImagemSelecionado!,
-                                              width: 100,
-                                              height: 100,
-                                              fit: BoxFit.fitHeight,
-                                            )
-                                          : Image.asset(
-                                              "images/perfil.png",
-                                              width: 80,
-                                              height: 80,
-                                              fit: BoxFit.fitHeight,
-                                            ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 20),
-                                  Visibility(
-                                    visible: cadastrarUsuario,
-                                    child: Column(
-                                      children: [
-                                        OutlinedButton.icon(
-                                            onPressed: _selecionarImagem,
-                                            icon: Icon(Icons.cached),
-                                            label: Text("Selecionar foto")),
-                                        SizedBox(height: 10),
-                                      ],
-                                    ),
-                                  ),
-                                  Visibility(
-                                    visible: cadastrarUsuario,
-                                    child: TextField(
-                                      keyboardType: TextInputType.name,
-                                      controller: _controllerName,
-                                      decoration: InputDecoration(
-                                        //hintText: "Nome",
-                                        labelText: "Nome",
-                                        suffixIcon: Icon(Icons.person_outline),
-                                      ),
-                                    ),
-                                  ),
-                                  TextField(
-                                    keyboardType: TextInputType.name,
-                                    controller: _controllerEmail,
-                                    decoration: InputDecoration(
-                                        //hintText: "Email",
-                                        labelText: "Email",
-                                        suffixIcon: Icon(Icons.mail_outline)),
-                                  ),
-                                  TextField(
-                                    obscureText: true,
-                                    keyboardType: TextInputType.name,
-                                    controller: _controllerPassword,
-                                    decoration: InputDecoration(
-                                      //hintText: "Senha",
-                                      labelText: "Senha",
-                                      suffixIcon: Icon(Icons.lock_outline),
-                                    ),
-                                  ),
-                                  SizedBox(height: 20),
-                                  Container(
-                                    width: double.infinity,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        _validarCampos();
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                          primary: PaletaCores.corPrimaria),
-                                      child: Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 10),
-                                        child: Text(
-                                          cadastrarUsuario
-                                              ? "Cadastrar"
-                                              : "Logar",
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.white),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text("Login"),
-                                      Switch(
-                                          value: cadastrarUsuario,
-                                          onChanged: (valor) {
-                                            setState(() {
-                                              cadastrarUsuario = valor;
-                                            });
-                                          }),
-                                      Expanded(
-                                          child: Text("Cadastro Freemium")),
-                                      //SizedBox(width: 70),
-                                      Visibility(
-                                        visible: !cadastrarUsuario,
-                                        child: OutlinedButton(
-                                          onPressed: () {
-                                            controllerAuth.redefinirSenha();
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                              primary: Colors.white30),
-                                          child: Text(
-                                            "Esqueceu sua senha",
-                                            style: TextStyle(
-                                                color: PaletaCores.corPrimaria),
+                      ),
+                      child: Container(
+                        width: 650,
+                        height: (!cadastrarUsuario)? alturaTela * 0.45:alturaTela * 0.6,
+                        child: Padding(
+                          padding: EdgeInsets.all(36),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Visibility(
+                                  visible: cadastrarUsuario,
+                                  child: ClipOval(
+                                    child: _arquivoImagemSelecionado != null
+                                        ? Image.memory(
+                                            _arquivoImagemSelecionado!,
+                                            width: 100,
+                                            height: 100,
+                                            fit: BoxFit.fitHeight,
+                                          )
+                                        : Image.asset(
+                                            "images/perfil.png",
+                                            width: 80,
+                                            height: 80,
+                                            fit: BoxFit.fitHeight,
                                           ),
-                                        ),
-                                      ),
+                                  ),
+                                ),
+                                SizedBox(height: 20),
+                                Visibility(
+                                  visible: cadastrarUsuario,
+                                  child: Column(
+                                    children: [
+                                      OutlinedButton.icon(
+                                          onPressed: _selecionarImagem,
+                                          icon: Icon(Icons.cached),
+                                          label: Text("Selecionar foto")),
+                                      SizedBox(height: 10),
                                     ],
                                   ),
-                                  SizedBox(height: 20),
-                                  Visibility(
-                                    visible: !cadastrarUsuario,
-                                    child: OutlinedButton.icon(
-                                      style: OutlinedButton.styleFrom(
-                                          primary: PaletaCores.corPrimaria),
-                                      onPressed: () {
-                                        controllerAuth.logarContaGoogle();
-                                      },
-                                      icon: Icon(Icons.login),
-                                      label:
-                                          Text("Logar com a conta do google"),
+                                ),
+                                Visibility(
+                                  visible: cadastrarUsuario,
+                                  child: TextField(
+                                    keyboardType: TextInputType.name,
+                                    controller: _controllerName,
+                                    decoration: InputDecoration(
+                                      //hintText: "Nome",
+                                      labelText: "Nome",
+                                      suffixIcon: Icon(Icons.person_outline),
                                     ),
                                   ),
-                                  SizedBox(height: 20),
-                                  Visibility(
-                                    visible: false,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        controllerAuth.logout();
-                                        Get.offAll("/");
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                          primary: PaletaCores.corPrimaria),
-                                      child: Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 10),
-                                        child: Text(
-                                          "Deslogar",
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.white),
-                                        ),
+                                ),
+                                TextField(
+                                  keyboardType: TextInputType.name,
+                                  controller: _controllerEmail,
+                                  decoration: InputDecoration(
+                                      //hintText: "Email",
+                                      labelText: "Email",
+                                      suffixIcon: Icon(Icons.mail_outline)),
+                                ),
+                                TextField(
+                                  obscureText: true,
+                                  keyboardType: TextInputType.name,
+                                  controller: _controllerPassword,
+                                  decoration: InputDecoration(
+                                    //hintText: "Senha",
+                                    labelText: "Senha",
+                                    suffixIcon: Icon(Icons.lock_outline),
+                                  ),
+                                ),
+                                SizedBox(height: 20),
+                                Container(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      _validarCampos();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        primary: PaletaCores.corPrimaria),
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10),
+                                      child: Text(
+                                        cadastrarUsuario
+                                            ? "Cadastrar"
+                                            : "Logar",
+                                        style: TextStyle(
+                                            fontSize: 18, color: Colors.white),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                Row(
+                                  children: [
+                                    Text("Login"),
+                                    Switch(
+                                        value: cadastrarUsuario,
+                                        onChanged: (valor) {
+                                          setState(() {
+                                            cadastrarUsuario = valor;
+                                          });
+                                        }),
+                                    Expanded(child: Text("Cadastro Freemium")),
+                                    //SizedBox(width: 70),
+                                    Visibility(
+                                      visible: !cadastrarUsuario,
+                                      child: OutlinedButton(
+                                        onPressed: () {
+                                          controllerAuth.redefinirSenha();
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            primary: Colors.white30),
+                                        child: Text(
+                                          "Esqueceu sua senha",
+                                          style: TextStyle(
+                                              color: PaletaCores.corPrimaria),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 20),
+                                Visibility(
+                                  visible: !cadastrarUsuario,
+                                  child: OutlinedButton.icon(
+                                    style: OutlinedButton.styleFrom(
+                                        primary: PaletaCores.corPrimaria),
+                                    onPressed: () {
+                                      controllerAuth.logarContaGoogle();
+                                    },
+                                    icon: Icon(Icons.login),
+                                    label: Text("Logar com a conta do google"),
+                                  ),
+                                ),
+                                SizedBox(height: 20),
+                                Visibility(
+                                  visible: false,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      controllerAuth.logout();
+                                      Get.offAll("/");
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        primary: PaletaCores.corPrimaria),
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10),
+                                      child: Text(
+                                        "Deslogar",
+                                        style: TextStyle(
+                                            fontSize: 18, color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -277,9 +269,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-              ],
-            );
-          }),
+              ),
+            ],
+          ),
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );

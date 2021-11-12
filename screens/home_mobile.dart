@@ -1,6 +1,6 @@
 import '/utils/paleta_cores.dart';
 import 'package:flutter/material.dart';
-import '/components/lista_contatos.dart';
+import '/screens/projeto_pagina_principal.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeMobile extends StatefulWidget {
@@ -81,7 +81,7 @@ class _HomeMobileState extends State<HomeMobile> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
-                child: ListaContatos(),
+                child: ProjetoPage(),
               )
             ],
           ),
