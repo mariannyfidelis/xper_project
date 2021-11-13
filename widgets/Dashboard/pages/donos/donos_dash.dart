@@ -24,9 +24,8 @@ class _DonoTableState extends State<DonoTable> {
 
   @override
   Widget build(BuildContext context) {
-
     ControllerProjetoRepository listaDonosPrincipais2 =
-    Get.find<ControllerProjetoRepository>();
+        Get.find<ControllerProjetoRepository>();
 
     return Container(
       margin: EdgeInsets.only(bottom: 30),
@@ -113,7 +112,8 @@ class _DonoTableState extends State<DonoTable> {
                         children: [
                           Expanded(
                             child: CustomText(
-                                text: listaDonosPrincipais2.listaDonos[index].nome),
+                                text: listaDonosPrincipais2
+                                    .listaDonos[index].nome),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(right: 8.0),
@@ -122,16 +122,17 @@ class _DonoTableState extends State<DonoTable> {
                                 splashRadius: 20,
                                 icon: Icon(Icons.edit),
                                 onPressed: () {
-                                  novoDonoController.text = listaDonosPrincipais2
-                                      .listaDonos[index].nome
-                                      .toString();
+                                  novoDonoController.text =
+                                      listaDonosPrincipais2
+                                          .listaDonos[index].nome
+                                          .toString();
                                   emailnovoDonoController.text =
-                                      listaDonosPrincipais2.listaDonos[index].email
+                                      listaDonosPrincipais2
+                                          .listaDonos[index].email
                                           .toString();
                                   idDono.text = listaDonosPrincipais2
                                       .listaDonos[index].id
                                       .toString();
-
                                 }),
                           ),
                           Padding(
@@ -172,10 +173,9 @@ class _DonoTableState extends State<DonoTable> {
             onPressed: () {
               //Get.find<DonoRepository>().removeDono(idDono.text);
 
-              Get.find<ControllerProjetoRepository>()
-                  .removeDono(idDono.text);
+              Get.find<ControllerProjetoRepository>().removeDono(idDono.text);
 
-              novoDonoController.text='';
+              novoDonoController.text = '';
               Get.back();
             },
             child: Text("Sim")),
@@ -207,21 +207,50 @@ class _DonoTableState extends State<DonoTable> {
         onPressed: () {
           var controlador = Get.find<ControllerProjetoRepository>();
 
-          if (opcao == 1) {
-            controlador.addOneDono(
-                novoDonoController.text, emailnovoDonoController.text);
-            novoDonoController.text = "";
-            emailnovoDonoController.text = "";
-          } else if (opcao == 2) {
-            controlador.atualizaTudo(controlador.idProjeto.string);
-          } else if (opcao == 3) {
-            controlador.atualizaDono(idDono.text, novoDonoController.text,
-                emailnovoDonoController.text);
-            novoDonoController.text = '';
-            emailnovoDonoController.text = '';
+          if (controlador.idProjeto.value != '') {
+            if (opcao == 1) {
+              if (novoDonoController.text != '' &&
+                  emailnovoDonoController.text != '') {
+                auth.registrarDono(
+                  novoDonoController.text,
+                  emailnovoDonoController.text,
+                  emailnovoDonoController.text,
+                  tipoUsuario: 'cliente',
+                );
+
+                controlador.addOneDono(
+                    novoDonoController.text, emailnovoDonoController.text);
+              }
+              novoDonoController.text = "";
+              emailnovoDonoController.text = "";
+            } else if (opcao == 2) {
+              controlador.atualizaTudo(controlador.idProjeto.string);
+            } else if (opcao == 3) {
+              if (novoDonoController.text != '' &&
+                  emailnovoDonoController.text != '') {
+                controlador.atualizaDono(idDono.text, novoDonoController.text,
+                    emailnovoDonoController.text);
+                novoDonoController.text = '';
+                emailnovoDonoController.text = '';
+              }
+            }else{
+              debugPrint(
+                  "Opção inválida no textfield Dono de Resultados/Metricas");
+            }
           } else {
-            debugPrint(
-                "Opção inválida no textfield Dono de Resultados/Metricas");
+            showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                        title: Text("Nenhum Projeto Selecionado"),
+                        content: Text(
+                            "Va no menu projetos, selecione um projeto e tente novamente"),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Get.back();
+                              },
+                              child: Text("OK")),
+                        ]));
           }
         },
         child: CustomText(
