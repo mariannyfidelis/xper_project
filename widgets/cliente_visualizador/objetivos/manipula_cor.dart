@@ -1,7 +1,8 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:get/get.dart';
-import 'package:xper_brasil_projects/widgets/Dashboard/controller/controllers_dash.dart';
+import 'package:xper_brasil_projects/utils/paleta_cores.dart';
+import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class ManipulaCor extends StatefulWidget {
   const ManipulaCor({Key? key}) : super(key: key);
@@ -13,7 +14,7 @@ class ManipulaCor extends StatefulWidget {
 class _ManipulaCorState extends State<ManipulaCor> {
   Color color = Colors.red;
   Color currentColor = Colors.limeAccent;
-  
+
   @override
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
@@ -24,7 +25,6 @@ class _ManipulaCorState extends State<ManipulaCor> {
   }
 
   escolhaCorObjetivoResultado2() {
-
     var mandalaController = Get.find<ControllerProjetoRepository>();
 
     showDialog(
@@ -44,18 +44,34 @@ class _ManipulaCorState extends State<ManipulaCor> {
             content: Container(
               height: 300,
               width: 600,
-              child: ColorPicker(
-                  colorPickerWidth: 400,
-                  portraitOnly: false,
-                  pickerAreaHeightPercent: 0.6,
-                  pickerColor: color,
-                  onColorChanged: (Color color) {
-                    setState(() {
-                      this.color = color;
-                    });
-                    mandalaController.atualizaCor(
-                        "${color.alpha}-${color.red}-${color.green}-${color.blue}");
-                  }),
+              child: Column(children: [
+                ColorPicker(
+                    colorPickerWidth: 400,
+                    portraitOnly: false,
+                    pickerAreaHeightPercent: 0.6,
+                    pickerColor: color,
+                    onColorChanged: (Color color) {
+                      setState(() {
+                        this.color = color;
+                      });
+                    }),
+                SizedBox(height: 26),
+                Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: PaletaCores.active, width: .5),
+                      color: PaletaCores.corLight,
+                      borderRadius: BorderRadius.circular(20)),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: TextButton(
+                      child:
+                          Text('Salvar', style: TextStyle(color: Colors.white)),
+                      onPressed: () {
+                        mandalaController.atualizaCor(
+                            "${color.alpha}-${color.red}-${color.green}-${color.blue}");
+                        Get.back();
+                      }),
+                )
+              ]),
             ),
           );
         });

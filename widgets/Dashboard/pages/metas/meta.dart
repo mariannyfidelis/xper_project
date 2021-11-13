@@ -28,6 +28,7 @@ class _MetaState extends State<Meta> {
 
   @override
   Widget build(BuildContext context) {
+    double? raioButton = 16;
     bool editavel = true;
 
     TextEditingController travaMeta = TextEditingController();
@@ -82,9 +83,10 @@ class _MetaState extends State<Meta> {
                   columnSpacing: 12,
                   horizontalMargin: 12,
                   minWidth: 600,
+                  dataRowHeight: 205,
                   columns: [
                     DataColumn2(
-                      label: Text('Metricas'),
+                      label: Text('Métricas'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
@@ -136,7 +138,7 @@ class _MetaState extends State<Meta> {
                         DataCell(SingleChildScrollView(
                             child: CustomText(
                             text:
-                            'Quarter 1 : ${listaMetricas.listaMetricas[index].realizado1.toString()}\nQuarter 2 : ${listaMetricas.listaMetricas[index].realizado2.toString()}\nQuarter 3 : ${listaMetricas.listaMetricas[index].realizado3.toString()}\nQuarter 4 : ${listaMetricas.listaMetricas[index].realizado4.toString()}'))),
+                            '\nQuarter 1 : ${listaMetricas.listaMetricas[index].realizado1.toString()}\n\nQuarter 2 : ${listaMetricas.listaMetricas[index].realizado2.toString()}\n\nQuarter 3 : ${listaMetricas.listaMetricas[index].realizado3.toString()}\n\nQuarter 4 : ${listaMetricas.listaMetricas[index].realizado4.toString()}\n'))),
                         //=======================Q1==================================
                         DataCell(Row(
                           children: [
@@ -153,6 +155,7 @@ class _MetaState extends State<Meta> {
                               ),
                             ),
                             IconButton(
+                              splashRadius: raioButton,
                               icon: Icon(Icons.lock, size: 20),
                               onPressed: () {
                                 idMetrica.text = listaMetricas
@@ -170,6 +173,7 @@ class _MetaState extends State<Meta> {
                               },
                             ),
                             IconButton(
+                                splashRadius: raioButton,
                                 icon: Icon(Icons.update, size: 20),
                                 onPressed: () {
                                   if (listaMetricas
@@ -198,6 +202,7 @@ class _MetaState extends State<Meta> {
                               ),
                             ),
                             IconButton(
+                              splashRadius: raioButton,
                               icon: Icon(Icons.lock, size: 20),
                               onPressed: () {
                                 idMetrica.text = listaMetricas
@@ -215,6 +220,7 @@ class _MetaState extends State<Meta> {
                               },
                             ),
                             IconButton(
+                                splashRadius: raioButton,
                                 icon: Icon(Icons.update, size: 20),
                                 onPressed: () {
                                   if (listaMetricas
@@ -243,6 +249,7 @@ class _MetaState extends State<Meta> {
                               ),
                             ),
                             IconButton(
+                              splashRadius: raioButton,
                               icon: Icon(Icons.lock, size: 20),
                               onPressed: () {
                                 idMetrica.text = listaMetricas
@@ -260,6 +267,7 @@ class _MetaState extends State<Meta> {
                               },
                             ),
                             IconButton(
+                                splashRadius: raioButton,
                                 icon: Icon(Icons.update, size: 20),
                                 onPressed: () {
                                   if (listaMetricas
@@ -287,6 +295,7 @@ class _MetaState extends State<Meta> {
                               ),
                             ),
                             IconButton(
+                              splashRadius: raioButton,
                               icon: Icon(Icons.lock, size: 20),
                               onPressed: () {
                                 idMetrica.text = listaMetricas
@@ -304,6 +313,7 @@ class _MetaState extends State<Meta> {
                               },
                             ),
                             IconButton(
+                                splashRadius: raioButton,
                                 icon: Icon(Icons.update, size: 20),
                                 onPressed: () {
                                   if (listaMetricas
@@ -319,7 +329,7 @@ class _MetaState extends State<Meta> {
 
                         DataCell(
                           CustomText(
-                              text: '${listaMetricas.gerarProgresso(
+                              text: '\nGeral : ${listaMetricas.gerarProgressoGeral(
                             listaMetricas.listaMetricas[index].realizado1!,
                             listaMetricas.listaMetricas[index].realizado2!,
                             listaMetricas.listaMetricas[index].realizado3!,
@@ -328,7 +338,7 @@ class _MetaState extends State<Meta> {
                             listaMetricas.listaMetricas[index].meta2!,
                             listaMetricas.listaMetricas[index].meta3!,
                             listaMetricas.listaMetricas[index].meta4!,
-                          )} %'
+                          )} % \n\nQuarter 1 : ${listaMetricas.gerarProgresso(listaMetricas.listaMetricas[index].realizado1!, listaMetricas.listaMetricas[index].meta1!)} %\n\nQuarter 2 : ${listaMetricas.gerarProgresso(listaMetricas.listaMetricas[index].realizado2!, listaMetricas.listaMetricas[index].meta2!)} %\n\nQuarter 3 : ${listaMetricas.gerarProgresso(listaMetricas.listaMetricas[index].realizado3!, listaMetricas.listaMetricas[index].meta3!)} %\n\nQuarter 4 : ${listaMetricas.gerarProgresso(listaMetricas.listaMetricas[index].realizado4!, listaMetricas.listaMetricas[index].meta4!)} %\n'
 
                               //'${(listaMetricas.listaMetricas[index].realizado! / listaMetricas.listaMetricas[index].meta!) * 100} %'
                               ),
@@ -342,36 +352,39 @@ class _MetaState extends State<Meta> {
           ),
         ),
       ),
-      floatingActionButton: Row(
-        children: [
-          SizedBox(width: 12),
-          Container(
-            decoration: BoxDecoration(
-                border: Border.all(color: PaletaCores.active, width: .5),
-                color: PaletaCores.corLight,
-                borderRadius: BorderRadius.circular(20)),
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: PaletaCores.corLight,
-                elevation: 0,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(left: 12.0),
+        child: Row(
+          children: [
+            SizedBox(width: 12),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border.all(color: PaletaCores.active, width: .5),
+                  color: PaletaCores.corLight,
+                  borderRadius: BorderRadius.circular(20)),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: PaletaCores.corLight,
+                  elevation: 0,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => TelaEscolhas()));
+                },
+                child: CustomText(
+                  text: "Voltar para Projetos",
+                  color: PaletaCores.active.withOpacity(.7),
+                  weight: FontWeight.bold,
                 ),
               ),
-              onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => TelaEscolhas()));
-              },
-              child: CustomText(
-                text: "Voltar para Projetos",
-                color: PaletaCores.active.withOpacity(.7),
-                weight: FontWeight.bold,
-              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -93,7 +93,6 @@ class _MetaClienteState extends State<MetaCliente> {
   Widget build(BuildContext context) {
     bool editavel = true;
 
-    TextEditingController travaMeta = TextEditingController();
     TextEditingController idMetrica = TextEditingController();
 
     ControllerProjetoRepository listaMetricas =

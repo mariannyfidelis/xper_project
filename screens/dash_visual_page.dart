@@ -4,7 +4,7 @@ import '/utils/paleta_cores.dart';
 import 'package:flutter/material.dart';
 import '/screens/projeto_pagina_principal.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
-import '/widgets/Dashboard/controller/controllers_dash2.dart';
+import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class DashVisual extends StatefulWidget {
   final String? tipo;
@@ -18,7 +18,6 @@ class _DashVisualState extends State<DashVisual> {
   @override
   Widget build(BuildContext context) {
     final controllerProjetos = Get.find<ControllerProjetoRepository>();
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Dashboard Virtual"),

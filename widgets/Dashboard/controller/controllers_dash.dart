@@ -116,8 +116,7 @@ class ControllerProjetoRepository extends GetxController {
     db = DBFirestore.get();
   }
 
-  _readProjeto(String id,
-      {String idUsuario = ''}) async {
+  _readProjeto(String id, {String idUsuario = ''}) async {
     final snapshot = await db.collection('projetosPrincipais').doc(id).get();
 
     late ProjectModel proj;
@@ -158,7 +157,6 @@ class ControllerProjetoRepository extends GetxController {
     proj.acl!.forEach((element) {
       _listAcl.add(element);
     });
-
   }
 
   //======================= CRUD objetivos =====================================
@@ -192,6 +190,13 @@ class ControllerProjetoRepository extends GetxController {
     //Tem que recalcular tudo
     double sweepFatia = 360 / _listObjects.length;
     double startAngle = 0;
+
+    ultimoNivelClicado.value = 2;
+    nomeObjMandala.value = objetivo.nome!;
+    progressoObj.value = 0.0;
+    progressoAtualObj.value = 0.0;
+    data.value = Timestamp.fromDate(DateTime.now());
+    ultimoObjetivoClicado.value = objetivo.idObjetivo!;
 
     for (var objetivo in _listObjects) {
       objetivo.setStartAngle(startAngle);
@@ -291,6 +296,20 @@ class ControllerProjetoRepository extends GetxController {
         }
         startAngle += sweepFatia;
       }
+      indiceObjective.value = (-1);
+      ultimoNivelClicado.value = 1;
+      ultimoObjetivoClicado.value = "";
+      nomeObjMandala.value = "";
+      progressoObj.value = 0.0;
+      progressoAtualObj.value = 0.0;
+      data.value = Timestamp.fromDate(DateTime.now());
+
+      indiceResult.value = (-1);
+      nomeResultMandala.value = '';
+      ultimoNivelClicado.value = 1;
+      ultimoResultadoClicado.value = "";
+      progressoResult.value = 0.0;
+      progressoAtualResult.value = 0.0;
 
       reference.update({
         "objetivosPrincipais": FieldValue.arrayRemove(val),
@@ -335,8 +354,8 @@ class ControllerProjetoRepository extends GetxController {
                 : donos
             : []);
 
-    debugPrint("${resultadosPrincipais.startAngle}");
-    debugPrint("${resultadosPrincipais.sweepAngle}");
+    //debugPrint("${resultadosPrincipais.startAngle}");
+    //debugPrint("${resultadosPrincipais.sweepAngle}");
 
     _listResults.add(resultadosPrincipais);
 
@@ -356,6 +375,12 @@ class ControllerProjetoRepository extends GetxController {
 
       double sweepFatia = (fatiaResult / tamanhoPedacoResultado);
       double startAngle = startPai;
+
+      ultimoNivelClicado.value = 3;
+      ultimoResultadoClicado.value = resultadosPrincipais.idResultado!;
+      nomeResultMandala.value = resultadosPrincipais.nomeResultado!;
+      progressoResult.value = 0.0;
+      progressoAtualResult.value = 0.0;
 
       for (var result in _listResults) {
         if (result.idObjetivoPai == idObjetivoPai) {
@@ -405,7 +430,6 @@ class ControllerProjetoRepository extends GetxController {
         //TODO - Pode ser que seja preciso pegar todo o cálculo de
         //ângulo e colocar aqui dentro do THEN
       });
-      //Esse aqui
 
       //Deve-se atualizar os dados dos ângulos de desenho
       var vinculoresult = _listResults.where((element) =>
@@ -436,6 +460,13 @@ class ControllerProjetoRepository extends GetxController {
         }
       }
 
+      indiceResult.value = (-1);
+      nomeResultMandala.value = '';
+      ultimoNivelClicado.value = 1;
+      ultimoResultadoClicado.value = "";
+      progressoResult.value = 0.0;
+      progressoAtualResult.value = 0.0;
+
       var l = _listResults.map((v) => v.toJson()).toList();
       await reference.update({'resultadosPrincipais': l});
     } else {
@@ -443,39 +474,100 @@ class ControllerProjetoRepository extends GetxController {
     }
   }
 
-  void atualizaResultado(String idResultado,
-      {String? nomeResultaAtualizado,
-      String? idObjetivoPai,
-      String? idMetrica = "",
-      String? cor = "255-242-242-242",
-      List<DonosResultadoMetricas>? dono}) async {
+  // void atualizaResultado(String idResultado,
+  //     {String? nomeResultaAtualizado,
+  //     String? idObjetivoPai,
+  //     String? idMetrica = "",
+  //     String? cor = "255-242-242-242",
+  //     List<DonosResultadoMetricas>? dono}) async {
+  //   int indice = _listResults
+  //       .indexWhere((element) => element.idResultado == idResultado);
+  //
+  //   if (indice != -1) {
+  //     _listResults[indice].idObjetivoPai = idObjetivoPai;
+  //     // _listResults[indice].idMetrica = idMetrica;
+  //
+  //     if (nome != null) {
+  //       _listResults[indice].nomeResultado = nomeResultaAtualizado;
+  //     }
+  //
+  //     if (cor != null) {
+  //       _listResults[indice].paint = cor;
+  //     }
+  //
+  //     var reference =
+  //         await db.collection('projetosPrincipais').doc(this.idProjeto.value);
+  //
+  //     var l = _listResults.map((v) => v.toJson()).toList();
+  //
+  //     await reference.update({'resultadosPrincipais': l});
+  //     atualizaTudo(this.idProjeto.value);
+  //   } else {
+  //     debugPrint("Não encontrei o resultado !");
+  //   }
+  // }
+  void atualizaResultado(
+    String idResultado, {
+    String? idObjetivoPai,
+    String? nomeResultado,
+    //TODO: mudar de importancia para progresso geral
+    int? importancia,
+    double? progresso,
+    double? metaObj = 0.0,
+    double? realizado = 0.0,
+    String? arquivo,
+    String? cor/*= "255-242-242-242"*/,
+  }) async {
+    var reference = await db
+        //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
+        .collection('projetosPrincipais')
+        .doc(this.idProjeto.value);
     int indice = _listResults
         .indexWhere((element) => element.idResultado == idResultado);
 
     if (indice != -1) {
-      _listResults[indice].idObjetivoPai = idObjetivoPai;
-      // _listResults[indice].idMetrica = idMetrica;
-
-      if (nome != null) {
-        _listResults[indice].nomeResultado = nomeResultaAtualizado;
+      if (nomeResultado == null) {
+        if (_listResults[indice].nomeResultado != null) {
+          nomeResultado = _listResults[indice].nomeResultado;
+        }
+        _listResults[indice].nomeResultado = nomeResultado;
       }
 
+      if (nomeResultado != null) {
+        _listResults[indice].nomeResultado = nomeResultado;
+      }
+      if (idObjetivoPai == null) {
+        if (_listResults[indice].idObjetivoPai != null) {
+          idObjetivoPai = _listResults[indice].idObjetivoPai;
+        }
+        _listResults[indice].idObjetivoPai = idObjetivoPai;
+      }
+      if (idObjetivoPai != null) {
+        _listResults[indice].idObjetivoPai = idObjetivoPai;
+      }
+      if (arquivo != null) {
+        _listResults[indice].arquivos!.add(arquivo);
+
+        var l = _listResults.map((v) => v.toJson()).toList();
+
+        await reference.update({'resultadosPrincipais': l});
+      }
       if (cor != null) {
         _listResults[indice].paint = cor;
+        var l = _listResults.map((v) => v.toJson()).toList();
+
+        await reference.update({'resultadosPrincipais': l});
       }
-
-      var reference =
-          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
-
+      //TODO
       var l = _listResults.map((v) => v.toJson()).toList();
 
       await reference.update({'resultadosPrincipais': l});
+
       atualizaTudo(this.idProjeto.value);
     } else {
-      debugPrint("Não encontrei o resultado !");
+      print("Objetivo não encontrado !");
     }
   }
-
 //======================= CRUD donos =====================================
 
   UnmodifiableListView<DonosResultadoMetricas> get listaDonos =>
@@ -545,17 +637,24 @@ class ControllerProjetoRepository extends GetxController {
       {String? idResultado,
       double meta = 100,
       double realizado = 1,
-      double progresso = 0}) async {
+      double progresso = 0,
+      String? unidade}) async {
     var uuid = Uuid();
     var id = uuid.v4();
 
     DocumentReference reference =
         await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
-    MetricasPrincipais metrica = MetricasPrincipais(
-        idMetrica: id,
-        nomeMetrica: nomeAtualizadoMetrica,
-        idResultado: idResultado);
+    MetricasPrincipais metrica = (unidade != null)
+        ? MetricasPrincipais(
+            idMetrica: id,
+            nomeMetrica: nomeAtualizadoMetrica,
+            idResultado: idResultado,
+            unidadeMedida: unidade)
+        : MetricasPrincipais(
+            idMetrica: id,
+            nomeMetrica: nomeAtualizadoMetrica,
+            idResultado: idResultado);
 
     _listMetrics.add(metrica);
 
@@ -571,13 +670,18 @@ class ControllerProjetoRepository extends GetxController {
       {String? idResultado,
       double? meta,
       double? realizado,
-      double? progresso}) async {
+      double? progresso,
+      String? unidade}) async {
     int indice =
         _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
 
     if (indice != -1) {
       _listMetrics[indice].nomeMetrica = nomeMetricaAtualizado;
       _listMetrics[indice].idResultado = idResultado;
+
+      if (unidade != null) {
+        _listMetrics[indice].unidadeMedida = unidade;
+      }
 
       var reference =
           await db.collection('projetosPrincipais').doc(this.idProjeto.value);
@@ -600,13 +704,69 @@ class ControllerProjetoRepository extends GetxController {
 
     if (indice != -1) {
       print(_listMetrics[indice]);
+      var indexResult = _listResults.indexWhere(
+          (element) => element.idResultado == _listMetrics[indice].idResultado);
+      if (indexResult != -1) {
+        //atualizando as metas de resultados
+
+        double meta = _listResults[indexResult].meta!;
+        double meta1 = _listResults[indexResult].meta1!;
+        double meta2 = _listResults[indexResult].meta2!;
+        double meta3 = _listResults[indexResult].meta3!;
+        double meta4 = _listResults[indexResult].meta4!;
+
+        meta -= (_listMetrics[indice].meta1! +
+            _listMetrics[indice].meta2! +
+            _listMetrics[indice].meta3! +
+            _listMetrics[indice].meta4!);
+        meta1 -= _listMetrics[indice].meta1!;
+        meta2 -= _listMetrics[indice].meta2!;
+        meta3 -= _listMetrics[indice].meta3!;
+        meta4 -= _listMetrics[indice].meta4!;
+
+        _listResults[indexResult].meta = meta;
+        _listResults[indexResult].meta1 = meta1;
+        _listResults[indexResult].meta2 = meta2;
+        _listResults[indexResult].meta3 = meta3;
+        _listResults[indexResult].meta4 = meta4;
+
+        //atualizando os realizados de resultados
+
+        _listResults[indexResult].realizado =
+            _listResults[indexResult].realizado! -
+                (_listMetrics[indice].realizado1! +
+                    _listMetrics[indice].realizado2! +
+                    _listMetrics[indice].realizado3! +
+                    _listMetrics[indice].realizado4!);
+
+        _listResults[indexResult].realizado1 =
+            _listResults[indexResult].realizado1! -
+                _listMetrics[indice].realizado1!;
+
+        _listResults[indexResult].realizado2 =
+            _listResults[indexResult].realizado2! -
+                _listMetrics[indice].realizado2!;
+
+        _listResults[indexResult].realizado3 =
+            _listResults[indexResult].realizado3! -
+                _listMetrics[indice].realizado3!;
+
+        _listResults[indexResult].realizado4 =
+            _listResults[indexResult].realizado4! -
+                _listMetrics[indice].realizado4!;
+      }
+      debugPrint("zzz meta ${_listResults[indexResult].meta}");
+
+      var lr = _listResults.map((r) => r.toJson()).toList();
       var a = _listMetrics.removeAt(indice);
       val.add(a.toJson());
 
       var reference =
           await db.collection('projetosPrincipais').doc(this.idProjeto.value);
-      reference.update(
-          {"metricasPrincipais": FieldValue.arrayRemove(val)}).then((_) {
+      reference.update({
+        "metricasPrincipais": FieldValue.arrayRemove(val),
+        'resultadosPrincipais': lr
+      }).then((_) {
         print("success com projeto repository!");
       });
     } else {
@@ -631,32 +791,30 @@ class ControllerProjetoRepository extends GetxController {
         _listMetrics[indice].meta4 = metaTravada;
       } else {}
 
+      var indexResult = _listResults.indexWhere(
+          (element) => element.idResultado == _listMetrics[indice].idResultado);
+      if (indexResult != -1) {
+        _listResults[indexResult].meta =
+            metasResulMetric(0.0, _listResults[indexResult].idResultado);
+        _listResults[indexResult].meta1 =
+            metasResulMetric(1.0, _listResults[indexResult].idResultado);
+        _listResults[indexResult].meta2 =
+            metasResulMetric(2.0, _listResults[indexResult].idResultado);
+        _listResults[indexResult].meta3 =
+            metasResulMetric(3.0, _listResults[indexResult].idResultado);
+        _listResults[indexResult].meta4 =
+            metasResulMetric(4.0, _listResults[indexResult].idResultado);
+      }
+
       var reference =
           await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
       var l = _listMetrics.map((v) => v.toJson()).toList();
-
-      await reference.update({'metricasPrincipais': l});
-
-      atualizaTudo(this.idProjeto.value);
-    } else {
-      print("Métrica não encontrada !");
-    }
-  }
-
-  void travaMetaResul(String idResultado, double meta) async {
-    int indice = _listResults
-        .indexWhere((element) => element.idResultado == idResultado);
-
-    if (indice != -1) {
-      _listResults[indice].meta = meta;
-
-      var reference =
-          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
-
-      var l = _listResults.map((v) => v.toJson()).toList();
-
-      await reference.update({'resultadosPrincipais': l});
+      var lr = _listResults.map((r) => r.toJson()).toList();
+      await reference.update({
+        'metricasPrincipais': l,
+        'resultadosPrincipais': lr,
+      });
 
       atualizaTudo(this.idProjeto.value);
     } else {
@@ -664,54 +822,182 @@ class ControllerProjetoRepository extends GetxController {
     }
   }
 
-  void travaMetaObj(String idObj, double meta) async {
-    int indice =
-        _listObjects.indexWhere((element) => element.idObjetivo == idObj);
+  // void travaMetaResul(String idResultado, double meta) async {
+  //   int indice = _listResults
+  //       .indexWhere((element) => element.idResultado == idResultado);
+  //
+  //   if (indice != -1) {
+  //     _listResults[indice].meta = meta;
+  //
+  //     var reference =
+  //         await db.collection('projetosPrincipais').doc(this.idProjeto.value);
+  //
+  //     var l = _listResults.map((v) => v.toJson()).toList();
+  //
+  //     await reference.update({'resultadosPrincipais': l});
+  //
+  //     atualizaTudo(this.idProjeto.value);
+  //   } else {
+  //     print("Métrica não encontrada !");
+  //   }
+  // }
 
-    if (indice != -1) {
-      _listObjects[indice].meta = meta;
+  // void travaMetaObj(String idObj, double meta) async {
+  //   int indice =
+  //       _listObjects.indexWhere((element) => element.idObjetivo == idObj);
+  //
+  //   if (indice != -1) {
+  //     _listObjects[indice].meta = meta;
+  //
+  //     var reference =
+  //         await db.collection('projetosPrincipais').doc(this.idProjeto.value);
+  //
+  //     var l = _listObjects.map((v) => v.toJson()).toList();
+  //
+  //     await reference.update({'objetivosPrincipais': l});
+  //
+  //     atualizaTudo(this.idProjeto.value);
+  //   } else {
+  //     print("Métrica não encontrada !");
+  //   }
+  // }
 
-      var reference =
-          await db.collection('projetosPrincipais').doc(this.idProjeto.value);
-
-      var l = _listObjects.map((v) => v.toJson()).toList();
-
-      await reference.update({'objetivosPrincipais': l});
-
-      atualizaTudo(this.idProjeto.value);
-    } else {
-      print("Métrica não encontrada !");
-    }
-  }
-
-  metasResulMetric(String? idResultado) {
+  metasResulMetric(double periodo, String? idResultado) {
     final vinculo =
         _listMetrics.where((element) => element.idResultado == idResultado);
 
     double metaResult = 0;
+    double meta1 = 0;
+    double meta2 = 0;
+    double meta3 = 0;
+    double meta4 = 0;
+
+    for (final vin in vinculo) {
+      metaResult += vin.meta1! + vin.meta2! + vin.meta3! + vin.meta4!;
+      meta1 += vin.meta1!;
+      meta2 += vin.meta2!;
+      meta3 += vin.meta3!;
+      meta4 += vin.meta4!;
+    }
+    print('objetivo total $metaResult');
+    if (periodo == 0.0) {
+      return metaResult;
+    } else if (periodo == 1.0) {
+      return meta1;
+    } else if (periodo == 2.0) {
+      return meta2;
+    } else if (periodo == 3.0) {
+      return meta3;
+    } else if (periodo == 4.0) {
+      return meta4;
+    } else {
+      return '\nGeral : $metaResult\n\nQuarter 1 : $meta1\n\nQuarter 2 : $meta2\n\nQuarter 3 : $meta3\n\nQuarter 4 : $meta4\n';
+    }
+  }
+
+  realizadoResulMetric(double? periodoAtual, String? idResultado) {
+    final vinculo =
+        _listMetrics.where((element) => element.idResultado == idResultado);
+
+    double realizadoResult = 0;
+    double realizado1 = 0;
+    double realizado2 = 0;
+    double realizado3 = 0;
+    double realizado4 = 0;
 
     for (final vin in vinculo) {
       print(vin.nomeMetrica);
-      metaResult += vin.meta1! + vin.meta2! + vin.meta3! + vin.meta4!;
-      print('${vin.meta1!}, ${vin.meta2!}, ${vin.meta3!}, ${vin.meta4!}');
+      realizadoResult +=
+          vin.realizado1! + vin.realizado2! + vin.realizado3! + vin.realizado4!;
+      realizado1 += vin.realizado1!;
+      realizado2 += vin.realizado2!;
+      realizado3 += vin.realizado3!;
+      realizado4 += vin.realizado4!;
     }
-    print('objetivo total $metaResult');
-    return metaResult;
+
+    if (periodoAtual == 0.0) {
+      return realizadoResult;
+    } else if (periodoAtual == 1.0) {
+      return realizado1;
+    } else if (periodoAtual == 2.0) {
+      return realizado2;
+    } else if (periodoAtual == 3.0) {
+      return realizado3;
+    } else if (periodoAtual == 4.0) {
+      return realizado4;
+    } else {
+      return '\nGeral : $realizadoResult\n\nQuarter 1 : $realizado1\n\nQuarter 2 : $realizado2\n\nQuarter 3 : $realizado3\n\nQuarter 4 : $realizado4\n';
+    }
   }
 
-  metaObjetivos(String idObjetivo) {
+  metaObjetivos(double? periodo, String idObjetivo) {
     final vinculo =
         _listResults.where((element) => element.idObjetivoPai == idObjetivo);
 
     double metaObj = 0;
+    double meta1 = 0;
+    double meta2 = 0;
+    double meta3 = 0;
+    double meta4 = 0;
 
     for (final vin in vinculo) {
       print(vin.nomeResultado);
       metaObj += vin.meta!;
+      meta1 += vin.meta1!;
+      meta2 += vin.meta2!;
+      meta3 += vin.meta3!;
+      meta4 += vin.meta4!;
       print(vin.meta!);
     }
     print('objetivo total $metaObj');
-    return metaObj;
+    if (periodo == 0.0) {
+      return metaObj;
+    } else if (periodo == 1.0) {
+      return meta1;
+    } else if (periodo == 2.0) {
+      return meta2;
+    } else if (periodo == 3.0) {
+      return meta3;
+    } else if (periodo == 4.0) {
+      return meta4;
+    } else {
+      return '\nGeral : $metaObj\n\nQuarter 1 : $meta1\n\nQuarter 2 : $meta2\n\nQuarter 3 : $meta3\n\nQuarter 4 : $meta4\n';
+    }
+  }
+
+  realizadoObjetivos(double periodoAtual, String idObjetivo) {
+    final vinculo =
+        _listResults.where((element) => element.idObjetivoPai == idObjetivo);
+
+    double realizadoObj = 0;
+    double realizado1 = 0;
+    double realizado2 = 0;
+    double realizado3 = 0;
+    double realizado4 = 0;
+
+    for (final vin in vinculo) {
+      print(vin.nomeResultado);
+      realizadoObj += vin.realizado!;
+      realizado1 += vin.realizado1!;
+      realizado2 += vin.realizado2!;
+      realizado3 += vin.realizado3!;
+      realizado4 += vin.realizado4!;
+      print(vin.meta!);
+    }
+
+    if (periodoAtual == 0.0) {
+      return realizadoObj;
+    } else if (periodoAtual == 1.0) {
+      return realizado1;
+    } else if (periodoAtual == 2.0) {
+      return realizado2;
+    } else if (periodoAtual == 3.0) {
+      return realizado3;
+    } else if (periodoAtual == 4.0) {
+      return realizado4;
+    } else {
+      return '\nGeral : $realizadoObj\n\nQuarter 1 : $realizado1\n\nQuarter 2 : $realizado2\n\nQuarter 3 : $realizado3\n\nQuarter 4 : $realizado4\n';
+    }
   }
 
   // metaDonos(String id, String email, String nome) {
@@ -734,19 +1020,56 @@ class ControllerProjetoRepository extends GetxController {
   //   return metaObj;
   // }
 
-  void atualizarRealizado(String idMetrica, double realizado) async {
+  void atualizarRealizado(
+      int periodo, String idMetrica, double realizado) async {
     int indice =
         _listMetrics.indexWhere((element) => element.idMetrica == idMetrica);
 
     if (indice != -1) {
-      _listMetrics[indice].realizado1 = realizado;
+      if (periodo == 1) {
+        _listMetrics[indice].realizado1 = realizado;
+      } else if (periodo == 2) {
+        _listMetrics[indice].realizado2 = realizado;
+      } else if (periodo == 3) {
+        _listMetrics[indice].realizado3 = realizado;
+      } else if (periodo == 4) {
+        _listMetrics[indice].realizado4 = realizado;
+      } else {}
+
+      var indexResult = _listResults.indexWhere(
+          (element) => element.idResultado == _listMetrics[indice].idResultado);
+      if (indexResult != -1) {
+        _listResults[indexResult].realizado =
+            realizadoResulMetric(0.0, _listResults[indexResult].idResultado);
+        _listResults[indexResult].realizado1 =
+            realizadoResulMetric(1.0, _listResults[indexResult].idResultado);
+        _listResults[indexResult].realizado2 =
+            realizadoResulMetric(2.0, _listResults[indexResult].idResultado);
+        _listResults[indexResult].realizado3 =
+            realizadoResulMetric(3, _listResults[indexResult].idResultado);
+        _listResults[indexResult].realizado4 =
+            realizadoResulMetric(4, _listResults[indexResult].idResultado);
+
+        // var indexObj = _listObjects.indexWhere((element) =>
+        //     element.idObjetivo == _listResults[indice].idObjetivoPai);
+        // if (indexObj != -1) {
+        //   _listObjects[indexObj].realizado =
+        //       realizadoObjetivos(_listObjects[indexObj].idObjetivo!);
+        // }
+      }
 
       var reference =
           await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
-      var l = _listMetrics.map((v) => v.toJson()).toList();
+      var lm = _listMetrics.map((m) => m.toJson()).toList();
+      var lr = _listResults.map((r) => r.toJson()).toList();
+      //var lo = _listObjects.map((o) => o.toJson()).toList();
 
-      await reference.update({'metricasPrincipais': l});
+      await reference.update({
+        'metricasPrincipais': lm,
+        'resultadosPrincipais': lr,
+        //'objetivosPrincipais': lo
+      });
 
       atualizaTudo(this.idProjeto.value);
     } else {
@@ -853,7 +1176,7 @@ class ControllerProjetoRepository extends GetxController {
   }
 
   void atualizaNomeProjeto(String idProj, String nomeAtualizado,
-      {String idUsuario = '5xmMnHGksrPtVK4rvnEsoYSemrr2'}) async {
+      {String idUsuario = 'idUsuario'}) async {
     String? tipo;
 
     int indice =
@@ -862,14 +1185,12 @@ class ControllerProjetoRepository extends GetxController {
     _listaProjetos.forEach((element) {
       if (element.idProjeto == idProj) {
         element.nome = nomeAtualizado;
-        debugPrint("tem sim e modifiquei para : [${element.nome}]");
       }
     });
 
     if (indice != -1) {
       _listaProjetos[indice].nome = nomeAtualizado;
       //tipo = _listaProjetos[indice].tipoProj;
-      debugPrint("tem sim um projeto");
       this.nome.value = nomeAtualizado;
       this.tipoProj.value = _listaProjetos[indice].tipoProj!;
 
@@ -890,8 +1211,7 @@ class ControllerProjetoRepository extends GetxController {
     reference.delete();
   }
 
-  void remove(ProjectModel projeto,
-      {String idUsuario = '5xmMnHGksrPtVK4rvnEsoYSemrr2'}) async {
+  void remove(ProjectModel projeto, {String idUsuario = 'idProjeto'}) async {
     var reference = await db
         .collection("projetosPrincipais")
         .doc(projeto.idProjeto)
@@ -931,7 +1251,7 @@ class ControllerProjetoRepository extends GetxController {
   }
 
   Paint criaPaintObjective({String? converteCor}) {
-    var r,g,b,a;
+    var r, g, b, a;
     if (converteCor == null) {
       r = Random().nextInt(40) + 215;
       g = Random().nextInt(40) + 215;
@@ -948,7 +1268,7 @@ class ControllerProjetoRepository extends GetxController {
     //TODO - Como colocar sombra e elevação
     Paint p = Paint()
       ..strokeWidth = 30
-      ..color = Color.fromARGB(a, r, g, b)//RGBO(r, g, b, a)
+      ..color = Color.fromARGB(a, r, g, b) //RGBO(r, g, b, a)
       ..style = PaintingStyle.fill
       ..strokeJoin = StrokeJoin.round;
     return p;
@@ -963,6 +1283,7 @@ class ControllerProjetoRepository extends GetxController {
     double? progresso,
     double? metaObj = 0.0,
     double? realizado = 0.0,
+    String? arquivo,
     String? cor = "255-242-242-242",
   }) async {
     int indice =
@@ -971,10 +1292,8 @@ class ControllerProjetoRepository extends GetxController {
     if (indice != -1) {
       if (nomeObjetivo != null) {
         _listObjects[indice].nome = nomeObjetivo;
-        var reference = await db
-            //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-            .collection('projetosPrincipais')
-            .doc(this.idProjeto.value);
+        var reference =
+            await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
         var l = _listObjects.map((v) => v.toJson()).toList();
 
@@ -982,18 +1301,25 @@ class ControllerProjetoRepository extends GetxController {
       }
       if (progresso != null) {
         _listObjects[indice].progresso = progresso;
-        var reference = await db
-            //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-            .collection('projetosPrincipais')
-            .doc(this.idProjeto.value);
+        var reference =
+            await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
         var l = _listObjects.map((v) => v.toJson()).toList();
 
         await reference.update({'objetivosPrincipais': l});
       }
+      if (arquivo != null) {
+        _listObjects[indice].arquivos!.add(arquivo);
+        var reference =
+            await db.collection('projetosPrincipais').doc(this.idProjeto.value);
+
+        var l = _listObjects.map((v) => v.toJson()).toList();
+
+        await reference.update({'objetivosPrincipais': l});
+      }
+
       if (cor != null) {
         var reference = await db
-            //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
             .collection('projetosPrincipais')
             .doc(this.idProjeto.value);
 
@@ -1049,13 +1375,13 @@ class ControllerProjetoRepository extends GetxController {
     objetivoModel.setDataVencimento(dateTime);
   }
 
-  void atualizaPedaco(String nomeAtualizado) {
+  void atualizarNome(String nomeAtualizado) {
     if (ultimoNivelClicado.value == 2) {
       atualizaObjetivoMandala(ultimoObjetivoClicado.value,
           nomeObjetivo: nomeAtualizado);
     } else if (ultimoNivelClicado.value == 3) {
       atualizaResultado(ultimoResultadoClicado.value,
-          nomeResultaAtualizado: nomeAtualizado);
+          nomeResultado: nomeAtualizado);
     } else {}
   }
 
@@ -1081,7 +1407,7 @@ class ControllerProjetoRepository extends GetxController {
     _objetivoController.value.text = nomeAtualizado;
   }
 
-  gerarProgresso(
+  gerarProgressoGeral(
       double realizado1,
       double realizado2,
       double realizado3,
@@ -1100,6 +1426,14 @@ class ControllerProjetoRepository extends GetxController {
     }
   }
 
+  gerarProgresso(double realizado, double meta) {
+    if (meta != 0) {
+      double progresso = (realizado / meta) * 100;
+      return progresso;
+    } else {
+      return 0.0;
+    }
+  }
   ocultaCriarProjeto(String tipo) {
     if (tipo == 'cliente' && filtragem.value != "privado") {
       botaoProjeto.value = false;

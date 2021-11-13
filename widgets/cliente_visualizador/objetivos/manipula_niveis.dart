@@ -97,9 +97,9 @@ class _ManipulaOKRState extends State<ManipulaOKR> {
               if (value == 2) {
                 (mandalaController.ultimoNivelClicado == 2)
                     ? mandalaController.removeObjetivo(
-                    mandalaController.ultimoObjetivoClicado.value)
+                        mandalaController.ultimoObjetivoClicado.value)
                     : mandalaController.removeResultado(
-                    mandalaController.ultimoResultadoClicado.value);
+                        mandalaController.ultimoResultadoClicado.value);
               }
             }),
             child: Center(child: Icon(Icons.arrow_drop_down)),
@@ -240,16 +240,48 @@ class _ManipulaOKRState extends State<ManipulaOKR> {
   }
 
   void adicionaResultado() {
-    debugPrint("||| Adicionando um novo resultado ...");
-    mandalaController.addOneResultado(
-        "Novo resultado ${mandalaController.listaResultados.length + 1}",
-        idObjetivoPai: mandalaController.ultimoObjetivoClicado.value);
+    if (mandalaController.ultimoObjetivoClicado.value != '') {
+      debugPrint("||| Adicionando um novo resultado ...");
+      mandalaController.addOneResultado(
+          "Novo resultado ${mandalaController.listaResultados.length + 1}",
+          idObjetivoPai: mandalaController.ultimoObjetivoClicado.value);
+    } else {
+      showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+                  title: Text("Nenhum Objetivo Selecionado"),
+                  content: Text(
+                      "Selecione algum objetivo para adicionar um resultado"),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child: Text("OK")),
+                  ]));
+    }
   }
 
   void adicionaMetrica() {
-    debugPrint("||| Adicionando uma nova métrica ...");
-    mandalaController.addOneMetric(
-        "Nova métrica ${mandalaController.listaMetricas.length + 1} do ${mandalaController.nomeResultMandala}",
-        idResultado: mandalaController.ultimoResultadoClicado.value);
+    if (mandalaController.ultimoResultadoClicado.value != '') {
+      debugPrint("||| Adicionando uma nova métrica ...");
+      mandalaController.addOneMetric(
+          "Nova métrica ${mandalaController.listaMetricas.length + 1} do ${mandalaController.nomeResultMandala}",
+          idResultado: mandalaController.ultimoResultadoClicado.value);
+    } else {
+      showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+                  title: Text("Nenhum Resultado Selecionado"),
+                  content: Text(
+                      "Selecione algum resultado para adicionar uma métrica"),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child: Text("OK")),
+                  ]));
+    }
   }
 }

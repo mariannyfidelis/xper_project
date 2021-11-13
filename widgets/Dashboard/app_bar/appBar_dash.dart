@@ -17,6 +17,7 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) =>
               ],
             )
           : IconButton(
+              splashRadius: 16,
               icon: Icon(Icons.menu),
               onPressed: () {
                 key.currentState!.openDrawer();
@@ -36,6 +37,7 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) =>
             child: Container(),
           ),
           IconButton(
+            splashRadius: 16,
             icon: Icon(Icons.settings,
                 color: PaletaCores.corLight.withOpacity(.7)),
             onPressed: () {},
@@ -43,6 +45,7 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) =>
           Stack(
             children: [
               IconButton(
+                  splashRadius: 16,
                   icon: Icon(
                     Icons.notifications,
                     color: PaletaCores.corLight.withOpacity(.7),

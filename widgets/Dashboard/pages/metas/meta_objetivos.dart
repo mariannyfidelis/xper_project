@@ -23,18 +23,6 @@ class _MetaObjetivosState extends State<MetaObjetivos> {
   Widget build(BuildContext context) {
     bool editavel = true;
 
-    gerarProgresso(double realizado, double meta) {
-      if (realizado != 0 && meta != 0) {
-        double progresso = (realizado / meta) * 100;
-        return progresso;
-      } else {
-        return 0;
-      }
-    }
-
-    TextEditingController travaMeta = TextEditingController();
-    TextEditingController idObjetivo = TextEditingController();
-
     ControllerProjetoRepository listaObjetivos =
         Get.find<ControllerProjetoRepository>();
 
@@ -42,7 +30,6 @@ class _MetaObjetivosState extends State<MetaObjetivos> {
       controladorMeta.add(new TextEditingController());
     });
 
-    //String meta = '';
     editavel.obs;
 
     return Scaffold(
@@ -81,6 +68,7 @@ class _MetaObjetivosState extends State<MetaObjetivos> {
                   columnSpacing: 12,
                   horizontalMargin: 12,
                   minWidth: 600,
+                  dataRowHeight: 205,
                   columns: [
                     DataColumn2(
                       label: Text('Objetivos'),
@@ -108,66 +96,33 @@ class _MetaObjetivosState extends State<MetaObjetivos> {
                               text: listaObjetivos.listaObjectives[index].nome),
                         ),
                         DataCell(
-                          CustomText(text: '0'),
+                          SingleChildScrollView(
+                            child: CustomText(
+                                text: listaObjetivos
+                                    .realizadoObjetivos(
+                                        5.0,
+                                        listaObjetivos
+                                            .listaObjectives[index].idObjetivo!)
+                                    .toString()),
+                          ),
                         ),
-                        DataCell(Row(
-                          children: [
-                            SizedBox(width: 25),
-                            Container(
-                              width: 40,
-                              child: TextField(
-                                keyboardType: TextInputType.number,
-                                enabled: editavel,
-                                controller: controladorMeta[index],
-
-                                // onChanged: (text) {
-                                //   meta = text;
-                                // },
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.lock),
-                              onPressed: () {
-                                idObjetivo.text = listaObjetivos
-                                    .listaObjectives[index].idObjetivo
-                                    .toString();
-                                listaObjetivos.travaMetaObj(idObjetivo.text,
-                                    double.parse(controladorMeta[index].text));
-                                // Get.find<ControllerProjetoRepository>()
-                                //     .travarMeta(
-                                //         idObjetivo.text,
-                                //         double.parse(
-                                //             controladorMeta[index].text));
-                                // (idObjetivo.text,
-                                //     double.parse(controladorMeta[index].text));
-                                // editavel = false;
-                              },
-                            ),
-                            IconButton(
-                                icon: Icon(Icons.update),
-                                onPressed: () {
-                                  idObjetivo.text = listaObjetivos
-                                      .listaObjectives[index].idObjetivo
-                                      .toString();
-                                  controladorMeta[index].text = listaObjetivos
-                                      .metaObjetivos(idObjetivo.text)
-                                      .toString();
-                                  // if (listaObjetivos
-                                  //         .listaObjectives[index].meta !=
-                                  //     null) {
-                                  //   controladorMeta[index].text = listaObjetivos
-                                  //       .listaObjetivos[index].meta
-                                  //       .toString();
-                                  // }
-                                }),
-                          ],
-                        )),
                         DataCell(
-                          CustomText(text: '%'
-                              // '${gerarProgresso(listaObjetivos.listaObjetivos[index].realizado!, listaObjetivos.listaObjetivos[index].meta!)} %'
-
-                              //'${(listaObjetivos.listaObjetivos[index].realizado! / listaObjetivos.listaObjetivos[index].meta!) * 100} %'
-                              ),
+                          SingleChildScrollView(
+                            child: CustomText(
+                                text: listaObjetivos
+                                    .metaObjetivos(
+                                    5.0,
+                                    listaObjetivos
+                                        .listaObjectives[index].idObjetivo!)
+                                    .toString()),
+                          ),
+                        ),
+                        DataCell(
+                          SingleChildScrollView(
+                            child: CustomText(
+                                text:
+                                '\nGeral : ${listaObjetivos.gerarProgresso(listaObjetivos.realizadoObjetivos(0.0, listaObjetivos.listaObjectives[index].idObjetivo!), listaObjetivos.metaObjetivos(0.0, listaObjetivos.listaObjectives[index].idObjetivo!))} %\n\nQuarter 1 : ${listaObjetivos.gerarProgresso(listaObjetivos.realizadoObjetivos(1.0, listaObjetivos.listaObjectives[index].idObjetivo!), listaObjetivos.metaObjetivos(1.0, listaObjetivos.listaObjectives[index].idObjetivo!))} %\n\nQuarter 2 : ${listaObjetivos.gerarProgresso(listaObjetivos.realizadoObjetivos(2.0, listaObjetivos.listaObjectives[index].idObjetivo!), listaObjetivos.metaObjetivos(2.0, listaObjetivos.listaObjectives[index].idObjetivo!))} %\n\nQuarter 3 : ${listaObjetivos.gerarProgresso(listaObjetivos.realizadoObjetivos(3.0, listaObjetivos.listaObjectives[index].idObjetivo!), listaObjetivos.metaObjetivos(3.0, listaObjetivos.listaObjectives[index].idObjetivo!))} %\n\nQuarter 4 : ${listaObjetivos.gerarProgresso(listaObjetivos.realizadoObjetivos(4.0, listaObjetivos.listaObjectives[index].idObjetivo!), listaObjetivos.metaObjetivos(4.0, listaObjetivos.listaObjectives[index].idObjetivo!))} %\n'),
+                          ),
                         ),
                       ],
                     ),
@@ -178,35 +133,38 @@ class _MetaObjetivosState extends State<MetaObjetivos> {
           ),
         ),
       ),
-      floatingActionButton: Row(
-        children: [
-          SizedBox(width: 12),
-          Container(
-              decoration: BoxDecoration(
-                  border: Border.all(color: PaletaCores.active, width: .5),
-                  color: PaletaCores.corLight,
-                  borderRadius: BorderRadius.circular(20)),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: PaletaCores.corLight,
-                  elevation: 0,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(left: 12.0),
+        child: Row(
+          children: [
+            SizedBox(width: 12),
+            Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: PaletaCores.active, width: .5),
+                    color: PaletaCores.corLight,
+                    borderRadius: BorderRadius.circular(20)),
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: PaletaCores.corLight,
+                    elevation: 0,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: CustomText(
-                  text: "Voltar para Projetos",
-                  color: PaletaCores.active.withOpacity(.7),
-                  weight: FontWeight.bold,
-                ),
-              )),
-          SizedBox(width: 12),
-        ],
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: CustomText(
+                    text: "Voltar para Projetos",
+                    color: PaletaCores.active.withOpacity(.7),
+                    weight: FontWeight.bold,
+                  ),
+                )),
+            SizedBox(width: 12),
+          ],
+        ),
       ),
     );
   }

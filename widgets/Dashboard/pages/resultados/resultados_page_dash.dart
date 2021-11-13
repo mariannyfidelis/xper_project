@@ -221,7 +221,7 @@ class _ResultadosTableState extends State<ResultadosTable> {
               if (newResultadoController.text != "") {
                 resultadoController2.atualizaResultado(
                     idResultadoController.text,
-                    nomeResultaAtualizado: newResultadoController.text,
+                    nomeResultado: newResultadoController.text,
                     idObjetivoPai: objetivoPai);
               }
               idResultadoController.text = '';

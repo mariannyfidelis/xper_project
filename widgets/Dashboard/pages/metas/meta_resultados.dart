@@ -23,18 +23,6 @@ class _MetaResultadosState extends State<MetaResultados> {
   Widget build(BuildContext context) {
     bool editavel = true;
 
-    gerarProgresso(double realizado, double meta) {
-      if (realizado != 0 && meta != 0) {
-        double progresso = (realizado / meta) * 100;
-        return progresso;
-      } else {
-        return 0;
-      }
-    }
-
-    TextEditingController travaMeta = TextEditingController();
-    TextEditingController idResultado = TextEditingController();
-
     ControllerProjetoRepository listaResultados =
         Get.find<ControllerProjetoRepository>();
 
@@ -42,7 +30,6 @@ class _MetaResultadosState extends State<MetaResultados> {
       controladorMeta.add(new TextEditingController());
     });
 
-    //String meta = '';
     editavel.obs;
 
     return Scaffold(
@@ -81,6 +68,8 @@ class _MetaResultadosState extends State<MetaResultados> {
                   columnSpacing: 12,
                   horizontalMargin: 12,
                   minWidth: 600,
+                  dataRowHeight: 205,
+                  //headingRowHeight: ,
                   columns: [
                     DataColumn2(
                       label: Text('Resultados'),
@@ -91,7 +80,7 @@ class _MetaResultadosState extends State<MetaResultados> {
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: Text('MetaResultados(previsto)'),
+                      label: Text('Meta (Prevista)'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
@@ -109,80 +98,33 @@ class _MetaResultadosState extends State<MetaResultados> {
                                   .listaResultados[index].nomeResultado),
                         ),
                         DataCell(
-                          CustomText(
-                              text: listaResultados
-                                  .listaResultados[index].realizado
-                                  .toString()),
+                          SingleChildScrollView(
+                            child: CustomText(
+                                text: listaResultados
+                                    .realizadoResulMetric(
+                                    5.0,
+                                    listaResultados.listaResultados[index]
+                                        .idResultado!)
+                                    .toString()),
+                          ),
                         ),
-                        DataCell(Row(
-                          children: [
-                            SizedBox(width: 25),
-                            Container(
-                              width: 40,
-                              child: TextField(
-                                keyboardType: TextInputType.number,
-                                enabled: editavel,
-                                controller: controladorMeta[index],
-
-                                // onChanged: (text) {
-                                //   meta = text;
-                                // },
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.lock),
-                              onPressed: () {
-                                idResultado.text = listaResultados
-                                    .listaResultados[index].idResultado
-                                    .toString();
-                                listaResultados.travaMetaResul(idResultado.text,
-                                    double.parse(controladorMeta[index].text));
-                              },
-                            ),
-                            IconButton(
-                                icon: Icon(Icons.update),
-                                onPressed: () {
-                                  idResultado.text = listaResultados
-                                      .listaResultados[index].idResultado
-                                      .toString();
-                                  if (listaResultados
-                                          .listaResultados[index].meta !=
-                                      null) {
-                                    controladorMeta[index].text =
-                                        listaResultados
-                                            .metasResulMetric(idResultado.text)
-                                            .toString();
-
-                                    // listaResultados
-                                    //     .metaResult(
-                                    //         listaResultados
-                                    //             .listaMetricas[index]
-                                    //             .meta1!,
-                                    //         listaResultados
-                                    //             .listaMetricas[index]
-                                    //             .meta2!,
-                                    //         listaResultados
-                                    //             .listaMetricas[index]
-                                    //             .meta3!,
-                                    //         listaResultados
-                                    //             .listaMetricas[index]
-                                    //             .meta4!)
-                                    //     .toString();
-
-                                    // listaResultados
-                                    //     .listaResultados[index].meta
-                                    //     .toString();
-                                  }
-                                }),
-                          ],
-                        )),
                         DataCell(
-                          CustomText(
-                              text:
-                                  '${gerarProgresso(listaResultados.listaResultados[index].realizado!, listaResultados.listaResultados[index].meta!)} %'
-
-                              //'${(listaResultados.listaResultados[index].realizado! / listaResultados.listaResultados[index].meta!) * 100} %'
-                              ),
+                          SingleChildScrollView(
+                            child: CustomText(
+                                text: listaResultados
+                                    .metasResulMetric(
+                                        5.0,
+                                        listaResultados.listaResultados[index]
+                                            .idResultado!)
+                                    .toString()),
+                          ),
+                        ),
+                        DataCell(
+                          SingleChildScrollView(
+                            child: CustomText(
+                                text:
+                                    '\nGeral : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(0.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(0.0, listaResultados.listaResultados[index].idResultado!))} %\n\nQuarter 1 : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(1.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(1.0, listaResultados.listaResultados[index].idResultado!))} %\n\nQuarter 2 : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(2.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(2.0, listaResultados.listaResultados[index].idResultado!))} %\n\nQuarter 3 : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(3.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(3.0, listaResultados.listaResultados[index].idResultado!))} %\n\nQuarter 4 : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(4.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(4.0, listaResultados.listaResultados[index].idResultado!))} %\n'),
+                          ),
                         ),
                       ],
                     ),
@@ -193,35 +135,38 @@ class _MetaResultadosState extends State<MetaResultados> {
           ),
         ),
       ),
-      floatingActionButton: Row(
-        children: [
-          SizedBox(width: 12),
-          Container(
-              decoration: BoxDecoration(
-                  border: Border.all(color: PaletaCores.active, width: .5),
-                  color: PaletaCores.corLight,
-                  borderRadius: BorderRadius.circular(20)),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: PaletaCores.corLight,
-                  elevation: 0,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(left: 12.0),
+        child: Row(
+          children: [
+            SizedBox(width: 12),
+            Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: PaletaCores.active, width: .5),
+                    color: PaletaCores.corLight,
+                    borderRadius: BorderRadius.circular(20)),
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: PaletaCores.corLight,
+                    elevation: 0,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: CustomText(
-                  text: "Voltar para Projetos",
-                  color: PaletaCores.active.withOpacity(.7),
-                  weight: FontWeight.bold,
-                ),
-              )),
-          SizedBox(width: 12),
-        ],
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: CustomText(
+                    text: "Voltar para Projetos",
+                    color: PaletaCores.active.withOpacity(.7),
+                    weight: FontWeight.bold,
+                  ),
+                )),
+            SizedBox(width: 12),
+          ],
+        ),
       ),
     );
   }

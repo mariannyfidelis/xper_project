@@ -60,7 +60,7 @@ class _ManipulaNomeObjetivoState extends State<ManipulaNomeObjetivo> {
                   controller: mandalaController.objetivoController,
                   onChanged: (text) {
                     //mandalaController.mudaNome(text);
-                    mandalaController.atualizaPedaco(text);
+                    mandalaController.atualizarNome(text);
                   },
                   decoration: InputDecoration(
                       border: OutlineInputBorder(

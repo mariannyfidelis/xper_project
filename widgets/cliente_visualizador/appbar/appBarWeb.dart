@@ -17,7 +17,7 @@ class WebAppBar extends StatelessWidget {
           IconButton(
               onPressed: () => Get.back(),
               icon: Icon(Icons.home),
-              splashRadius: 14),
+              splashRadius: 16),
           SizedBox(width: 20),
           Text('Plataforma XPER - WebAppbar'),
           Expanded(child: Container()),
