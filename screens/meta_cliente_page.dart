@@ -17,13 +17,13 @@ class TelaMeta extends StatefulWidget {
 class _TelaMetaState extends State<TelaMeta> {
   String _dataVencimento = "";
   ControllerProjetoRepository listaMetricas =
-  Get.find<ControllerProjetoRepository>();
+      Get.find<ControllerProjetoRepository>();
 
   @override
   Widget build(BuildContext context) {
     var mandalaController = Get.find<ControllerProjetoRepository>();
     return Obx(
-          () => Visibility(
+      () => Visibility(
         visible: mandalaController.visivel.value,
         child: Padding(
           padding: const EdgeInsets.only(top: 20.0),
@@ -48,14 +48,10 @@ class _TelaMetaState extends State<TelaMeta> {
                         },
                       ),
                     ),
-                    SizedBox(
-                      width: 20,
-                    ),
+                    SizedBox(width: 20),
                     Text("Anexos",
                         style: TextStyle(color: PaletaCores.textColor)),
-                    SizedBox(
-                      width: 20,
-                    ),
+                    SizedBox(width: 20),
                     Container(
                       width: 50,
                       child: ElevatedButton(
@@ -91,14 +87,16 @@ class _MetaClienteState extends State<MetaCliente> {
 
   @override
   Widget build(BuildContext context) {
+
     bool editavel = true;
+    double? raioButton = 16;
 
     TextEditingController idMetrica = TextEditingController();
 
     ControllerProjetoRepository listaMetricas =
-    Get.find<ControllerProjetoRepository>();
+        Get.find<ControllerProjetoRepository>();
     var lm = listaMetricas.listaMetricas.where((element) =>
-    element.idResultado == listaMetricas.ultimoResultadoClicado.value);
+        element.idResultado == listaMetricas.ultimoResultadoClicado.value);
 
     List<MetricasPrincipais> metricas = <MetricasPrincipais>[].obs;
     if (listaMetricas.ultimoNivelClicado.value == 3) {
@@ -128,7 +126,10 @@ class _MetaClienteState extends State<MetaCliente> {
               Padding(
                 padding: const EdgeInsets.all(
                     18.0), //TODO: substituir pela mesma forma do donos
-                child: Text('Adiciona Realizado'),
+                child: Text(
+                  'Adicionar Realizado',
+                  style: TextStyle(color: PaletaCores.black, fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
               Container(
                 margin: EdgeInsets.only(bottom: 30),
@@ -143,7 +144,7 @@ class _MetaClienteState extends State<MetaCliente> {
                       ),
                     ],
                     border:
-                    Border.all(color: PaletaCores.corLightGrey, width: .5)),
+                        Border.all(color: PaletaCores.corLightGrey, width: .5)),
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -161,43 +162,44 @@ class _MetaClienteState extends State<MetaCliente> {
                       ],
                     ),
                     Obx(
-                          () => DataTable2(
+                      () => DataTable2(
                         columnSpacing: 12,
                         horizontalMargin: 12,
                         minWidth: 600,
+                        dataRowHeight: 205,
                         columns: [
                           DataColumn2(
                             label: Text('Metricas'),
                             size: ColumnSize.L,
                           ),
                           DataColumn2(
-                            label: Text('Realizado(q1)'),
+                            label: Text('Realizado (Q1)'),
                             size: ColumnSize.M,
                           ),
                           DataColumn2(
-                            label: Text('Realizado(q2)'),
+                            label: Text('Realizado (Q2)'),
                             size: ColumnSize.M,
                           ),
                           DataColumn2(
-                            label: Text('Realizado(q3)'),
+                            label: Text('Realizado (Q3)'),
                             size: ColumnSize.M,
                           ),
                           DataColumn2(
-                            label: Text('Realizado(q4)'),
+                            label: Text('Realizado (Q4)'),
                             size: ColumnSize.M,
                           ),
                           DataColumn2(
-                            label: Text('Metas(previstos)'),
+                            label: Text('Metas (previstas)'),
                             size: ColumnSize.M,
                           ),
                           DataColumn2(
-                            label: Text('Progresso por quarter'),
+                            label: Text('Progresso por Quarter'),
                             size: ColumnSize.M,
                           ),
                         ],
                         rows: List<DataRow>.generate(
                           metricas.length,
-                              (index) => DataRow(
+                          (index) => DataRow(
                             cells: [
                               DataCell(
                                 CustomText(text: metricas[index].nomeMetrica),
@@ -210,34 +212,29 @@ class _MetaClienteState extends State<MetaCliente> {
                                       keyboardType: TextInputType.number,
                                       enabled: editavel,
                                       controller: controladorRealizado1[index],
-
-                                      // onChanged: (text) {
-                                      //   meta = text;
-                                      // },
                                     ),
                                   ),
                                   IconButton(
+                                    splashRadius: raioButton,
                                     icon: Icon(Icons.lock, size: 20),
                                     onPressed: () {
                                       idMetrica.text =
                                           metricas[index].idMetrica.toString();
                                       Get.find<ControllerProjetoRepository>()
                                           .atualizarRealizado(
-                                          1,
-                                          idMetrica.text,
-                                          double.parse(
-                                              controladorRealizado1[index]
-                                                  .text));
-                                      // (idMetrica.text,
-                                      //     double.parse(controladorMeta[index].text));
-                                      // editavel = false;
+                                              1,
+                                              idMetrica.text,
+                                              double.parse(
+                                                  controladorRealizado1[index]
+                                                      .text));
                                     },
                                   ),
                                   IconButton(
+                                      splashRadius: raioButton,
                                       icon: Icon(Icons.update, size: 20),
                                       onPressed: () {
                                         if (listaMetricas
-                                            .listaMetricas[index].meta1 !=
+                                                .listaMetricas[index].meta1 !=
                                             null) {
                                           controladorRealizado1[index].text =
                                               metricas[index]
@@ -263,23 +260,25 @@ class _MetaClienteState extends State<MetaCliente> {
                                     ),
                                   ),
                                   IconButton(
+                                    splashRadius: raioButton,
                                     icon: Icon(Icons.lock, size: 20),
                                     onPressed: () {
                                       idMetrica.text =
                                           metricas[index].idMetrica.toString();
                                       Get.find<ControllerProjetoRepository>()
                                           .atualizarRealizado(
-                                          2,
-                                          idMetrica.text,
-                                          double.parse(
-                                              controladorRealizado2[index]
-                                                  .text));
+                                              2,
+                                              idMetrica.text,
+                                              double.parse(
+                                                  controladorRealizado2[index]
+                                                      .text));
                                       // (idMetrica.text,
                                       //     double.parse(controladorMeta[index].text));
                                       // editavel = false;
                                     },
                                   ),
                                   IconButton(
+                                      splashRadius: raioButton,
                                       icon: Icon(Icons.update, size: 20),
                                       onPressed: () {
                                         if (metricas[index].meta2 != null) {
@@ -307,23 +306,25 @@ class _MetaClienteState extends State<MetaCliente> {
                                     ),
                                   ),
                                   IconButton(
+                                    splashRadius: raioButton,
                                     icon: Icon(Icons.lock, size: 20),
                                     onPressed: () {
                                       idMetrica.text =
                                           metricas[index].idMetrica.toString();
                                       Get.find<ControllerProjetoRepository>()
                                           .atualizarRealizado(
-                                          3,
-                                          idMetrica.text,
-                                          double.parse(
-                                              controladorRealizado3[index]
-                                                  .text));
+                                              3,
+                                              idMetrica.text,
+                                              double.parse(
+                                                  controladorRealizado3[index]
+                                                      .text));
                                       // (idMetrica.text,
                                       //     double.parse(controladorMeta[index].text));
                                       // editavel = false;
                                     },
                                   ),
                                   IconButton(
+                                      splashRadius: raioButton,
                                       icon: Icon(Icons.update, size: 20),
                                       onPressed: () {
                                         if (metricas[index].meta3 != null) {
@@ -350,23 +351,25 @@ class _MetaClienteState extends State<MetaCliente> {
                                     ),
                                   ),
                                   IconButton(
+                                    splashRadius: raioButton,
                                     icon: Icon(Icons.lock, size: 20),
                                     onPressed: () {
                                       idMetrica.text =
                                           metricas[index].idMetrica.toString();
                                       Get.find<ControllerProjetoRepository>()
                                           .atualizarRealizado(
-                                          4,
-                                          idMetrica.text,
-                                          double.parse(
-                                              controladorRealizado4[index]
-                                                  .text));
+                                              4,
+                                              idMetrica.text,
+                                              double.parse(
+                                                  controladorRealizado4[index]
+                                                      .text));
                                       // (idMetrica.text,
                                       //     double.parse(controladorMeta[index].text));
                                       // editavel = false;
                                     },
                                   ),
                                   IconButton(
+                                      splashRadius: raioButton,
                                       icon: Icon(Icons.update, size: 20),
                                       onPressed: () {
                                         if (metricas[index].meta4 != null) {
@@ -381,11 +384,25 @@ class _MetaClienteState extends State<MetaCliente> {
                               DataCell(SingleChildScrollView(
                                   child: CustomText(
                                       text:
-                                      'Quarter 1 : ${metricas[index].meta1.toString()}\nQuarter 2 : ${metricas[index].meta2.toString()}\nQuarter 3 : ${metricas[index].meta3.toString()}\nQuarter 4 : ${metricas[index].meta4.toString()}'))),
+                                          '\nQuarter 1 : ${metricas[index].meta1.toString()}\n\nQuarter 2 : ${metricas[index].meta2.toString()}\n\nQuarter 3 : ${metricas[index].meta3.toString()}\n\nQuarter 4 : ${metricas[index].meta4.toString()}\n'))),
                               DataCell(SingleChildScrollView(
-                                  child: CustomText(
-                                      text:
-                                      'Quarter 1 : ${listaMetricas.gerarProgresso(metricas[index].realizado1!, metricas[index].meta1!)} %\nQuarter 2 : ${listaMetricas.gerarProgresso(metricas[index].realizado2!, metricas[index].meta2!)} %\nQuarter 3 : ${listaMetricas.gerarProgresso(metricas[index].realizado3!, metricas[index].meta3!)} %\nQuarter 4 : ${listaMetricas.gerarProgresso(metricas[index].realizado4!, metricas[index].meta4!)} %'))),
+                                child: CustomText(
+                                    text:
+                                        '\nGeral : ${listaMetricas.gerarProgressoGeral(
+                                  listaMetricas
+                                      .listaMetricas[index].realizado1!,
+                                  listaMetricas
+                                      .listaMetricas[index].realizado2!,
+                                  listaMetricas
+                                      .listaMetricas[index].realizado3!,
+                                  listaMetricas
+                                      .listaMetricas[index].realizado4!,
+                                  listaMetricas.listaMetricas[index].meta1!,
+                                  listaMetricas.listaMetricas[index].meta2!,
+                                  listaMetricas.listaMetricas[index].meta3!,
+                                  listaMetricas.listaMetricas[index].meta4!,
+                                )} %\n\nQuarter 1 : ${listaMetricas.gerarProgresso(listaMetricas.listaMetricas[index].realizado1!, listaMetricas.listaMetricas[index].meta1!)} %\n\nQuarter 2 : ${listaMetricas.gerarProgresso(listaMetricas.listaMetricas[index].realizado2!, listaMetricas.listaMetricas[index].meta2!)} %\n\nQuarter 3 : ${listaMetricas.gerarProgresso(listaMetricas.listaMetricas[index].realizado3!, listaMetricas.listaMetricas[index].meta3!)} %\n\nQuarter 4 : ${listaMetricas.gerarProgresso(listaMetricas.listaMetricas[index].realizado4!, listaMetricas.listaMetricas[index].meta4!)} %\n'),
+                              )),
                             ],
                           ),
                         ),
@@ -398,35 +415,38 @@ class _MetaClienteState extends State<MetaCliente> {
           ),
         ),
       ),
-      floatingActionButton: Row(
-        children: [
-          SizedBox(width: 12),
-          Container(
-              decoration: BoxDecoration(
-                  border: Border.all(color: PaletaCores.active, width: .5),
-                  color: PaletaCores.corLight,
-                  borderRadius: BorderRadius.circular(20)),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: PaletaCores.corLight,
-                  elevation: 0,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(left: 12.0),
+        child: Row(
+          children: [
+            SizedBox(width: 12),
+            Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: PaletaCores.active, width: .5),
+                    color: PaletaCores.corLight,
+                    borderRadius: BorderRadius.circular(20)),
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: PaletaCores.corLight,
+                    elevation: 0,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: CustomText(
-                  text: "Voltar para Mandala",
-                  color: PaletaCores.active.withOpacity(.7),
-                  weight: FontWeight.bold,
-                ),
-              )),
-          SizedBox(width: 12),
-        ],
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: CustomText(
+                    text: "Voltar para Mandala",
+                    color: PaletaCores.active.withOpacity(.7),
+                    weight: FontWeight.bold,
+                  ),
+                )),
+            SizedBox(width: 12),
+          ],
+        ),
       ),
     );
   }
