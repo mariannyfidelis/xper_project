@@ -95,7 +95,7 @@ class _ManipulaOKRState extends State<ManipulaOKR> {
             initialValue: 9,
             onSelected: ((value) {
               if (value == 2) {
-                (mandalaController.ultimoNivelClicado == 2)
+                (mandalaController.ultimoNivelClicado.value == 2)
                     ? mandalaController.removeObjetivo(
                         mandalaController.ultimoObjetivoClicado.value)
                     : mandalaController.removeResultado(

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '/utils/paleta_cores.dart';
 import 'package:flutter/material.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
 
@@ -17,15 +18,24 @@ class ManipulaProgresso extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text("Progresso             "),
+              Text("Progresso Atual   ", style: TextStyle(color: PaletaCores.textColor)),
               SizedBox(width: 10),
-              Text("${mandalaController.progressoObj.floor()}%"),
+              Text(
+                  "${(mandalaController.ultimoNivelClicado.value == 2) ? mandalaController.progressoAtualObj.value.floor() : mandalaController.progressoAtualResult.value.floor()}%",
+                  style: TextStyle(color: PaletaCores.textColor)),
               Slider(
-                value: mandalaController.progressoObj.value,
+
+                  value: (mandalaController.ultimoNivelClicado.value == 2)
+                      ? (mandalaController.progressoAtualObj.value <= 100)
+                      ? mandalaController.progressoAtualObj.value
+                      : 100
+                      : (mandalaController.progressoAtualResult.value <= 100)
+                      ? mandalaController.progressoAtualResult.value
+                      : 100,
                 divisions: 20,
                 max: 100,
                 min: 0,
-                activeColor: Colors.white,
+                activeColor: PaletaCores.textColor,
                 inactiveColor: Colors.transparent,
                 //inactiveColor: Colors.red,
                 label: "Progresso",
@@ -34,6 +44,7 @@ class ManipulaProgresso extends StatelessWidget {
                 },
               ),
               IconButton(
+                color: PaletaCores.textColor,
                 icon: Icon(Icons.lock_outline, size: 18),
                 onPressed: () {
                   mandalaController.atualizaObjetivoMandala(
@@ -48,15 +59,23 @@ class ManipulaProgresso extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text("Progresso Geral   "),
+              Text("Progresso Geral   ", style: TextStyle(color: PaletaCores.textColor)),
               SizedBox(width: 10),
-              Text("${mandalaController.progressoObj.floor()}%"),
+              Text(
+                  "${(mandalaController.ultimoNivelClicado.value == 2) ? mandalaController.progressoObj.value.floor() : mandalaController.progressoResult.value.floor()}%",
+                  style: TextStyle(color: PaletaCores.textColor)),
               Slider(
-                value: mandalaController.progressoObj.value,
+                value: (mandalaController.ultimoNivelClicado.value == 2)
+                    ? (mandalaController.progressoObj.value >= 100)
+                    ? 100
+                    : mandalaController.progressoObj.value
+                    : (mandalaController.progressoResult.value >= 100)
+                    ? 100
+                    : mandalaController.progressoResult.value,
                 divisions: 20,
                 max: 100,
                 min: 0,
-                activeColor: Colors.white,
+                activeColor: PaletaCores.textColor,
                 inactiveColor: Colors.transparent,
                 //inactiveColor: Colors.red,
                 label: "Progresso",
@@ -65,6 +84,7 @@ class ManipulaProgresso extends StatelessWidget {
                 },
               ),
               IconButton(
+                color: PaletaCores.textColor,
                 icon: Icon(Icons.lock_outline, size: 18),
                 onPressed: () {
                   mandalaController.atualizaObjetivoMandala(

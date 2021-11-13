@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:xper_brasil_projects/utils/paleta_cores.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class TelaCalendario extends StatefulWidget {
@@ -21,7 +22,7 @@ class _TelaCalendarioState extends State<TelaCalendario> {
         visible: mandalaController.visivel.value,
         child: Row(
           children: [
-            Text("Vencimento      "),
+            Text("Vencimento      ", style: TextStyle(color: PaletaCores.textColor),),
             IconButton(
               splashRadius: 15,
               iconSize: 20,
@@ -46,7 +47,7 @@ class _TelaCalendarioState extends State<TelaCalendario> {
                     // ignore: unnecessary_statements
                     : () {};
               },
-              icon: Icon(Icons.date_range
+              icon: Icon(Icons.date_range, color: PaletaCores.textColor,
                   //size: 15
                   ),
             ),
