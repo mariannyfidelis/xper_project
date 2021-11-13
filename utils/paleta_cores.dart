@@ -14,4 +14,5 @@ class PaletaCores {
   static const Color textColor = Colors.white;
 
   static const Color blackO7 = Colors.black26;
+  static const Color black = Colors.black;
 }
