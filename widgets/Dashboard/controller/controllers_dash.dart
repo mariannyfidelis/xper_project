@@ -31,21 +31,25 @@ class ControllerProjetoRepository extends GetxController {
   double radToDeg(double rad) => rad * (180.0 / pi);
 
   var ultimoNivelClicado = 1.obs;
-  var indice = (-1).obs;
+  //var indiceObjective = (-1).obs;
+  var indiceObjective = (-1).obs;
   var indiceResult = (-1).obs;
   var filtragem = "publico".obs;
   var iconsProjeto = false.obs;
+  var periodo = 2.0.obs;
 
 //==================== Objetivos mandala ======================
   var ultimoObjetivoClicado = "".obs;
   var nomeObjMandala = ''.obs;
   var progressoObj = 0.0.obs;
+  var progressoAtualObj = 0.0.obs;
   var data = Timestamp.fromDate(DateTime.now()).obs;
 
   //===================Results mandala===================
   var ultimoResultadoClicado = "".obs;
   var nomeResultMandala = ''.obs;
   var progressoResult = 0.0.obs;
+  var progressoAtualResult = 0.0.obs;
 
   //===================Projeto===========================
   var idProjeto = "".obs;

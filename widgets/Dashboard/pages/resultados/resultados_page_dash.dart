@@ -200,29 +200,49 @@ class _ResultadosTableState extends State<ResultadosTable> {
           //TODO: Corrigir para pegar os dados de Donos
           //var donoController = Get.find<ControllerProjetoRepository>().listaDonos;
           //var objetivoController = Get.find<ControllerProjetoRepository>().listaObjectives;
+          if (resultadoController2.idProjeto.value != "") {
+            if (operacao == 1) {
+              debugPrint(objetivoPai);
+              debugPrint("${Get.find<DropObjetivoEResultado>().obj.string}");
+              //TODO: Aqui será feito o link entre Objetivos Resultados e Donos
+              var donos = <DonosResultadoMetricas>[];
 
-          if (operacao == 1) {
-            debugPrint(objetivoPai);
-            debugPrint("${Get.find<DropObjetivoEResultado>().obj.string}");
-            //TODO: Aqui será feito o link entre Objetivos Resultados e Donos
-            var donos = <DonosResultadoMetricas>[];
-
-            resultadoController2.addOneResultado(newResultadoController.text,
-                idObjetivoPai: objetivoPai, donos: donos);
-
-            newResultadoController.text = "";
-            //objetivoPaiController.text = "";
-          } else if (operacao == 2) {
-            resultadoController2.atualizaTudo(idProjeto);
-          } else if (operacao == 3) {
-            resultadoController2.atualizaResultado(
-                idResultadoController.text, nomeResultaAtualizado: newResultadoController.text,
-                idObjetivoPai: objetivoPai);
-
-            idResultadoController.text = '';
-            newResultadoController.text = '';
+              if (newResultadoController.text != "") {
+                resultadoController2.addOneResultado(
+                    newResultadoController.text,
+                    idObjetivoPai: objetivoPai,
+                    donos: donos);
+              }
+              newResultadoController.text = "";
+              //objetivoPaiController.text = "";
+            } else if (operacao == 2) {
+              resultadoController2.atualizaTudo(idProjeto);
+            } else if (operacao == 3) {
+              if (newResultadoController.text != "") {
+                resultadoController2.atualizaResultado(
+                    idResultadoController.text,
+                    nomeResultaAtualizado: newResultadoController.text,
+                    idObjetivoPai: objetivoPai);
+              }
+              idResultadoController.text = '';
+              newResultadoController.text = '';
+            } else {
+              debugPrint("Operação inválida em resultados principais");
+            }
           } else {
-            debugPrint("Operação inválida em resultados principais");
+            showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                        title: Text("Nenhum Projeto Selecionado"),
+                        content: Text(
+                            "Va no menu projetos, selecione um projeto e tente novamente"),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Get.back();
+                              },
+                              child: Text("OK")),
+                        ]));
           }
         },
         child: CustomText(

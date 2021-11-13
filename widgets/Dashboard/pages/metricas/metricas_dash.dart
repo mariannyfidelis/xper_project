@@ -18,6 +18,7 @@ class MetricasTable extends StatefulWidget {
 class _MetricasTableState extends State<MetricasTable> {
   TextEditingController newMetrica = TextEditingController();
   TextEditingController idMetrica = TextEditingController();
+  TextEditingController unidade = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +58,13 @@ class _MetricasTableState extends State<MetricasTable> {
             ),
           ),
           SizedBox(height: 20, width: 10),
+          TextField(
+            controller: unidade,
+            decoration: InputDecoration(
+              labelText: "Unidade da metrica",
+              suffixIcon: Icon(Icons.data_usage_outlined),
+            ),
+          ),
           SizedBox(height: 40, width: 10),
           CustomText(
               text: "A métrica pertence a qual resultado ?",
@@ -136,6 +144,9 @@ class _MetricasTableState extends State<MetricasTable> {
                                   idMetrica.text = controllerProjetoRepository
                                       .listaMetricas[index].idMetrica
                                       .toString();
+                                  unidade.text = controllerProjetoRepository
+                                      .listaMetricas[index].unidadeMedida
+                                      .toString();
                                 }),
                           ),
                           Padding(
@@ -207,19 +218,41 @@ class _MetricasTableState extends State<MetricasTable> {
         onPressed: () {
           var controlador = Get.find<ControllerProjetoRepository>();
           var resultadoPai = Get.find<DropObjetivoEResultado>().result.string;
-
-          if (operacao == 1) {
-            controlador.addOneMetric(newMetrica.text, idResultado: resultadoPai);
-            newMetrica.text = "";
-          } else if (operacao == 2) {
-            controlador.atualizaTudo(controlador.idProjeto.string);
-          } else if (operacao == 3) {
-            controlador.atualizaMetrica(
-                idMetrica.text, newMetrica.text, idResultado: resultadoPai);
-            newMetrica.text = '';
-            idMetrica.text = '';
+          if (controlador.idProjeto.value != '') {
+            if (operacao == 1) {
+              if (newMetrica.text != '')
+                (unidade.text == '')
+                    ? controlador.addOneMetric(newMetrica.text,
+                        idResultado: resultadoPai)
+                    : controlador.addOneMetric(newMetrica.text,
+                        idResultado: resultadoPai, unidade: unidade.text);
+              newMetrica.text = "";
+            } else if (operacao == 2) {
+              controlador.atualizaTudo(controlador.idProjeto.string);
+            } else if (operacao == 3) {
+              if (newMetrica.text != '')
+                controlador.atualizaMetrica(idMetrica.text, newMetrica.text,
+                    unidade: unidade.text, idResultado: resultadoPai);
+              newMetrica.text = '';
+              idMetrica.text = '';
+              unidade.text = '';
+            } else {
+              debugPrint("Opção inválida no textfield Metricas");
+            }
           } else {
-            debugPrint("Opção inválida no textfield Metricas");
+            showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                        title: Text("Nenhum Projeto Selecionado"),
+                        content: Text(
+                            "Va no menu projetos, selecione um projeto e tente novamente"),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Get.back();
+                              },
+                              child: Text("OK")),
+                        ]));
           }
         },
         child: CustomText(

@@ -88,23 +88,27 @@ class _MetaState extends State<Meta> {
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: Text('Realizados(q1,q2,q3,q4)'),
+                      label: Text('Unidade'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: Text('Meta(q1)'),
+                      label: Text('Realizados (Q1,Q2,Q3,Q4)'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: Text('Meta(q2)'),
+                      label: Text('Meta(Q1)'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: Text('Meta(q3)'),
+                      label: Text('Meta(Q2)'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: Text('Meta(q4)'),
+                      label: Text('Meta(Q3)'),
+                      size: ColumnSize.M,
+                    ),
+                    DataColumn2(
+                      label: Text('Meta(Q4)'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
@@ -123,10 +127,16 @@ class _MetaState extends State<Meta> {
                               text: listaMetricas
                                   .listaMetricas[index].nomeMetrica),
                         ),
+                        DataCell(
+                          CustomText(
+                              text: listaMetricas
+                                  .listaMetricas[index].unidadeMedida),
+                        ),
                         // =======================REALIZADO===============================
-                        DataCell(CustomText(
+                        DataCell(SingleChildScrollView(
+                            child: CustomText(
                             text:
-                                ('q1 : ${listaMetricas.listaMetricas[index].realizado1.toString()},q2 : ${listaMetricas.listaMetricas[index].realizado2.toString()}, q3: ${listaMetricas.listaMetricas[index].realizado3.toString()}, q4 : ${listaMetricas.listaMetricas[index].realizado4.toString()}'))),
+                            'Quarter 1 : ${listaMetricas.listaMetricas[index].realizado1.toString()}\nQuarter 2 : ${listaMetricas.listaMetricas[index].realizado2.toString()}\nQuarter 3 : ${listaMetricas.listaMetricas[index].realizado3.toString()}\nQuarter 4 : ${listaMetricas.listaMetricas[index].realizado4.toString()}'))),
                         //=======================Q1==================================
                         DataCell(Row(
                           children: [

@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import '/widgets/Dashboard/pages/overview/widgets/info_card.dart';
-import '/models/objetivo_model.dart';
-import 'package:provider/provider.dart';
 import '/models/usuario.dart';
+import '/models/objetivo_model.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '/widgets/Dashboard/pages/overview/widgets/info_card.dart';
 
 class OverViewCardsMediumScreenSizeDash extends StatelessWidget {
   const OverViewCardsMediumScreenSizeDash({Key? key}) : super(key: key);
@@ -10,7 +10,7 @@ class OverViewCardsMediumScreenSizeDash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final usuarios = Provider.of<List<Usuario>?>(context);
-    final projetos = Provider.of<List<ObjetivoModel>?>(context);
+    //final projetos = Provider.of<List<ObjetivoModel>?>(context);
     double _width = MediaQuery.of(context).size.width;
     return (usuarios != null)
         ? Column(
@@ -19,7 +19,7 @@ class OverViewCardsMediumScreenSizeDash extends StatelessWidget {
               Row(
                 children: [
                   InfoCardDash(
-                    title: 'Numero de Clientes',
+                    title: 'Número de Clientes',
                     value: '${usuarios.length}',
                     onTap: () {},
                     topColor: Colors.orangeAccent,
@@ -27,7 +27,7 @@ class OverViewCardsMediumScreenSizeDash extends StatelessWidget {
                   SizedBox(width: _width / 64),
                   InfoCardDash(
                     title: 'Modelos Criados',
-                    value: '${projetos!.length}',
+                    value: '100',
                     onTap: () {},
                     topColor: Colors.lightGreen,
                   ),
@@ -57,14 +57,14 @@ class OverViewCardsMediumScreenSizeDash extends StatelessWidget {
               Row(
                 children: [
                   InfoCardDash(
-                    title: 'Numero de Insights',
+                    title: 'Número de Insights',
                     value: '${usuarios.length}',
                     onTap: () {},
                     topColor: Colors.blue,
                   ),
                   SizedBox(width: _width / 64),
                   InfoCardDash(
-                    title: 'Usuarios Freemiun',
+                    title: 'Usuários Freemiun',
                     value: '${usuarios.length - 4}',
                     onTap: () {},
                     topColor: Colors.amberAccent,

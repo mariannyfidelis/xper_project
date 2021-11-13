@@ -1,12 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:xper_brasil_projects/widgets/Dashboard/controller/controllers_dash.dart';
-
-import '/widgets/Dashboard/pages/overview/widgets/bar_chart_horizontal.dart';
-import '/widgets/Dashboard/app_bar/custom_text.dart';
-import '/widgets/Dashboard/pages/overview/widgets/bar_chart_dash.dart';
-
 import '/utils/paleta_cores.dart';
+import 'package:flutter/material.dart';
+import '/widgets/Dashboard/app_bar/custom_text.dart';
+import '/widgets/Dashboard/controller/controllers_dash.dart';
+import '/widgets/Dashboard/pages/overview/widgets/bar_chart_dash.dart';
+import '/widgets/Dashboard/pages/overview/widgets/bar_chart_horizontal.dart';
 
 class RevenueSectionLargeDash extends StatelessWidget {
   const RevenueSectionLargeDash({Key? key}) : super(key: key);
@@ -17,7 +15,7 @@ class RevenueSectionLargeDash extends StatelessWidget {
 
     return Column(
       children: [
-        Text("${mandalaController.nome==""? "Seleciona Projeto": mandalaController.nome.string}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25) ,),
+        Text("${mandalaController.nome.string==""? "Seleciona Projeto": mandalaController.nome.string}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25) ,),
         Container(
             //height: 600,
             padding: EdgeInsets.all(24),
@@ -145,7 +143,7 @@ class RevenueSectionLargeDash extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         CustomText(
-                            text: 'Por Metrica',
+                            text: 'Por Métrica',
                             size: 20,
                             weight: FontWeight.bold,
                             color: PaletaCores.corLightGrey),

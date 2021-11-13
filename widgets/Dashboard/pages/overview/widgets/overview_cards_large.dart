@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import '/widgets/Dashboard/pages/overview/widgets/info_card.dart';
-import '/models/objetivo_model.dart';
 import '/models/usuario.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '/widgets/Dashboard/pages/overview/widgets/info_card.dart';
 
 class OverviewCardsLargeScreenDash extends StatelessWidget {
   const OverviewCardsLargeScreenDash({Key? key}) : super(key: key);
@@ -10,6 +9,7 @@ class OverviewCardsLargeScreenDash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double _width = MediaQuery.of(context).size.width;
+    //TODO: Provider deve ser substituído !!!!!!!!
     final usuarios = Provider.of<List<Usuario>?>(context);
     //final projetos = Provider.of<List<ObjetivoModel>?>(context);
 

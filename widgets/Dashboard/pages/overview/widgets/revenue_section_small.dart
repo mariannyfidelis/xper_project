@@ -1,9 +1,8 @@
+import 'revenue_info.dart';
+import '/utils/paleta_cores.dart';
 import 'package:flutter/material.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
 import '/widgets/Dashboard/pages/overview/widgets/bar_chart_dash.dart';
-import 'revenue_info.dart';
-
-import '/utils/paleta_cores.dart';
 
 class RevenueSectionSmallDash extends StatelessWidget {
   const RevenueSectionSmallDash({Key? key}) : super(key: key);

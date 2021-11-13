@@ -42,10 +42,10 @@ class OverViewPageDash extends StatelessWidget {
                   OverviewCardsLargeScreenDash()
               else
                 OverViewCardsSmallScreenDash(),
-              if (!ResponsiveWidget.isSmallScreen(context))
-                RevenueSectionLargeDash()
-              else
-                RevenueSectionSmallDash(),
+              // if (!ResponsiveWidget.isSmallScreen(context))
+              //   RevenueSectionLargeDash()
+              // else
+              //   RevenueSectionSmallDash(),
               ClientsList()
             ],
           ),
