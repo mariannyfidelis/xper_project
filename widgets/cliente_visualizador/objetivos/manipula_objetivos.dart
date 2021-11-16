@@ -1,9 +1,8 @@
 import 'package:get/get.dart';
-import 'package:xper_brasil_projects/widgets/Dashboard/controller/controllers_dash.dart';
-
 import 'arco_automatico_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:touchable/touchable.dart';
+import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class Objetivos extends StatefulWidget {
   Objetivos({Key? key}) : super(key: key);

@@ -54,7 +54,7 @@ class ControllerProjetoRepository extends GetxController {
 
   //===================Projeto===========================
   var public = false.obs;
-  var permissaoCompartilhar =  "pode ler".obs;
+  var permissaoCompartilhar = "pode ler".obs;
   var idProjeto = "".obs;
   var nome = "".obs;
   var proprietario = "".obs;
@@ -109,6 +109,11 @@ class ControllerProjetoRepository extends GetxController {
       listaProjetos[0].metricasPrincipais!.forEach((element) {
         _listMetrics.clear();
         _listMetrics.add(element);
+      });
+
+      listaProjetos[0].acl!.forEach((element) {
+        _listAcl.clear();
+        _listAcl.add(element);
       });
 
       await _readProjeto(idProjeto.value);
@@ -1529,12 +1534,12 @@ class ControllerProjetoRepository extends GetxController {
 
 //======================= CRUD ACL =====================================
 
-  changePermissaoCompartilhar(String permissao){
+  changePermissaoCompartilhar(String permissao) {
     this.permissaoCompartilhar.value = permissao;
   }
+
   atualizaACL(
       String idProjeto, String identificadorEmail, String permissao) async {
-
     var listAcl;
 
     DocumentReference reference =
@@ -1572,31 +1577,32 @@ class ControllerProjetoRepository extends GetxController {
                 }
               }
             }
-            if (jaEstaNaLista == false) {
-              ACL aclObject =
-                  ACL(identificador: identificadorEmail, permissao: permissao);
-              _listaProjetos[indice].acl!.add(aclObject);
-              _listAcl.add(aclObject);
+          } else if (_listaProjetos[indice].acl!.length == 0) {
+            print("_listaProjetos[indice].acl!.length == 0");
+          }
+          if (jaEstaNaLista == false) {
+            ACL aclObject =
+                ACL(identificador: identificadorEmail, permissao: permissao);
+            _listaProjetos[indice].acl!.add(aclObject);
+            _listAcl.add(aclObject);
+            listAcl = _listAcl.map((v) => v.toJson()).toList();
+            await reference.update({'acl': listAcl});
+          }
+          if (jaEstaNaLista && mudouPermissao) {
+            if (indiceAcl != -1) {
+              _listaProjetos[indice].acl![indiceAcl].permissao = permissao;
+              _listAcl[indiceAcl].permissao = permissao;
               listAcl = _listAcl.map((v) => v.toJson()).toList();
-              debugPrint("Adicionei um ACL");
-              await reference.set( {'acl': listAcl});
-            }
-            if (jaEstaNaLista && mudouPermissao) {
-              if (indiceAcl != -1) {
-                _listaProjetos[indice].acl![indiceAcl].permissao = permissao;
-                _listAcl[indiceAcl].permissao = permissao;
-                listAcl = _listAcl.map((v) => v.toJson()).toList();
-                debugPrint("update de um ACL");
-                await reference.update({'acl': listAcl});
-              }
+              await reference.update({'acl': listAcl});
             }
           }
-        }
-        _listAcl.forEach((element) {print(element);});
-        //listAcl = _listAcl.map((v) => v.toJson()).toList();
-       // await reference.update({'acl': listAcl});
 
-        debugPrint("saindo um ACL");
+          _listAcl.forEach((element) {
+            print(element);
+          });
+        }else{
+          debugPrint("lista ACL é igual a null");
+        }
       } else {
         debugPrint("Projeto não encontrado !");
       }
