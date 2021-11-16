@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:get/get.dart';
+import '/widgets/Dashboard/controller/controllers_dash.dart';
 import '/models/usuario.dart';
 import '/screens/home_web.dart';
 import '/screens/tela_de_aviso.dart';
@@ -11,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+//TODO: Configurar para salvar os dados dentro do número correto do projeto
 String id_projeto = "01";
 
 class AuthException implements Exception {
@@ -71,7 +73,7 @@ class AuthService extends GetxController {
             .set(usuario.toMap())
             .then((value) {
           //Rotas para outra tela
-          Get.to(HomeWeb());
+          Get.to(() => HomeWeb());
           //Navigator.pushReplacementNamed(context, "/projetos");
         });
       });
@@ -84,7 +86,7 @@ class AuthService extends GetxController {
           .set(usuario.toMap())
           .then((value) {
         //Rotas para outra tela
-        Get.to(HomeWeb());
+        Get.to(() => HomeWeb());
         //Navigator.pushReplacementNamed(context, "/projetos");
       });
     }
@@ -127,6 +129,7 @@ class AuthService extends GetxController {
         return idUsuario;
       });
     } on FirebaseAuthException catch (e) {
+      print("--------> ${e.code} <---------");
       if (e.code == 'weak-password') {
         throw AuthException("A senha é fraca !");
       } else if (e.code == "wrong-password") {
@@ -134,13 +137,15 @@ class AuthService extends GetxController {
       } else if (e.code == "user-not-found") {
         throw AuthException("Email não encontrado. Cadastra-se!");
       } else if (e.code == "email-already-in-use") {
+        print(e.code);
+        return e.code;
         throw AuthException("Este email já está cadastrado !");
       }
     }
     //_getUser();
   }
 
-  registrar(String email, String senha) async {
+  registrar(String nome, String email, String senha) async {
     try {
       await _auth.createUserWithEmailAndPassword(email: email, password: senha);
       _getUser();
@@ -159,7 +164,7 @@ class AuthService extends GetxController {
 
   void redefinirSenha() {
     print("Redefina sua senha ...");
-    Get.to(RedefinicaoSenhaPage());
+    Get.to(() => RedefinicaoSenhaPage());
     //Navigator.pushReplacementNamed(context, "/redefinicaoSenha");
   }
 
@@ -234,15 +239,15 @@ class AuthService extends GetxController {
     print("xxx tipo do usuário $tipoUsuario");
 
     if (tipoUsuario == "admin" && ativo == true) {
-      Get.to(Dashboard(tipo: "admin"));
+      Get.to(() => Dashboard(tipo: "admin"));
     } else if (tipoUsuario == "gerenciador" && ativo == true) {
-      Get.to(Dashboard(tipo: "gerenciador"));
+      Get.to(() => Dashboard(tipo: "gerenciador"));
     } else if (tipoUsuario == "cliente" && ativo == true) {
-      Get.to(HomeWeb(tipo: "cliente"));
+      Get.off(HomeWeb(tipo: "cliente"));
     } else if (ativo == false) {
-      Get.to(TelaDeAviso());
+      Get.to(() => TelaDeAviso());
     } else {
-      Get.to(Scaffold(body: Center(child: CircularProgressIndicator())));
+      Get.to(() => Scaffold(body: Center(child: CircularProgressIndicator())));
     }
     // //QuerySnapshot snapshot =
     // //  await _firestore.collection("usuarios/$uidUser").get();
@@ -281,7 +286,6 @@ class AuthService extends GetxController {
   }
 
   Future<String?> getTipoUsuario2() async {
-    //
     if (usuario == null) {
       return null;
     } else {
@@ -326,7 +330,58 @@ class AuthService extends GetxController {
     // });
   }
 
-  String? registrarDono(String nome, String email, String senha,
+  Future<String?> registrarDono(String nome, String email, String senha,
+      {String tipoUsuario = "cliente"}) async {
+    String? idUsuario = "";
+
+    try {
+      _auth
+          .createUserWithEmailAndPassword(
+        email: email,
+        password: senha,
+      )
+          .then((userCredencial) {
+        print("Usuário criado pelo auth-service: $idUsuario");
+        idUsuario = userCredencial.user?.uid;
+        print("Novo usuario 'corporativo - dono' cadastrado: $idUsuario");
+
+        if (idUsuario != null) {
+          Usuario usuario = Usuario(idUsuario!, nome, email,
+              tipoUsuario: tipoUsuario, ativo: true);
+
+          criaEstruturaPasta(idUsuario!);
+
+          var cont = Get.find<ControllerProjetoRepository>();
+          cont.addOneDono(nome, email);
+        } else {
+          print("Nao foi possivel a criacao de um Dono  .... :(");
+        }
+
+        return idUsuario;
+        // _auth.currentUser
+        //     ?.sendEmailVerification()
+        //     .then((value) => print("enviei um email de verificação ..."));
+      }).catchError((e) {
+        String? erroCode = "";
+
+        if (e.code == 'weak-password') {
+          erroCode = e.code;
+          return erroCode;
+        } else if (e.code == "wrong-password") {
+          erroCode = e.code;
+          return erroCode;
+        } else if (e.code == "user-not-found") {
+          erroCode = e.code;
+          return erroCode;
+        } else if (e.code == "email-already-in-use") {
+          erroCode = e.code;
+          return erroCode;
+        }
+      });
+    } catch (e) {}
+  }
+
+  String? registrarDono2(String nome, String email, String senha,
       {String tipoUsuario = "cliente"}) {
     String? idUsuario;
 

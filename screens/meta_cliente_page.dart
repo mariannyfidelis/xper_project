@@ -44,7 +44,7 @@ class _TelaMetaState extends State<TelaMeta> {
                       child: ElevatedButton(
                         child: Icon(Icons.arrow_drop_down),
                         onPressed: () {
-                          Get.to(MetaCliente());
+                          Get.to(() => MetaCliente());
                         },
                       ),
                     ),
@@ -57,7 +57,7 @@ class _TelaMetaState extends State<TelaMeta> {
                       child: ElevatedButton(
                         child: Icon(Icons.attach_file),
                         onPressed: () {
-                          Get.to(AnexoPage());
+                          Get.to(() =>AnexoPage());
                         },
                       ),
                     ),

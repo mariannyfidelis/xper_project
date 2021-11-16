@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
+import '/utils/paleta_cores.dart';
 import 'package:flutter/material.dart';
-import 'package:xper_brasil_projects/utils/paleta_cores.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class ManipulaNomeObjetivo extends StatefulWidget {
@@ -37,7 +37,7 @@ class _ManipulaNomeObjetivoState extends State<ManipulaNomeObjetivo> {
     return Visibility(
       visible: true,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 8.0),
+        padding: const EdgeInsets.only(bottom: 6.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,

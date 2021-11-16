@@ -30,6 +30,7 @@ class ControllerProjetoRepository extends GetxController {
 
   double radToDeg(double rad) => rad * (180.0 / pi);
 
+  var responsaveis = "".obs;
   var ultimoNivelClicado = 1.obs;
   //var indiceObjective = (-1).obs;
   var indiceObjective = (-1).obs;
@@ -52,6 +53,8 @@ class ControllerProjetoRepository extends GetxController {
   var progressoAtualResult = 0.0.obs;
 
   //===================Projeto===========================
+  var public = false.obs;
+  var permissaoCompartilhar =  "pode ler".obs;
   var idProjeto = "".obs;
   var nome = "".obs;
   var proprietario = "".obs;
@@ -1219,6 +1222,44 @@ class ControllerProjetoRepository extends GetxController {
     _listaProjetos.remove(projeto);
   }
 
+  void mudaTipoPermissaoProjeto(bool publico) {
+    public.value = publico;
+    print(public.value);
+  }
+
+  void tornaProjetoPublico(String idProjeto) async {
+    DocumentReference reference =
+        await db.collection('projetosPrincipais').doc(idProjeto);
+
+    String tipoProjeto = (public.value == true) ? "publico" : "privado";
+
+    if (idProjeto != "") {
+      int indice = _listaProjetos
+          .indexWhere((element) => element.idProjeto == idProjeto);
+
+      _listaProjetos.forEach((element) {
+        if (element.idProjeto == idProjeto) {
+          element.tipoProj = tipoProjeto;
+        }
+      });
+
+      if (indice != -1) {
+        _listaProjetos[indice].tipoProj = tipoProjeto;
+        this.tipoProj.value = tipoProjeto;
+
+        var reference =
+            await db.collection('projetosPrincipais').doc(idProjeto);
+
+        await reference.update({'tipoProj': tipoProjeto});
+        debugPrint("Tornei o projeto Público");
+      } else {
+        debugPrint("Projeto não encontrado !");
+      }
+    } else {
+      debugPrint("Erro ao tornar projeto público");
+    }
+  }
+
   void atualizaTudo(String idProjeto) {
     _readProjeto(idProjeto);
   }
@@ -1319,9 +1360,8 @@ class ControllerProjetoRepository extends GetxController {
       }
 
       if (cor != null) {
-        var reference = await db
-            .collection('projetosPrincipais')
-            .doc(this.idProjeto.value);
+        var reference =
+            await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
         _listObjects[indice].paint = cor;
         var l = _listObjects.map((v) => v.toJson()).toList();
@@ -1336,10 +1376,7 @@ class ControllerProjetoRepository extends GetxController {
   }
 
   //=============================================SUSPENDER USER====================================================
-  mudarAtivo(
-    bool ativo,
-    String idDoCara,
-  ) {
+  mudarAtivo(bool ativo, String idDoCara) {
     var reference = db.collection('usuarios').doc(idDoCara);
 
     (ativo)
@@ -1347,10 +1384,7 @@ class ControllerProjetoRepository extends GetxController {
         : reference.update({'ativo': true});
   }
 
-  mudarEdit(
-    bool editor,
-    String idDoCara,
-  ) {
+  mudarEdit(bool editor, String idDoCara) {
     var reference = db.collection('usuarios').doc(idDoCara);
 
     (editor)
@@ -1434,6 +1468,7 @@ class ControllerProjetoRepository extends GetxController {
       return 0.0;
     }
   }
+
   ocultaCriarProjeto(String tipo) {
     if (tipo == 'cliente' && filtragem.value != "privado") {
       botaoProjeto.value = false;
@@ -1467,7 +1502,20 @@ class ControllerProjetoRepository extends GetxController {
 
   void buscarExtensao() {}
 
-  void adicionarResponsavel() {}
+  String adicionarResponsavel(String? nomeResponsavel) {
+    List<String> spli = [""];
+
+    if (nomeResponsavel != "" && nomeResponsavel != null) {
+      if (nomeResponsavel.contains("@")) {
+        debugPrint("Adicionando responsável - $nomeResponsavel ");
+        spli = nomeResponsavel.split("@");
+      }
+    } else {
+      debugPrint("Nenhum responsável válido foi adicionado !");
+    }
+    responsaveis.value = spli[0];
+    return spli[0];
+  }
 
   void buscarResponsavel() {}
 
@@ -1477,5 +1525,83 @@ class ControllerProjetoRepository extends GetxController {
 
   void setSweepAngle(int o, double sweep) {
     _listObjects[o].setSweepAngle(sweep);
+  }
+
+//======================= CRUD ACL =====================================
+
+  changePermissaoCompartilhar(String permissao){
+    this.permissaoCompartilhar.value = permissao;
+  }
+  atualizaACL(
+      String idProjeto, String identificadorEmail, String permissao) async {
+
+    var listAcl;
+
+    DocumentReference reference =
+        await db.collection('projetosPrincipais').doc(idProjeto);
+
+    if (idProjeto != "") {
+      int indice = _listaProjetos
+          .indexWhere((element) => element.idProjeto == idProjeto);
+
+      // _listaProjetos.forEach((element) {
+      //   if (element.idProjeto == idProjeto) {
+      //     element.acl = tipoProjeto;
+      //   }
+      // });
+
+      if (indice != -1) {
+        //_listaProjetos[indice].acl = tipoProjeto;
+        var listaACL = _listaProjetos[indice].acl;
+        bool jaEstaNaLista = false;
+        bool mudouPermissao = false;
+        int indiceAcl = -1;
+
+        if (_listaProjetos[indice].acl != null) {
+          print("_listaProjetos[indice].acl != null");
+          if (_listaProjetos[indice].acl!.length > 0) {
+            print("_listaProjetos[indice].acl.length > 0");
+            for (int a = 0; a < _listaProjetos[indice].acl!.length; a++) {
+              var acl = _listaProjetos[indice].acl![a];
+
+              if (acl.identificador == identificadorEmail) {
+                jaEstaNaLista = true;
+                if (acl.permissao != permissao) {
+                  mudouPermissao = true;
+                  indiceAcl = a;
+                }
+              }
+            }
+            if (jaEstaNaLista == false) {
+              ACL aclObject =
+                  ACL(identificador: identificadorEmail, permissao: permissao);
+              _listaProjetos[indice].acl!.add(aclObject);
+              _listAcl.add(aclObject);
+              listAcl = _listAcl.map((v) => v.toJson()).toList();
+              debugPrint("Adicionei um ACL");
+              await reference.set( {'acl': listAcl});
+            }
+            if (jaEstaNaLista && mudouPermissao) {
+              if (indiceAcl != -1) {
+                _listaProjetos[indice].acl![indiceAcl].permissao = permissao;
+                _listAcl[indiceAcl].permissao = permissao;
+                listAcl = _listAcl.map((v) => v.toJson()).toList();
+                debugPrint("update de um ACL");
+                await reference.update({'acl': listAcl});
+              }
+            }
+          }
+        }
+        _listAcl.forEach((element) {print(element);});
+        //listAcl = _listAcl.map((v) => v.toJson()).toList();
+       // await reference.update({'acl': listAcl});
+
+        debugPrint("saindo um ACL");
+      } else {
+        debugPrint("Projeto não encontrado !");
+      }
+    } else {
+      debugPrint("Erro ao manipular ACLs");
+    }
   }
 }

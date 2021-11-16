@@ -1,11 +1,14 @@
 import 'package:get/get.dart';
 import 'dash_visual_page.dart';
+import '/screens/login_page.dart';
 import '/utils/paleta_cores.dart';
 import '/models/project_model.dart';
 import '/services/auth_service.dart';
 import 'projeto_pagina_principal.dart';
 import 'package:flutter/material.dart';
+import '/utils/configuracoes_aplicacao.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
+import '/widgets/Dashboard/pages/resultados/drop.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class HomeWeb extends StatefulWidget {
@@ -34,34 +37,74 @@ class _HomeWebState extends State<HomeWeb> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 117, 119, 139),
+        elevation: 10,
+        toolbarHeight: 50,
         actions: [
-          ElevatedButton(
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              style: estiloBotao,
               onPressed: () {
                 controllerProjetos.sincronizaListaProjects("publico");
                 controllerProjetos.filtragem.value = "publico";
               },
-              child: Text("Projetos públicos")),
+              child: Text(
+                "Projetos públicos",
+                style: estiloTextoBotao,
+              ),
+            ),
+          ),
           SizedBox(width: 10),
-          ElevatedButton(
-              onPressed: () {
-                controllerProjetos.sincronizaListaProjects("privado");
-                controllerProjetos.filtragem.value = "privado";
-              },
-              child: Text("Seus projetos")),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+                style: estiloBotao,
+                onPressed: () {
+                  controllerProjetos.sincronizaListaProjects("privado");
+                  controllerProjetos.filtragem.value = "privado";
+                },
+                child: Text(
+                  "Seus projetos",
+                  style: estiloTextoBotao,
+                )),
+          ),
           SizedBox(width: 10),
-          ElevatedButton(
-              onPressed: () {
-                controllerProjetos.sincronizaListaProjects("compartilhado");
-                controllerProjetos.filtragem.value = "compartilhar";
-              },
-              child: Text("Compartilhados comigo")),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+                style: estiloBotao,
+                onPressed: () {
+                  controllerProjetos.sincronizaListaProjects("compartilhado");
+                  controllerProjetos.filtragem.value = "compartilhar";
+                },
+                child: Text(
+                  "Compartilhados comigo",
+                  style: estiloTextoBotao,
+                )),
+          ),
           SizedBox(width: 10),
-          ElevatedButton(
-              onPressed: () {
-                controllerProjetos.sincronizaListaProjects("todos");
-                controllerProjetos.filtragem.value = "todos";
-              },
-              child: Text("Todos os projetos"))
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+                style: estiloBotao,
+                onPressed: () {
+                  controllerProjetos.sincronizaListaProjects("todos");
+                  controllerProjetos.filtragem.value = "todos";
+                },
+                child: Text(
+                  "Todos os projetos",
+                  style: estiloTextoBotao,
+                )),
+          ),
+          OutlinedButton.icon(
+            onPressed: () {
+              Get.find<AuthService>().logout();
+              Get.to(() => LoginPage(title: "XPER"), routeName: "/");
+            },
+            icon: Icon(Icons.logout),
+            label: Text("Sair"),
+          )
         ],
         title: Text("Tela Projetos"),
       ),
@@ -86,10 +129,9 @@ class _HomeWebState extends State<HomeWeb> {
                                 padding: const EdgeInsets.only(left: 8.0),
                                 child: CustomText(
                                   text: meusProjetos[index].nome,
-                                  color:
-                                      PaletaCores.corPrimaria.withOpacity(.7),
+                                  color: PaletaCores.corPrimaria,
                                   weight: FontWeight.bold,
-                                  size: 16,
+                                  size: 18,
                                 ),
                               ),
                             ),
@@ -189,7 +231,7 @@ class _HomeWebState extends State<HomeWeb> {
               },
               child: CustomText(
                 text: "Dashboard Visual",
-                color: PaletaCores.active.withOpacity(.7),
+                color: PaletaCores.active,
                 weight: FontWeight.bold,
               ),
             ),
@@ -216,7 +258,7 @@ class _HomeWebState extends State<HomeWeb> {
                         controllerProjetos.addOneProject("Projeto Padrão"),
                     child: CustomText(
                       text: "Criar Novo Projeto",
-                      color: PaletaCores.active.withOpacity(.7),
+                      color: PaletaCores.active,
                       weight: FontWeight.bold,
                     ),
                   ),
@@ -309,6 +351,10 @@ class _HomeWebState extends State<HomeWeb> {
                         fontWeight: FontWeight.bold,
                       )),
                   TextField(
+                    decoration: InputDecoration(
+                      labelText: "Mensagem a ser enviada email",
+                      suffixIcon: Icon(Icons.email),
+                    ),
                     controller: mensagem,
                     enableSuggestions: true,
                     enableInteractiveSelection: true,
@@ -323,14 +369,19 @@ class _HomeWebState extends State<HomeWeb> {
                   ),
                   for (int i = 0; i < 3; i++)
                     Padding(
-                        padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
+                        padding: const EdgeInsets.only(
+                            top: 12.0, bottom: 12.0, left: 10.0),
                         child: Row(
                           children: [
                             Expanded(
                                 child: Text(
                               "Pessoa $i",
+                              style: estiloTextoBotaoDropMenuButton,
                             )),
-                            Text("É dono")
+                            Text(
+                              "É dono",
+                              style: estiloTextoBotaoDropMenuButton,
+                            )
                           ],
                         )),
                 ],
@@ -347,30 +398,90 @@ class _HomeWebState extends State<HomeWeb> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  TextField(
-                    controller: emailnovoDonoController,
-                    decoration: InputDecoration(
-                      labelText: "Email",
-                      suffixIcon: Icon(Icons.email),
-                    ),
-                  ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Checkbox(
-                        onChanged: (bool? value) {
-                          setState(() {
-                            publico = value!;
-                          });
-                        },
-                        value: publico,
-                        activeColor: Color(0xFF6200EE),
+                      Expanded(
+                        child: TextField(
+                          controller: emailnovoDonoController,
+                          decoration: InputDecoration(
+                            labelText: "Email",
+                            suffixIcon: Icon(Icons.email),
+                          ),
+                        ),
                       ),
-                      Text("Tornar esse projeto público para qualquer pessoa",
-                          style: TextStyle(
-                              fontSize: 14, fontStyle: FontStyle.normal))
+                      SizedBox(width: 20),
+                      //Expanded(child: Container(width: 5,)),
+                      Container(
+                          height: 70, width: 100, child: DropDown())
                     ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Obx(() => Checkbox(
+                              onChanged: (bool? value) {
+                                Get.find<ControllerProjetoRepository>()
+                                    .mudaTipoPermissaoProjeto(value!);
+
+                                print("mudei para public: ${value}");
+                                // setState(() {
+                                //   publico = value!;
+                                // });
+                              },
+                              value: Get.find<ControllerProjetoRepository>()
+                                  .public
+                                  .value,
+                              activeColor: Color(0xFF6200EE),
+                            )),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                              "Tornar esse projeto público para qualquer pessoa",
+                              style: TextStyle(
+                                  fontSize: 14, fontStyle: FontStyle.normal)),
+                        ),
+                        Expanded(child: Container()),
+                        IconButton(
+                            splashRadius: 16,
+                            onPressed: () {
+                              var controladorMandala =
+                                  Get.find<ControllerProjetoRepository>();
+
+                              bool verificacaoDono =
+                                  novoDonoController.text != "" &&
+                                      novoDonoController.text.length > 3;
+
+                              bool verificacaoEmail =
+                                  emailnovoDonoController.text != "" &&
+                                      emailnovoDonoController.text
+                                          .contains("@");
+                              if (verificacaoDono && verificacaoEmail) {
+                                controladorMandala
+                                    .tornaProjetoPublico(idProjeto);
+
+                                controladorMandala.atualizaACL(
+                                    idProjeto,
+                                    emailnovoDonoController.text,
+                                    controladorMandala
+                                        .permissaoCompartilhar.string);
+
+                                //TODO: Enviar email de convite
+
+                                debugPrint("${novoDonoController.text} de ${emailnovoDonoController.text} - ${controladorMandala
+                                    .permissaoCompartilhar.string}");
+
+                                novoDonoController.text = "";
+                                emailnovoDonoController.text = "";
+
+                                Get.back();
+                              }
+                            },
+                            icon: Icon(Icons.send, size: 18))
+                      ],
+                    ),
                   )
                 ]),
               ),

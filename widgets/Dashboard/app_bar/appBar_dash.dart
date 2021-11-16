@@ -70,8 +70,8 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) =>
           Container(width: 1, height: 22, color: PaletaCores.corLightGrey),
           SizedBox(width: 24),
           CustomText(
-            text: "Plataforma GOX",
-            color: PaletaCores.corLightGrey,
+            text: "Plataforma XPER",
+            color: PaletaCores.corPrimaria,
           ),
           SizedBox(width: 16),
           Container(

@@ -202,6 +202,8 @@ class _LoginPageState extends State<LoginPage> {
                                   children: [
                                     Text("Login"),
                                     Switch(
+                                      splashRadius: 16,
+                                      activeColor: PaletaCores.corPrimaria,
                                         value: cadastrarUsuario,
                                         onChanged: (valor) {
                                           setState(() {

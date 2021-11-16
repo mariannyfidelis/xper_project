@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:xper_brasil_projects/widgets/Dashboard/controller/controllers_dash.dart';
+import '/utils/configuracoes_aplicacao.dart';
 
 class DropDown extends StatefulWidget {
   @override
@@ -6,10 +9,9 @@ class DropDown extends StatefulWidget {
 }
 
 class _DropDownState extends State<DropDown> {
-
-  String nomeCidade="";
-  var _cidades =['Santos','Porto Alegre','Campinas','Rio de Janeiro'];
-  var _itemSelecionado = 'Santos';
+  String permissao = "";
+  var _permissao = ['pode ler', 'pode editar'];
+  var _itemSelecionado = 'pode ler';
 
   @override
   Widget build(BuildContext context) {
@@ -17,43 +19,28 @@ class _DropDownState extends State<DropDown> {
   }
 
   criaDropDownButton() {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          Text("Selecione a cidade"),
-          TextField(
-            onSubmitted: (String userInput) {
-              setState(() {
-                debugPrint('chamei setState');
-                nomeCidade = userInput;
-              });
-            },
-          ),
-          DropdownButton<String>(
-            items : _cidades.map((String dropDownStringItem) {
-              return DropdownMenuItem<String>(
-                value: dropDownStringItem,
-                child: Text(dropDownStringItem),
-              );
-            }).toList(),
-            onChanged: ( String? novoItemSelecionado) {
-              _dropDownItemSelected(novoItemSelecionado.toString());
-              setState(() {
-                this._itemSelecionado =  novoItemSelecionado!;
-              });
-            },
-            value: _itemSelecionado,
-          ),
-          Text("A cidade selecionada foi \n$_itemSelecionado",
-            style: TextStyle(fontSize: 20.0),
-          ),
-        ],
+    return Obx(()=> Container(
+      child: DropdownButton<String>(
+        items: _permissao.map((String dropDownStringItem) {
+          return DropdownMenuItem<String>(
+            value: dropDownStringItem,
+            child: Text(
+              dropDownStringItem,
+              style: estiloTextoBotaoDropMenuButton,
+            ),
+          );
+        }).toList(),
+        onChanged: (String? novoItemSelecionado) {
+          _dropDownItemSelected(novoItemSelecionado.toString());
+        },
+        value: Get.find<ControllerProjetoRepository>().permissaoCompartilhar.string,
       ),
-    );
+    ));
   }
-  void _dropDownItemSelected(String novoItem){
-    setState(() {
-      this._itemSelecionado = novoItem;
-    });
+
+  void _dropDownItemSelected(String novoItem) {
+    Get.find<ControllerProjetoRepository>().changePermissaoCompartilhar(novoItem);
+      //this._itemSelecionado = novoItem;
+
   }
 }

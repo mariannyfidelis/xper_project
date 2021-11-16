@@ -209,6 +209,7 @@ class _DonoTableState extends State<DonoTable> {
 
           if (controlador.idProjeto.value != '') {
             if (opcao == 1) {
+              Future<String?> retorno;
               if (novoDonoController.text != '' &&
                   emailnovoDonoController.text != '') {
                 auth.registrarDono(
@@ -217,9 +218,6 @@ class _DonoTableState extends State<DonoTable> {
                   emailnovoDonoController.text,
                   tipoUsuario: 'cliente',
                 );
-
-                controlador.addOneDono(
-                    novoDonoController.text, emailnovoDonoController.text);
               }
               novoDonoController.text = "";
               emailnovoDonoController.text = "";
@@ -233,7 +231,7 @@ class _DonoTableState extends State<DonoTable> {
                 novoDonoController.text = '';
                 emailnovoDonoController.text = '';
               }
-            }else{
+            } else {
               debugPrint(
                   "Opção inválida no textfield Dono de Resultados/Metricas");
             }

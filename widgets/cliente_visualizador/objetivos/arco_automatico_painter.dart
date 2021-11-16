@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:get/get.dart';
+import 'package:xper_brasil_projects/utils/paleta_cores.dart';
 import '/models/project_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -9,7 +10,7 @@ import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class ArcoAutomatico extends CustomPainter {
   BuildContext context;
-  ProjectModel? modeloProjeto;
+  //ProjectModel? modeloProjeto;
 
   ArcoAutomatico(this.context);
 
@@ -317,9 +318,9 @@ class ArcoAutomatico extends CustomPainter {
             print("xx Ultimo nivel clicado - 3");
           }, paintStyleForTouch: PaintingStyle.stroke);
 
-          double? fontS = listaResultados.length < 8 ? 30: 30;
+          double? fontS = listaResultados.length < 8 ? 30 : 30;
           final styleTextResult = TextStyle(
-            color: Colors.yellow,
+            color: PaletaCores.black,
             fontWeight: FontWeight.normal,
             fontSize: fontS,
           );
@@ -332,7 +333,8 @@ class ArcoAutomatico extends CustomPainter {
               degToRad(listaResultados[r].sweepAngle),
               listaResultados[r].nomeResultado!,
               styleTextResult,
-              3, nivel: 3);
+              3,
+              nivel: 3);
         }
         listaLinesResults.forEach((element) {
           canvas.drawLine(c, element, linePaint);
@@ -380,12 +382,12 @@ class ArcoAutomatico extends CustomPainter {
               degToRad(listaObjetivos[o].sweepAngle),
               listaObjetivos[o].nome!,
               styleTextObjectiveWithResult,
-              3, nivel: 2);
+              3,
+              nivel: 2);
         }
 
         canvas.drawArc(
             rectObjetivos, degToRad(0), degToRad(360), true, linePaint);
-
 
         listaLines.forEach((element) {
           canvas.drawLine(c, element, linePaint);
@@ -473,7 +475,6 @@ class ArcoAutomatico extends CustomPainter {
   void drawLabels(Canvas canvas, Offset c, double radius, startAngle,
       sweepAngle, String text, TextStyle styleText2, int quantNivel,
       {int nivel = 0}) {
-
     if (quantNivel == 1) {
       final r = radius * 0.35;
       final dx = r * cos(startAngle + sweepAngle / 2.0);

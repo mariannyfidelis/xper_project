@@ -1,20 +1,18 @@
-//String das permissões --> {read, owner, write}
-
 class ACL{
 
-  String? idDonoResultadoMetrica;
+  String? identificador;
   String? permissao;
 
-  ACL({this.idDonoResultadoMetrica, this.permissao});
+  ACL({this.identificador, this.permissao});
 
   ACL.fromJson(Map<String, dynamic> json) {
-    idDonoResultadoMetrica = json['idDonoResultadoMetrica'];
+    identificador = json['identificador'];
     permissao = json['permissao'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['idDonoResultadoMetrica'] = this.idDonoResultadoMetrica;
+    data['identificador'] = this.identificador;
     data['permissao'] = this.permissao;
 
     return data;

@@ -1,3 +1,6 @@
+import 'package:get/get.dart';
+import 'package:xper_brasil_projects/widgets/Dashboard/controller/controllers_dash.dart';
+
 import 'arco_automatico_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:touchable/touchable.dart';
@@ -14,6 +17,8 @@ class _ObjetivosState extends State<Objetivos> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height - kToolbarHeight;
+    ControllerProjetoRepository controller =
+        Get.find<ControllerProjetoRepository>();
 
     return Expanded(
       child: SafeArea(

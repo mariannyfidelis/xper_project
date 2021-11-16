@@ -66,13 +66,13 @@ class _ProjetoPageState extends State<ProjetoPage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20)),
                             child: Padding(
-                              padding: const EdgeInsets.all(18.0),
+                              padding: const EdgeInsets.only(top: 10, left:20 ,bottom: 12.0),
                               child: Column(
                                 children: [
                                   ManipulaNomeObjetivo(),
                                   ManipulaProgresso(),
                                   ManipulaResponsaveis(),
-                                  ManipulaExtensoes(),
+                                  //ManipulaExtensoes(),
                                   TelaCalendario(),
                                   TelaMeta(),
                                   ManipulaCor(),
