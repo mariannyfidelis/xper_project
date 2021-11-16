@@ -333,6 +333,7 @@ class AuthService extends GetxController {
   Future<String?> registrarDono(String nome, String email, String senha,
       {String tipoUsuario = "cliente"}) async {
     String? idUsuario = "";
+    Get.find<ControllerProjetoRepository>().addResponsavelPedaco(nome, email);
 
     try {
       _auth
