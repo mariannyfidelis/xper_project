@@ -2,8 +2,8 @@ class ResultadosPrincipais {
   String? idResultado;
   String? nomeResultado;
   String? idObjetivoPai;
-  // String? idMetrica;
   List? donoResultado;
+  List? extensao;
   double? meta;
   double? meta1;
   double? meta2;
@@ -24,7 +24,6 @@ class ResultadosPrincipais {
     required this.idResultado,
     required this.nomeResultado,
     required this.idObjetivoPai,
-    // required this.idMetrica,
     required this.donoResultado,
     this.meta = 0.0,
     this.meta1 = 0.0,
@@ -40,13 +39,14 @@ class ResultadosPrincipais {
     this.startAngle= 0.0,
     this.sweepAngle= 360.0,
     this.arquivos,
-    this.paint="255-242-242-242"
+    this.paint="255-242-242-242",
+    this.extensao
   });
 
   ResultadosPrincipais.fromJson(Map<String, dynamic> json) {
     idResultado = json['idResultado'];
     nomeResultado = json['nomeResultado'];
-    donoResultado = json['donoResultado'];
+    donoResultado = (json['donoResultado'] != null) ? json['donoResultado']:[];
     idObjetivoPai = json['idObjetivoPai'];
     realizado = json['realizado'];
     realizado1 = json['realizado1'];
@@ -58,12 +58,12 @@ class ResultadosPrincipais {
     meta2 = json['meta2'];
     meta3 = json['meta3'];
     meta4 = json['meta4'];
-    arquivos = json['arquivos'];
+    arquivos = (json['arquivos'] != null) ? json['arquivos']: [];
     progresso = json['progresso'];
     startAngle = (json['startAngle'] != null) ? json['startAngle'] : 0.0;
     sweepAngle = (json['sweepAngle'] != null) ? json['sweepAngle'] : 0.0;
     paint = (json['paint'] != null) ? (json['paint']) : "255-242-242-242";
-    // idMetrica = json['idMetrica'];
+    extensao = (json['extensao'] != null) ? (json['extensao']): [];
   }
 
   Map<String, dynamic> toJson() {
@@ -87,7 +87,8 @@ class ResultadosPrincipais {
     data['sweepAngle'] = this.sweepAngle;
     data['paint'] = this.paint;
     data['arquivos'] = this.arquivos;
-    // data['idMetrica'] = this.idObjetivoPai;
+    data['extensao'] = this.extensao;
+
     return data;
   }
 

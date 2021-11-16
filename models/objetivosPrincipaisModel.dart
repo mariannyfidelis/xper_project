@@ -12,6 +12,8 @@ class ObjetivosPrincipais {
   late Timestamp? dataVencimento;
   List<dynamic>? arquivos = [];
   late String paint;
+  List? extensao = [];
+  List? donos = []; //responsáveis
 
   ObjetivosPrincipais(
       {required this.idObjetivo,
@@ -24,7 +26,9 @@ class ObjetivosPrincipais {
       this.sweepAngle = 360,
       this.dataVencimento,
       this.arquivos,
-      this.paint = "255-242-242-242"});
+      this.paint = "255-242-242-242",
+      this.extensao,
+      this.donos});
 
   ObjetivosPrincipais.fromJson(Map<String, dynamic> json) {
     this.idObjetivo = (json['id_objetivo'] != null) ? json['id_objetivo'] : "";
@@ -38,7 +42,10 @@ class ObjetivosPrincipais {
     this.dataVencimento = (json['dataVencimento'] != null)
         ? json['dataVencimento']
         : Timestamp.fromDate(DateTime.now());
+    this.arquivos = (json['arquivos'] != null) ? json['arquivos'] : [];
     this.paint = (json['paint'] != null) ? (json['paint']) : "255-242-242-242";
+    this.extensao = (json['extensao'] != null) ? json['extensao'] : [];
+    this.donos = (json['donos'] != null) ? json['donos'] : [];
   }
 
   Map<String, dynamic> toJson() {
@@ -52,7 +59,10 @@ class ObjetivosPrincipais {
     data['meta'] = this.meta;
     data['realizado'] = this.realizado;
     data['dataVencimento'] = this.dataVencimento; //dataFormatada;
+    data['arquivos'] = this.arquivos;
     data['paint'] = this.paint;
+    data['extensao'] = this.extensao;
+    data['donos'] = this.donos;
     return data;
   }
 
