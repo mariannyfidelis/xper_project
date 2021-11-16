@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:xper_brasil_projects/services/auth_service.dart';
 import '/utils/paleta_cores.dart';
+import '/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import '/utils/configuracoes_aplicacao.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
@@ -51,6 +51,16 @@ class _ManipulaResponsaveisState extends State<ManipulaResponsaveis> {
                                 size: 20,
                                 color: PaletaCores.textColor,
                               ),
+                              suffixIcon: IconButton(
+                                  color: PaletaCores.textColor,
+                                  splashRadius: 16,
+                                  onPressed: () {
+                                    (responsavelController.text.trim() != "")
+                                        ? buildAlertDialog(
+                                            responsavelController)
+                                        : () {};
+                                  },
+                                  icon: Icon(Icons.person_add, size: 14)),
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(
                                     color: Colors.white, width: 32.0),
@@ -60,30 +70,14 @@ class _ManipulaResponsaveisState extends State<ManipulaResponsaveis> {
                           keyboardType: TextInputType.text,
                         )),
                     Column(
-                      children: [
-                        IconButton(
-                            color: PaletaCores.textColor,
-                            splashRadius: 16,
-                            onPressed: () {
-                              (responsavelController.text.trim() != "")
-                                  ? buildAlertDialog(responsavelController)
-                                  : () {};
-                            },
-                            icon: Icon(Icons.person_add, size: 14)),
-                        IconButton(
-                            color: PaletaCores.textColor,
-                            splashRadius: 16,
-                            onPressed: () =>
-                                mandalaController.adicionarResponsavel(
-                                    responsavelController.text),
-                            icon: Icon(Icons.person_remove, size: 14))
-                      ],
+                      mainAxisSize: MainAxisSize.min,
+                      children: [],
                     ),
-                    // IconButton(
-                    //     color: PaletaCores.textColor,
-                    //     splashRadius: 16,
-                    //     onPressed: mandalaController.buscarResponsavel,
-                    //     icon: Icon(Icons.search, size: 20)),
+                    IconButton(
+                        color: PaletaCores.textColor,
+                        splashRadius: 16,
+                        onPressed: listarDonos,
+                        icon: Icon(Icons.list_alt, size: 14))
                   ],
                 ),
                 Obx(
@@ -152,13 +146,120 @@ class _ManipulaResponsaveisState extends State<ManipulaResponsaveis> {
                         controllerEmail.text,
                       );
                       controllerNome.text = "";
-                      controllerEmail.text= "";
-                      responsavel.text="";
+                      controllerEmail.text = "";
+                      responsavel.text = "";
                       Get.back();
                     },
                     child:
                         Text("Adicionar", style: estiloTextoBotaoAlertDialog),
                   ),
                 ]));
+  }
+
+  listarDonos() {
+    var mandalaController = Get.find<ControllerProjetoRepository>();
+    showDialog(
+        useSafeArea: true,
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: Column(
+
+                  children: [
+                Text(
+                  "Responsáveis",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: Text(
+                          'Nome',
+                          style: TextStyle(
+                              color: PaletaCores.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Expanded(child: Container(width: 25)),
+                      Padding(
+                          padding: const EdgeInsets.only(top: 10.0, bottom: 4.0),
+                          child: Text(
+                            'Email',
+                            style: TextStyle(
+                                color: PaletaCores.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                          ))
+                    ],
+                  ),
+                ),
+              ]),
+              content: Container(
+                height: 100,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      if (mandalaController.ultimoNivelClicado.value == 2)
+                        if (mandalaController
+                                .listaObjectives[
+                                    mandalaController.indiceObjective.value]
+                                .donos!
+                                .length >
+                            0)
+                          for (int i = 0;
+                              i <
+                                  mandalaController
+                                      .listaObjectives[mandalaController
+                                          .indiceObjective.value]
+                                      .donos!
+                                      .length;
+                              i += 2)
+                            Row(
+                              children: [
+                                Text(
+                                    '${mandalaController.listaObjectives[mandalaController.indiceObjective.value].donos![i]}',
+                                    style: estiloTextoBotaoDropMenuButton),
+                                //SizedBox(width: 25),
+                                Expanded(child: Container(width: 25)),
+                                Text(
+                                  '${mandalaController.listaObjectives[mandalaController.indiceObjective.value].donos![i + 1]}',
+                                  style: estiloTextoBotaoDropMenuButton,
+                                ),
+                                // IconButton(
+                                //     color: PaletaCores.corPrimaria,
+                                //     splashRadius: 16,
+                                //     onPressed: () =>
+                                //         mandalaController.adicionarResponsavel(
+                                //             responsavelController.text),
+                                //     icon: Icon(Icons.person_remove, size: 10),
+                                // )
+                              ],
+                            ),
+                      if (mandalaController.ultimoNivelClicado.value == 3)
+                        if (mandalaController
+                                .listaResultados[
+                                    mandalaController.indiceResult.value]
+                                .donoResultado!
+                                .length >
+                            0)
+                          for (int i = 0;
+                              i <
+                                  mandalaController
+                                      .listaResultados[
+                                          mandalaController.indiceResult.value]
+                                      .donoResultado!
+                                      .length;
+                              i += 2)
+                            Row(
+                              children: [],
+                            ),
+                    ],
+                  ),
+                ),
+              ),
+            ));
   }
 }
