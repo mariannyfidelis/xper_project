@@ -50,8 +50,16 @@ class _AnexoPageState extends State<AnexoPage> {
           String urlImagem = await uploadtask.snapshot.ref.getDownloadURL();
           print("deu certo taí o link $urlImagem!!!");
 
-          controller.atualizaResultado(controller.ultimoResultadoClicado.value,
-              arquivo: urlImagem);
+          if (controller.ultimoNivelClicado.value == 3) {
+            controller.atualizaResultado(
+                controller.ultimoResultadoClicado.value,
+                arquivo: urlImagem);
+          }
+          if (controller.ultimoNivelClicado.value == 2) {
+            controller.atualizaObjetivoMandala(
+                controller.ultimoObjetivoClicado.value,
+                arquivo: urlImagem);
+          }
         });
       } else {}
     }

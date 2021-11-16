@@ -72,7 +72,7 @@ class _ProjetoPageState extends State<ProjetoPage> {
                                   ManipulaNomeObjetivo(),
                                   ManipulaProgresso(),
                                   ManipulaResponsaveis(),
-                                  //ManipulaExtensoes(),
+                                  ManipulaExtensoes(),
                                   TelaCalendario(),
                                   TelaMeta(),
                                   ManipulaCor(),

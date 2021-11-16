@@ -123,7 +123,7 @@ class _HomeWebState extends State<HomeWeb> {
                                 controllerProjetos.atualizaTudo(
                                     meusProjetos[index].idProjeto!);
                                 //TODO - Enviar dados para a mandala
-                                Get.to(ProjetoPage(/*dados do idprojeto*/));
+                                Get.to(() => ProjetoPage(/*dados do idprojeto*/));
                               },
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
@@ -339,6 +339,8 @@ class _HomeWebState extends State<HomeWeb> {
 
   //TODO - Implementar compartilharProjeto
   void compartilharProjeto(String idProjeto, int index) {
+    var controladorMandala = Get.find<ControllerProjetoRepository>();
+    var listaPermissoes = controladorMandala.listaACLs;
     showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -350,14 +352,17 @@ class _HomeWebState extends State<HomeWeb> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       )),
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: "Mensagem a ser enviada email",
-                      suffixIcon: Icon(Icons.email),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        labelText: "Mensagem a ser enviada email",
+                        suffixIcon: Icon(Icons.email),
+                      ),
+                      controller: mensagem,
+                      enableSuggestions: true,
+                      enableInteractiveSelection: true,
                     ),
-                    controller: mensagem,
-                    enableSuggestions: true,
-                    enableInteractiveSelection: true,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
@@ -367,21 +372,30 @@ class _HomeWebState extends State<HomeWeb> {
                           TextStyle(fontSize: 14, fontStyle: FontStyle.normal),
                     ),
                   ),
-                  for (int i = 0; i < 3; i++)
+                  for (int i = 0; i < listaPermissoes.length; i++)
                     Padding(
                         padding: const EdgeInsets.only(
-                            top: 12.0, bottom: 12.0, left: 10.0),
+                            top: 4.0, left: 10.0),
                         child: Row(
                           children: [
                             Expanded(
                                 child: Text(
-                              "Pessoa $i",
+                              "${listaPermissoes[i].identificador}",
                               style: estiloTextoBotaoDropMenuButton,
                             )),
                             Text(
-                              "É dono",
+                              "${listaPermissoes[i].permissao}",
                               style: estiloTextoBotaoDropMenuButton,
-                            )
+                            ),
+                            IconButton(
+                              iconSize: 12,
+                                splashRadius: 14,
+                                color: PaletaCores.corPrimaria,
+                                onPressed: () {
+                                  debugPrint(
+                                      "Tentando remover ${listaPermissoes[i].identificador}");
+                                },
+                                icon: Icon(Icons.person_remove))
                           ],
                         )),
                 ],
@@ -411,8 +425,7 @@ class _HomeWebState extends State<HomeWeb> {
                       ),
                       SizedBox(width: 20),
                       //Expanded(child: Container(width: 5,)),
-                      Container(
-                          height: 70, width: 100, child: DropDown())
+                      Container(height: 70, width: 100, child: DropDown())
                     ],
                   ),
                   Padding(
@@ -425,11 +438,8 @@ class _HomeWebState extends State<HomeWeb> {
                               onChanged: (bool? value) {
                                 Get.find<ControllerProjetoRepository>()
                                     .mudaTipoPermissaoProjeto(value!);
-
-                                print("mudei para public: ${value}");
-                                // setState(() {
-                                //   publico = value!;
-                                // });
+                                Get.find<ControllerProjetoRepository>()
+                                    .tornaProjetoPublico(idProjeto);
                               },
                               value: Get.find<ControllerProjetoRepository>()
                                   .public
@@ -447,9 +457,6 @@ class _HomeWebState extends State<HomeWeb> {
                         IconButton(
                             splashRadius: 16,
                             onPressed: () {
-                              var controladorMandala =
-                                  Get.find<ControllerProjetoRepository>();
-
                               bool verificacaoDono =
                                   novoDonoController.text != "" &&
                                       novoDonoController.text.length > 3;
@@ -470,8 +477,8 @@ class _HomeWebState extends State<HomeWeb> {
 
                                 //TODO: Enviar email de convite
 
-                                debugPrint("${novoDonoController.text} de ${emailnovoDonoController.text} - ${controladorMandala
-                                    .permissaoCompartilhar.string}");
+                                debugPrint(
+                                    "${novoDonoController.text} de ${emailnovoDonoController.text} - ${controladorMandala.permissaoCompartilhar.string}");
 
                                 novoDonoController.text = "";
                                 emailnovoDonoController.text = "";
