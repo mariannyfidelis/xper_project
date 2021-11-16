@@ -32,7 +32,6 @@ class ControllerProjetoRepository extends GetxController {
 
   var responsaveis = "".obs;
   var ultimoNivelClicado = 1.obs;
-  //var indiceObjective = (-1).obs;
   var indiceObjective = (-1).obs;
   var indiceResult = (-1).obs;
   var filtragem = "publico".obs;
@@ -183,15 +182,19 @@ class ControllerProjetoRepository extends GetxController {
         await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     ObjetivosPrincipais objetivo = ObjetivosPrincipais(
-        idObjetivo: uuid.v4(),
-        importancia: importancia,
-        nome: nomeObjetivo,
-        progresso: progresso,
-        meta: meta,
-        realizado: realizado,
-        startAngle: 0,
-        sweepAngle: 360,
-        dataVencimento: Timestamp.fromDate(DateTime.now()));
+      idObjetivo: uuid.v4(),
+      importancia: importancia,
+      nome: nomeObjetivo,
+      progresso: progresso,
+      meta: meta,
+      realizado: realizado,
+      startAngle: 0,
+      sweepAngle: 360,
+      dataVencimento: Timestamp.fromDate(DateTime.now()),
+      arquivos: <String>[],
+      donos: [],
+      extensao: [],
+    );
 
     _listObjects.add(objetivo);
 
@@ -342,7 +345,6 @@ class ControllerProjetoRepository extends GetxController {
 
   void addOneResultado(String nomeResultado,
       {String? idObjetivoPai = "idObjetivoPai",
-      /*String idMetrica = "idMetrica",*/
       List<DonosResultadoMetricas?>? donos}) async {
     var uuid = Uuid();
 
@@ -350,20 +352,19 @@ class ControllerProjetoRepository extends GetxController {
         await db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     ResultadosPrincipais resultadosPrincipais = ResultadosPrincipais(
-        idResultado: uuid.v4(),
-        nomeResultado: nomeResultado,
-        idObjetivoPai: idObjetivoPai,
-        startAngle: 0.0,
-        sweepAngle: 360.0,
-        // idMetrica: idMetrica,
-        donoResultado: (donos != null)
-            ? (donos.isEmpty)
-                ? []
-                : donos
-            : []);
-
-    //debugPrint("${resultadosPrincipais.startAngle}");
-    //debugPrint("${resultadosPrincipais.sweepAngle}");
+      idResultado: uuid.v4(),
+      nomeResultado: nomeResultado,
+      idObjetivoPai: idObjetivoPai,
+      startAngle: 0.0,
+      sweepAngle: 360.0,
+      donoResultado: (donos != null)
+          ? (donos.isEmpty)
+              ? []
+              : donos
+          : [],
+      extensao: [],
+      arquivos: [],
+    );
 
     _listResults.add(resultadosPrincipais);
 
@@ -392,7 +393,6 @@ class ControllerProjetoRepository extends GetxController {
 
       for (var result in _listResults) {
         if (result.idObjetivoPai == idObjetivoPai) {
-          //TODO - falta configurar aqui o progresso e a importância
           result.setStartAngle(startAngle);
           result.setSweepAngle(sweepFatia);
           startAngle += sweepFatia;
@@ -401,7 +401,6 @@ class ControllerProjetoRepository extends GetxController {
     }
 
     var l = _listResults.map((v) => v.toJson()).toList();
-
     await reference.update({'resultadosPrincipais': l}); //[l]
   }
 
@@ -1534,6 +1533,8 @@ class ControllerProjetoRepository extends GetxController {
 
 //======================= CRUD ACL =====================================
 
+  UnmodifiableListView<ACL> get listaACLs => UnmodifiableListView(_listAcl);
+
   changePermissaoCompartilhar(String permissao) {
     this.permissaoCompartilhar.value = permissao;
   }
@@ -1600,7 +1601,7 @@ class ControllerProjetoRepository extends GetxController {
           _listAcl.forEach((element) {
             print(element);
           });
-        }else{
+        } else {
           debugPrint("lista ACL é igual a null");
         }
       } else {
@@ -1610,4 +1611,47 @@ class ControllerProjetoRepository extends GetxController {
       debugPrint("Erro ao manipular ACLs");
     }
   }
+
+  removerACL(
+      String idProjeto, String identificadorEmail, String permissao) async {
+    var listAcl;
+
+    DocumentReference reference =
+        await db.collection('projetosPrincipais').doc(idProjeto);
+
+    if (idProjeto != "") {
+      int indice = _listaProjetos
+          .indexWhere((element) => element.idProjeto == idProjeto);
+    } else {
+      debugPrint("Erro ao remover um ACL");
+    }
+  }
+
+  addResponsavelPedaco(String nome, String email) async {
+    if (ultimoNivelClicado.value == 3) {
+      if (_listResults[indiceResult.value].donoResultado!.contains(nome) ==
+          false &&
+          _listResults[indiceResult.value].donoResultado!.contains(email) ==
+              false) {
+        _listResults[indiceResult.value].donoResultado!.add(nome);
+        _listResults[indiceResult.value].donoResultado!.add(email);
+      } else {}
+    }
+    if (ultimoNivelClicado.value == 2) {
+      if (_listObjects[indiceObjective.value].donos!.contains(nome) == false &&
+          _listObjects[indiceObjective.value].donos!.contains(email) == false) {
+        _listObjects[indiceObjective.value].donos!.add(nome);
+        _listObjects[indiceObjective.value].donos!.add(email);
+      } else {}
+    }
+    DocumentReference reference =
+    db.collection('projetosPrincipais').doc(this.idProjeto.value);
+
+    var lr = _listResults.map((v) => v.toJson()).toList();
+    var lo = _listObjects.map((v) => v.toJson()).toList();
+
+    await reference
+        .update({'resultadosPrincipais': lr, 'objetivosPrincipais': lo}); //[l]
+  }
+
 }
