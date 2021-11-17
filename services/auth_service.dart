@@ -12,8 +12,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-//TODO: Configurar para salvar os dados dentro do número correto do projeto
-String id_projeto = "01";
+//TODO: errado !!! Configurar para salvar os dados dentro do número correto do projeto
+String id_projeto = "01"; //
 
 class AuthException implements Exception {
   String message;
@@ -139,7 +139,7 @@ class AuthService extends GetxController {
       } else if (e.code == "email-already-in-use") {
         print(e.code);
         return e.code;
-        throw AuthException("Este email já está cadastrado !");
+
       }
     }
     //_getUser();
@@ -175,7 +175,6 @@ class AuthService extends GetxController {
       print("Logado como: ${value.user?.uid} de email: ${value.user?.email}");
       User? usuarioLogado = value.user;
 
-      //TODO - Será que precisa ???
       _getUser();
       verificaTipoUsuario(usuarioLogado);
     }).catchError((error) {
@@ -249,15 +248,6 @@ class AuthService extends GetxController {
     } else {
       Get.to(() => Scaffold(body: Center(child: CircularProgressIndicator())));
     }
-    // //QuerySnapshot snapshot =
-    // //  await _firestore.collection("usuarios/$uidUser").get();
-    // if (tipo == "admin") {
-    //   //Navigator.pushReplacementNamed(context, "/dashboard");
-    // } else if (tipo == "gerenciador") {
-    //   //Navigator.pushReplacementNamed(context, "/gerenciador");
-    // } else if (tipo == "cliente") {
-    //   //Navigator.pushReplacementNamed(context, "/projetos");
-    // }
   }
 
   FirebaseAuth getUser() {
@@ -305,7 +295,7 @@ class AuthService extends GetxController {
     }
   }
 
-  void criaEstruturaPasta(String idUsuario) {
+  void criaEstruturaPasta(String idUsuario, {String id_projeto = "01"}) {
     print("entrei para criar uma pasta para um usuário");
 
     Reference estruturaUser = _storage

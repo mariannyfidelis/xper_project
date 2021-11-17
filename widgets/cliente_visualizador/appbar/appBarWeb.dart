@@ -89,10 +89,10 @@ class WebAppBar extends StatelessWidget {
 
     var results = mandalaController.listaResultados.where((element) =>
     element.donoResultado!.contains(busca.text) ||
-        element.extensao!.contains(busca.text));
+        element.extensao!.contains(busca.text.trim().toLowerCase()));
     var objetives = mandalaController.listaObjectives.where((element) =>
     element.donos!.contains(busca.text) ||
-        element.extensao!.contains(busca.text));
+        element.extensao!.contains(busca.text.trim().toLowerCase()));
 
     showDialog(
         context: context,
@@ -212,6 +212,5 @@ class WebAppBar extends StatelessWidget {
             ),
           ),
         ));
-
   }
 }

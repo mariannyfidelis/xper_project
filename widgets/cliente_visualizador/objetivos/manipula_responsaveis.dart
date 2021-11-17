@@ -25,65 +25,55 @@ class _ManipulaResponsaveisState extends State<ManipulaResponsaveis> {
           padding: const EdgeInsets.only(top: 10.0),
           child: Container(
             height: 100,
-            child: Column(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text("Responsáveis   ", style: estilo_teste),
-                    SizedBox(width: 20),
-                    Container(
-                        width: 250,
-                        child: TextField(
-                          style: estilo_teste,
-                          controller: responsavelController,
-                          textAlign: TextAlign.justify,
-                          textAlignVertical: TextAlignVertical.center,
-                          decoration: InputDecoration(
-                              hintStyle: estilo_teste,
-                              hintText: "Adicione colaborador",
-                              focusColor: PaletaCores.textColor,
-                              prefixIcon: Icon(
-                                Icons.people,
-                                size: 20,
+                Text("Responsáveis   ", style: estilo_teste),
+                SizedBox(width: 10),
+                Container(
+                    width: 250,
+                    child: Obx(
+                          () => TextField(
+                        enabled: mandalaController.acl(),
+                        enableInteractiveSelection: mandalaController.acl(),
+                        style: estilo_teste,
+                        controller: responsavelController,
+                        textAlign: TextAlign.justify,
+                        textAlignVertical: TextAlignVertical.center,
+                        decoration: InputDecoration(
+                            hintStyle: estilo_teste,
+                            hintText: "Adicione colaborador",
+                            focusColor: PaletaCores.textColor,
+                            prefixIcon: Icon(
+                              Icons.people,
+                              size: 20,
+                              color: PaletaCores.textColor,
+                            ),
+                            suffixIcon: IconButton(
                                 color: PaletaCores.textColor,
-                              ),
-                              suffixIcon: IconButton(
-                                  color: PaletaCores.textColor,
-                                  splashRadius: 16,
-                                  onPressed: () {
-                                    (responsavelController.text.trim() != "")
-                                        ? buildAlertDialog(
-                                            responsavelController)
-                                        : () {};
-                                  },
-                                  icon: Icon(Icons.person_add, size: 14)),
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.white, width: 32.0),
-                                borderRadius: BorderRadius.circular(10),
-                              )),
-                          maxLength: 450,
-                          keyboardType: TextInputType.text,
-                        )),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [],
-                    ),
-                    IconButton(
-                        color: PaletaCores.textColor,
-                        splashRadius: 16,
-                        onPressed: listarDonos,
-                        icon: Icon(Icons.list_alt, size: 14))
-                  ],
-                ),
-                Obx(
-                  () => Expanded(
-                      child: Text("${mandalaController.responsaveis}")),
-                )
+                                splashRadius: 16,
+                                onPressed: () {
+                                  (responsavelController.text.trim() != "")
+                                      ? buildAlertDialog(
+                                      responsavelController)
+                                      : () {};
+                                },
+                                icon: Icon(Icons.person_add, size: 14)),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.white, width: 32.0),
+                              borderRadius: BorderRadius.circular(10),
+                            )),
+                        maxLength: 450,
+                        keyboardType: TextInputType.text,
+                      ),
+                    )),
+                IconButton(
+                    color: PaletaCores.textColor,
+                    splashRadius: 16,
+                    onPressed: listarDonos,
+                    icon: Icon(Icons.list_alt, size: 14))
               ],
             ),
           ),
@@ -162,9 +152,7 @@ class _ManipulaResponsaveisState extends State<ManipulaResponsaveis> {
         useSafeArea: true,
         context: context,
         builder: (ctx) => AlertDialog(
-              title: Column(
-
-                  children: [
+              title: Column(children: [
                 Text(
                   "Responsáveis",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -185,7 +173,8 @@ class _ManipulaResponsaveisState extends State<ManipulaResponsaveis> {
                       ),
                       Expanded(child: Container(width: 25)),
                       Padding(
-                          padding: const EdgeInsets.only(top: 10.0, bottom: 4.0),
+                          padding:
+                              const EdgeInsets.only(top: 10.0, bottom: 4.0),
                           child: Text(
                             'Email',
                             style: TextStyle(
@@ -254,7 +243,13 @@ class _ManipulaResponsaveisState extends State<ManipulaResponsaveis> {
                                       .length;
                               i += 2)
                             Row(
-                              children: [],
+                              children: [
+                                Text(
+                                    '${mandalaController.listaResultados[mandalaController.indiceResult.value].donoResultado![i]}', style: estiloTextoBotaoDropMenuButton),
+                                Expanded(child: Container(width: 25)),
+                                Text(
+                                    '${mandalaController.listaResultados[mandalaController.indiceResult.value].donoResultado![i + 1]}', style: estiloTextoBotaoDropMenuButton)
+                              ],
                             ),
                     ],
                   ),

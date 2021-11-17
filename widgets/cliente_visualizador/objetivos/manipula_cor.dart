@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:xper_brasil_projects/utils/paleta_cores.dart';
+import '/utils/paleta_cores.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class ManipulaCor extends StatefulWidget {

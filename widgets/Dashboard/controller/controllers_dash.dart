@@ -1,6 +1,7 @@
 import 'dart:core';
-import 'dart:collection';
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:collection';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
 import '/services/auth_service.dart';
@@ -12,6 +13,10 @@ import '/models/permissaoACLModel.dart';
 import '/models/resultadoPrincipalModel.dart';
 import '/models/objetivosPrincipaisModel.dart';
 import '/models/donoResultadoMetricaModel.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '/widgets/Dashboard/controller/menu_controller_dash.dart';
 import '/widgets/Dashboard/controller/navigation_controller_dash.dart';
@@ -53,6 +58,8 @@ class ControllerProjetoRepository extends GetxController {
 
   //===================Projeto===========================
   var public = false.obs;
+  var editor = false.obs;
+
   var permissaoCompartilhar = "pode ler".obs;
   var idProjeto = "".obs;
   var nome = "".obs;
@@ -76,6 +83,9 @@ class ControllerProjetoRepository extends GetxController {
   List<MetricasPrincipais> _listMetrics = <MetricasPrincipais>[].obs;
 
   List<ACL> _listAcl = <ACL>[].obs;
+
+  Uint8List? _arquivoImagemSelecionado;
+  var  _nomeArquivoSelecionado = "".obs;
 
   late FirebaseFirestore db;
 
@@ -1100,18 +1110,12 @@ class ControllerProjetoRepository extends GetxController {
             .where("proprietario", isEqualTo: auth.usuario!.uid)
             .get();
       } else if (tipo == "compartilhado") {
-        //TODO - Lista de Donos
-        //TODO: Verificar como compartilhar !!!
-        //       .where("listaDonos", arrayContainsAny: Dono.toJson)
-        //       .get();
-        //   'listaDonos', arrayContainsAny: [
-        // {
-        // 'email': 'brunolucas2001@gmail.com',
-        // 'id': 'EsxJseqqSiNUaR7zISUgusvQjZQ2',
-        // 'nome': 'Bruno Lucas'
-        // }
-        // ])
-
+        snapshot = await db
+            .collection('projetosPrincipais')
+            .where('acl', arrayContainsAny: [
+          {'identificador': auth.usuario!.email, 'permissao': 'pode ler'},
+          {'identificador': auth.usuario!.email, 'permissao': 'pode editar'}
+        ]).get();
       } else if (tipo == "publico") {
         snapshot = await db
             .collection('projetosPrincipais')
@@ -1138,9 +1142,7 @@ class ControllerProjetoRepository extends GetxController {
     projectModel.forEach((project) async {
       print(i.toString());
       await db
-          .collection(
-              //'objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
-              'projetosPrincipais')
+          .collection('projetosPrincipais')
           .doc(project.idProjeto.toString())
           .set(project.toJson());
       if (!_listaProjetos
@@ -1502,7 +1504,31 @@ class ControllerProjetoRepository extends GetxController {
     return iconsProjeto.value;
   }
 
-  void adicionarExtensao() {}
+  adicionarExtensao(String nomeExtensao) async {
+
+    if (ultimoNivelClicado.value == 3) {
+      if (_listResults[indiceResult.value].extensao!.contains(nomeExtensao) ==
+          false) {
+        _listResults[indiceResult.value].extensao!.add(nomeExtensao);
+      } else {}
+    }
+    if (ultimoNivelClicado.value == 2) {
+      if (_listObjects[indiceObjective.value]
+          .extensao!
+          .contains(nomeExtensao) ==
+          false) {
+        _listObjects[indiceObjective.value].extensao!.add(nomeExtensao);
+      } else {}
+    }
+    DocumentReference reference =
+    db.collection('projetosPrincipais').doc(this.idProjeto.value);
+
+    var lr = _listResults.map((v) => v.toJson()).toList();
+    var lo = _listObjects.map((v) => v.toJson()).toList();
+
+    await reference
+        .update({'resultadosPrincipais': lr, 'objetivosPrincipais': lo});
+  }
 
   void buscarExtensao() {}
 
@@ -1550,23 +1576,16 @@ class ControllerProjetoRepository extends GetxController {
       int indice = _listaProjetos
           .indexWhere((element) => element.idProjeto == idProjeto);
 
-      // _listaProjetos.forEach((element) {
-      //   if (element.idProjeto == idProjeto) {
-      //     element.acl = tipoProjeto;
-      //   }
-      // });
-
       if (indice != -1) {
-        //_listaProjetos[indice].acl = tipoProjeto;
         var listaACL = _listaProjetos[indice].acl;
         bool jaEstaNaLista = false;
         bool mudouPermissao = false;
         int indiceAcl = -1;
 
         if (_listaProjetos[indice].acl != null) {
-          print("_listaProjetos[indice].acl != null");
+
           if (_listaProjetos[indice].acl!.length > 0) {
-            print("_listaProjetos[indice].acl.length > 0");
+
             for (int a = 0; a < _listaProjetos[indice].acl!.length; a++) {
               var acl = _listaProjetos[indice].acl![a];
 
@@ -1579,7 +1598,7 @@ class ControllerProjetoRepository extends GetxController {
               }
             }
           } else if (_listaProjetos[indice].acl!.length == 0) {
-            print("_listaProjetos[indice].acl!.length == 0");
+
           }
           if (jaEstaNaLista == false) {
             ACL aclObject =
@@ -1597,7 +1616,6 @@ class ControllerProjetoRepository extends GetxController {
               await reference.update({'acl': listAcl});
             }
           }
-
           _listAcl.forEach((element) {
             print(element);
           });
@@ -1615,22 +1633,49 @@ class ControllerProjetoRepository extends GetxController {
   removerACL(
       String idProjeto, String identificadorEmail, String permissao) async {
     var listAcl;
-
+    var val = <Map<String, dynamic>>[];
     DocumentReference reference =
         await db.collection('projetosPrincipais').doc(idProjeto);
 
     if (idProjeto != "") {
       int indice = _listaProjetos
           .indexWhere((element) => element.idProjeto == idProjeto);
+      if (indice != -1) {
+        var vinculo = _listaProjetos[indice]
+            .acl!
+            .where((element) => element.identificador == identificadorEmail);
+        var vinculo2 = _listAcl
+            .where((element) => element.identificador == identificadorEmail);
+
+        for (var acl in vinculo2) {
+          val.add(acl.toJson());
+        }
+
+        await reference.update({
+          "acl": FieldValue.arrayRemove(val),
+        }).then((_) {
+          debugPrint(" Success ao remover ACL!");
+        });
+
+        _listaProjetos[indice].acl!.removeWhere(
+            (element) => element.identificador == identificadorEmail);
+        _listAcl.removeWhere(
+            (element) => element.identificador == identificadorEmail);
+        // var lacl = _listAcl.map((v) => v.toJson()).toList();
+        // await reference
+        //     .update({'acl': lacl});
+      } else {
+        debugPrint("Projeto e índice não encontrado, para remover o ACL");
+      }
     } else {
-      debugPrint("Erro ao remover um ACL");
+      debugPrint("Erro ao remover um ACL. Não encontrei o projeto");
     }
   }
 
   addResponsavelPedaco(String nome, String email) async {
     if (ultimoNivelClicado.value == 3) {
       if (_listResults[indiceResult.value].donoResultado!.contains(nome) ==
-          false &&
+              false &&
           _listResults[indiceResult.value].donoResultado!.contains(email) ==
               false) {
         _listResults[indiceResult.value].donoResultado!.add(nome);
@@ -1645,7 +1690,7 @@ class ControllerProjetoRepository extends GetxController {
       } else {}
     }
     DocumentReference reference =
-    db.collection('projetosPrincipais').doc(this.idProjeto.value);
+        db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     var lr = _listResults.map((v) => v.toJson()).toList();
     var lo = _listObjects.map((v) => v.toJson()).toList();
@@ -1654,4 +1699,103 @@ class ControllerProjetoRepository extends GetxController {
         .update({'resultadosPrincipais': lr, 'objetivosPrincipais': lo}); //[l]
   }
 
+  acl() {
+    var indice = _listAcl
+        .indexWhere((element) => element.identificador == auth.usuario!.email);
+
+    if (indice != -1) {
+      if (_listAcl[indice].permissao == 'pode editar') {
+        editor.value = true;
+      } else {
+        editor.value = false;
+      }
+    } else {
+
+      if(auth.usuario!.uid == proprietario.string){
+        editor.value = true;
+      }else{
+        debugPrint("Não encontrei projeto com ACL");
+      }
+    }
+
+    return editor.value;
+  }
+
+  void selecionarImagem() async {
+    FilePickerResult? resultado = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
+    //     .then((value) {
+    //   print(value!.names[0]);
+    //   _nomeArquivoSelecionado.value = value.names[0]!;
+    //   print(_nomeArquivoSelecionado.string);
+    // });
+
+    //Recuperar arquivo
+    _arquivoImagemSelecionado = resultado?.files.single.bytes;
+  }
+
+  void uploadImagem(User? usuario) {
+    Uint8List? arquivoSelecionado = _arquivoImagemSelecionado;
+    FirebaseStorage _storage = FirebaseStorage.instance;
+    var imageId = Uuid();
+
+    if (arquivoSelecionado != null) {
+      Reference imagePerfilRef = _storage.ref(
+          "usuario/id_usuario_${usuario!.uid}/projeto_${usuario.uid}/image/${imageId.v4()}.jpg");//_${_nomeArquivoSelecionado.string}
+      UploadTask uploadtask = imagePerfilRef.putData(arquivoSelecionado);
+      uploadtask.whenComplete(() async {
+        String urlImagem = await uploadtask.snapshot.ref.getDownloadURL();
+        debugPrint("deu certo taí o link $urlImagem!!!");
+
+        if (ultimoNivelClicado.value == 3) {
+          atualizaResultado(ultimoResultadoClicado.value, arquivo: urlImagem);
+        }
+        if (ultimoNivelClicado.value == 2) {
+          atualizaObjetivoMandala(ultimoObjetivoClicado.value,
+              arquivo: urlImagem);
+        }
+      });
+    } else {}
+  }
+
+  void selecionarPDF() async {
+    FilePickerResult? resultado = await FilePicker.platform.pickFiles(
+      type: FileType.any,
+    );
+
+    //Recuperar arquivo
+    _arquivoImagemSelecionado = resultado?.files.single.bytes;
+  }
+
+  void uploadPDF(User? usuario) {
+    Uint8List? arquivoSelecionado = _arquivoImagemSelecionado;
+    FirebaseStorage _storage = FirebaseStorage.instance;
+    var pdfId = Uuid();
+
+    if (arquivoSelecionado != null) {
+      Reference imagePerfilRef = _storage.ref(
+          "usuario/id_usuario_${usuario!.uid}/projeto_${usuario.uid}/PDF/${pdfId.v4()}.pdf");
+      UploadTask uploadtask = imagePerfilRef.putData(arquivoSelecionado);
+      uploadtask.whenComplete(() async {
+        String urlPDF = await uploadtask.snapshot.ref.getDownloadURL();
+        debugPrint("deu certo taí o link $urlPDF!!!");
+
+        if (ultimoNivelClicado.value == 3) {
+          atualizaResultado(ultimoResultadoClicado.value, arquivo: urlPDF);
+        }
+        if (ultimoNivelClicado.value == 2) {
+          atualizaObjetivoMandala(ultimoObjetivoClicado.value, arquivo: urlPDF);
+        }
+      });
+    } else {}
+  }
+
+  Future<void> baixarAnexo(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url, forceWebView: false, forceSafariVC: false);
+    } else {
+      debugPrint('Não é possivel fazer o download');
+    }
+  }
 }

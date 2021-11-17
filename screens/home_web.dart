@@ -123,7 +123,8 @@ class _HomeWebState extends State<HomeWeb> {
                                 controllerProjetos.atualizaTudo(
                                     meusProjetos[index].idProjeto!);
                                 //TODO - Enviar dados para a mandala
-                                Get.to(() => ProjetoPage(/*dados do idprojeto*/));
+                                Get.to(
+                                    () => ProjetoPage(/*dados do idprojeto*/));
                               },
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
@@ -344,61 +345,64 @@ class _HomeWebState extends State<HomeWeb> {
     showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-              title: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Compartilhamento de projeto com outros usuários",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      )),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: "Mensagem a ser enviada email",
-                        suffixIcon: Icon(Icons.email),
-                      ),
-                      controller: mensagem,
-                      enableSuggestions: true,
-                      enableInteractiveSelection: true,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
-                    child: Text(
-                      "Colaboradores que atualmente têm acesso:",
-                      style:
-                          TextStyle(fontSize: 14, fontStyle: FontStyle.normal),
-                    ),
-                  ),
-                  for (int i = 0; i < listaPermissoes.length; i++)
+              title: Obx(
+                () => Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Compartilhamento de projeto com outros usuários",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     Padding(
-                        padding: const EdgeInsets.only(
-                            top: 4.0, left: 10.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                                child: Text(
-                              "${listaPermissoes[i].identificador}",
-                              style: estiloTextoBotaoDropMenuButton,
-                            )),
-                            Text(
-                              "${listaPermissoes[i].permissao}",
-                              style: estiloTextoBotaoDropMenuButton,
-                            ),
-                            IconButton(
-                              iconSize: 12,
-                                splashRadius: 14,
-                                color: PaletaCores.corPrimaria,
-                                onPressed: () {
-                                  debugPrint(
-                                      "Tentando remover ${listaPermissoes[i].identificador}");
-                                },
-                                icon: Icon(Icons.person_remove))
-                          ],
-                        )),
-                ],
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          labelText: "Mensagem a ser enviada email",
+                          suffixIcon: Icon(Icons.email),
+                        ),
+                        controller: mensagem,
+                        enableSuggestions: true,
+                        enableInteractiveSelection: true,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
+                      child: Text(
+                        "Colaboradores que atualmente têm acesso:",
+                        style: TextStyle(
+                            fontSize: 14, fontStyle: FontStyle.normal),
+                      ),
+                    ),
+                    for (int i = 0; i < listaPermissoes.length; i++)
+                      Padding(
+                          padding: const EdgeInsets.only(top: 4.0, left: 10.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: Text(
+                                "${listaPermissoes[i].identificador}",
+                                style: estiloTextoBotaoDropMenuButton,
+                              )),
+                              Text(
+                                "${listaPermissoes[i].permissao}",
+                                style: estiloTextoBotaoDropMenuButton,
+                              ),
+                              IconButton(
+                                  iconSize: 12,
+                                  splashRadius: 14,
+                                  color: PaletaCores.corPrimaria,
+                                  onPressed: () {
+                                    debugPrint(
+                                        "Tentando remover ${listaPermissoes[i].identificador}");
+                                    controladorMandala.removerACL(
+                                        idProjeto,
+                                        listaPermissoes[i].identificador!,
+                                        listaPermissoes[i].permissao!);
+                                  },
+                                  icon: Icon(Icons.person_remove))
+                            ],
+                          )),
+                  ],
+                ),
               ),
               contentPadding: EdgeInsets.zero,
               content: Padding(

@@ -35,7 +35,7 @@ Route<dynamic>? generateRoute(RouteSettings settings) {
     case PlanodeAcaoPageRouteDash:
       return _getPageRoute(PlanosPageDash());
     case ProjetoPageRouteDash:
-      return _getPageRoute(HomeWeb());
+      return _getPageRoute(HomeWeb(tipo:'admin'));
 
     default:
       return _getPageRoute(OverViewPageDash());

@@ -57,7 +57,270 @@ class _TelaMetaState extends State<TelaMeta> {
                       child: ElevatedButton(
                         child: Icon(Icons.attach_file),
                         onPressed: () {
-                          Get.to(() =>AnexoPage());
+                          showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                  title: Column(
+                                    children: [
+                                      Text("Anexos"),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 12),
+                                        child: Row(
+                                          children: [
+                                            SizedBox(width: 12),
+                                            Container(
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color:
+                                                            PaletaCores.active,
+                                                        width: .5),
+                                                    color: PaletaCores.corLight,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20)),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 6),
+                                                child: ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    primary:
+                                                        PaletaCores.corLight,
+                                                    elevation: 0,
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 6,
+                                                    ),
+                                                  ),
+                                                  onPressed: mandalaController
+                                                      .selecionarImagem,
+                                                  child: CustomText(
+                                                    text: "Anexar imagem",
+                                                    color: PaletaCores.active
+                                                        .withOpacity(.7),
+                                                    weight: FontWeight.bold,
+                                                  ),
+                                                )),
+                                            SizedBox(height: 12),
+                                            Container(
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color:
+                                                            PaletaCores.active,
+                                                        width: .5),
+                                                    color: PaletaCores.corLight,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20)),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 6),
+                                                child: ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    primary:
+                                                        PaletaCores.corLight,
+                                                    elevation: 0,
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 6,
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    mandalaController
+                                                        .uploadImagem(
+                                                            auth.usuario);
+                                                  },
+                                                  child: CustomText(
+                                                    text: "Upload imagem",
+                                                    color: PaletaCores.active
+                                                        .withOpacity(.7),
+                                                    weight: FontWeight.bold,
+                                                  ),
+                                                )),
+                                            SizedBox(width: 12),
+                                            Container(
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color:
+                                                            PaletaCores.active,
+                                                        width: .5),
+                                                    color: PaletaCores.corLight,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20)),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 6),
+                                                child: ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    primary:
+                                                        PaletaCores.corLight,
+                                                    elevation: 0,
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 6,
+                                                    ),
+                                                  ),
+                                                  onPressed: mandalaController
+                                                      .selecionarPDF,
+                                                  child: CustomText(
+                                                    text: "Anexar PDF",
+                                                    color: PaletaCores.active
+                                                        .withOpacity(.7),
+                                                    weight: FontWeight.bold,
+                                                  ),
+                                                )),
+                                            SizedBox(height: 12),
+                                            Container(
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color:
+                                                            PaletaCores.active,
+                                                        width: .5),
+                                                    color: PaletaCores.corLight,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20)),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 6),
+                                                child: ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    primary:
+                                                        PaletaCores.corLight,
+                                                    elevation: 0,
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 6,
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    mandalaController.uploadPDF(
+                                                        auth.usuario);
+                                                  },
+                                                  child: CustomText(
+                                                    text: "Upload PDF",
+                                                    color: PaletaCores.active
+                                                        .withOpacity(.7),
+                                                    weight: FontWeight.bold,
+                                                  ),
+                                                )),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  content: Container(
+                                    height: 250,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(25.0),
+                                      child: Obx(
+                                        () => SingleChildScrollView(
+                                          child: Column(
+                                            children: [
+                                              if (mandalaController
+                                                      .ultimoNivelClicado
+                                                      .value ==
+                                                  2)
+                                                if (mandalaController
+                                                        .listaObjectives[
+                                                            mandalaController
+                                                                .indiceObjective
+                                                                .value]
+                                                        .arquivos!
+                                                        .length >
+                                                    0)
+                                                  for (int i = 0;
+                                                      i <
+                                                          mandalaController
+                                                              .listaObjectives[
+                                                                  mandalaController
+                                                                      .indiceObjective
+                                                                      .value]
+                                                              .arquivos!
+                                                              .length;
+                                                      i++)
+                                                    TextButton.icon(
+                                                        onPressed: () {
+                                                          mandalaController.baixarAnexo(
+                                                              mandalaController
+                                                                  .listaObjectives[
+                                                                      mandalaController
+                                                                          .indiceObjective
+                                                                          .value]
+                                                                  .arquivos![i]);
+                                                        },
+                                                        label: Text(
+                                                          'Anexo ${i + 1}',
+                                                          style: TextStyle(
+                                                              fontSize: 25,
+                                                              color: PaletaCores
+                                                                  .corPrimaria),
+                                                        ),
+                                                        icon: Icon(
+                                                            Icons
+                                                                .picture_as_pdf_sharp,
+                                                            size: 25,
+                                                            color: PaletaCores
+                                                                .corPrimaria)),
+                                              if (mandalaController
+                                                      .ultimoNivelClicado
+                                                      .value ==
+                                                  3)
+                                                if (mandalaController
+                                                        .listaResultados[
+                                                            mandalaController
+                                                                .indiceResult
+                                                                .value]
+                                                        .arquivos!
+                                                        .length >
+                                                    0)
+                                                  for (int i = 0;
+                                                      i <
+                                                          mandalaController
+                                                              .listaResultados[
+                                                                  mandalaController
+                                                                      .indiceResult
+                                                                      .value]
+                                                              .arquivos!
+                                                              .length;
+                                                      i += 2)
+                                                    TextButton.icon(
+                                                        onPressed: () {
+                                                          mandalaController.baixarAnexo(
+                                                              mandalaController
+                                                                  .listaResultados[
+                                                                      mandalaController
+                                                                          .indiceResult
+                                                                          .value]
+                                                                  .arquivos![i]);
+                                                        },
+                                                        label: Text(
+                                                          'Anexo ${i + 1}',
+                                                          style: TextStyle(
+                                                              fontSize: 25,
+                                                              color: PaletaCores
+                                                                  .corPrimaria),
+                                                        ),
+                                                        icon: Icon(
+                                                            Icons
+                                                                .picture_as_pdf_sharp,
+                                                            size: 25,
+                                                            color: PaletaCores
+                                                                .corPrimaria)),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )));
                         },
                       ),
                     ),
@@ -87,7 +350,6 @@ class _MetaClienteState extends State<MetaCliente> {
 
   @override
   Widget build(BuildContext context) {
-
     bool editavel = true;
     double? raioButton = 16;
 
@@ -128,7 +390,10 @@ class _MetaClienteState extends State<MetaCliente> {
                     18.0), //TODO: substituir pela mesma forma do donos
                 child: Text(
                   'Adicionar Realizado',
-                  style: TextStyle(color: PaletaCores.black, fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: PaletaCores.black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
               Container(
@@ -218,6 +483,13 @@ class _MetaClienteState extends State<MetaCliente> {
                                     splashRadius: raioButton,
                                     icon: Icon(Icons.lock, size: 20),
                                     onPressed: () {
+
+                                      String asdas = "Maria";
+                                      int tamanho = asdas.length;
+
+                                      asdas.substring(0, (tamanho ~/4));
+
+
                                       idMetrica.text =
                                           metricas[index].idMetrica.toString();
                                       Get.find<ControllerProjetoRepository>()

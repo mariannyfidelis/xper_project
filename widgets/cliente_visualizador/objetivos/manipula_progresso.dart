@@ -37,7 +37,6 @@ class ManipulaProgresso extends StatelessWidget {
                     min: 0,
                     activeColor: PaletaCores.textColor,
                     inactiveColor: Colors.transparent,
-                    //inactiveColor: Colors.red,
                     label: "Progresso atual",
                     onChanged: (newValue) {
                       newValue = mandalaController.progressoObj.value;
@@ -82,7 +81,6 @@ class ManipulaProgresso extends StatelessWidget {
                     onChanged: (newValue) {
                       newValue = mandalaController.progressoObj.value;
                     },
-
                   ),
                   IconButton(
                     color: PaletaCores.textColor,

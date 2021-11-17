@@ -33,7 +33,7 @@ Route<dynamic>? generateRouteGestor(RouteSettings settings) {
     case PlanodeAcaoPageRouteGestor:
       return _getPageRoute(PlanosPageDash());
     case ProjetoPageRouteGestor:
-      return _getPageRoute(HomeWeb(tipo: 'gestor'));
+      return _getPageRoute(HomeWeb(tipo: 'gerenciador'));
 
     default:
       return _getPageRoute(OverViewPageDash());

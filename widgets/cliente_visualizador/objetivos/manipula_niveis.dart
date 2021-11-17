@@ -38,58 +38,6 @@ class _ManipulaOKRState extends State<ManipulaOKR> {
                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               )),
 
-          // IconButton(
-          //   tooltip: "Adiciona objetivo",
-          //   splashRadius: 20,
-          //   onPressed: () {
-          //     controller.addObjetivo();
-          //   },
-          //   icon: Icon(FontAwesomeIcons.plusSquare), //(Icons.add),
-          // ),
-          // SizedBox(width: 2),
-          // IconButton(
-          //   tooltip: "Adiciona resultado",
-          //   splashRadius: 20,
-          //   onPressed: () {
-          //     controller.delObjetivo();
-          //   },
-          //   icon: Icon(FontAwesomeIcons.minusSquare),
-          // ),
-          // IconButton(
-          //   tooltip: "Adiciona métrica",
-          //   splashRadius: 20,
-          //   onPressed: () {
-          //     controller.addObjetivoProximo();
-          //     // setState(() {
-          //     //   if (objetictive >= 1) {
-          //     //     objetictive = objetictive - 1;
-          //     //     p = (100 / objetictive);
-          //     //     graus = (360 * p) / 100;
-          //     //     niveis = niveis - 1;
-          //
-          //     //   }
-          //     // });
-          //   },
-          //   //tooltip: "Objetivo próximo - adicionar",
-          //   icon: Icon(FontAwesomeIcons.plusCircle),
-          // ),
-          // IconButton(
-          //   splashRadius: 20,
-          //   onPressed: () {
-          //     controller.delObjetivoProximo();
-          //     // setState(() {
-          //     //   if (objetictive >= 1) {
-          //     //     objetictive = objetictive - 1;
-          //     //     p = (100 / objetictive);
-          //     //     graus = (360 * p) / 100;
-          //     //     niveis = niveis - 1;
-          //     //     criaPaint(lsPaint, true);
-          //     //   }
-          //     // });
-          //   },
-          //   tooltip: "Objetivo próximo - deletar",
-          //   icon: Icon(FontAwesomeIcons.minusCircle),
-          // ),
           PopupMenuButton(
             tooltip: "Menu de objetivos",
             initialValue: 9,

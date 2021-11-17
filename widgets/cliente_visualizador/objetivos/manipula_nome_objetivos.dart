@@ -46,13 +46,17 @@ class _ManipulaNomeObjetivoState extends State<ManipulaNomeObjetivo> {
               child: Container(
                 width: 360,
                 child: Obx(() => TextField(
+                  enabled: mandalaController.acl(),
+                  enableInteractiveSelection: mandalaController.acl(),
                   cursorColor: PaletaCores.textColor,
                   style: TextStyle(color: PaletaCores.textColor),
                   cursorWidth: 3.0,
                   cursorHeight: 5,
                   controller: mandalaController.objetivoController,
                   onChanged: (text) {
+                    if(mandalaController.acl() == true){
                     mandalaController.atualizarNome(text);
+                    }
                   },
                   decoration: InputDecoration(
                     focusColor: PaletaCores.textColor,
