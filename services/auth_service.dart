@@ -1,16 +1,18 @@
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:get/get.dart';
-import '/widgets/Dashboard/controller/controllers_dash.dart';
 import '/models/usuario.dart';
 import '/screens/home_web.dart';
 import '/screens/tela_de_aviso.dart';
 import '/database/db_firestore.dart';
+import '/utils/conversoes_uteis.dart';
 import '/screens/dashboard_page.dart';
 import 'package:flutter/material.dart';
 import '/screens/redefinicao_senha_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 //TODO: errado !!! Configurar para salvar os dados dentro do número correto do projeto
 String id_projeto = "01"; //
@@ -72,23 +74,43 @@ class AuthService extends GetxController {
             .doc("${usuario.idUsuario}")
             .set(usuario.toMap())
             .then((value) {
-          //Rotas para outra tela
-          Get.to(() => HomeWeb());
-          //Navigator.pushReplacementNamed(context, "/projetos");
+          showDialog(
+              context: Get.context!,
+              builder: (ctx) => AlertDialog(
+                    title: Text("Usuário Cadastrado!"),
+                  ));
         });
       });
     } else {
       String urlImagem = usuario.urlImagem;
-      print("deu certo taí o link $urlImagem!!!");
-      final usuariosRef = _firestore.collection("usuarios");
-      usuariosRef
-          .doc("${usuario.idUsuario}")
-          .set(usuario.toMap())
-          .then((value) {
-        //Rotas para outra tela
-        Get.to(() => HomeWeb());
-        //Navigator.pushReplacementNamed(context, "/projetos");
-      });
+      if (urlImagem != null || urlImagem != "") {
+        print("deu certo taí o link $urlImagem!!!");
+        final usuariosRef = _firestore.collection("usuarios");
+        usuariosRef
+            .doc("${usuario.idUsuario}")
+            .set(usuario.toMap())
+            .then((value) {
+        });
+      } else {
+        print("Arquivo: authservice - linha 96");
+        print("entrei no upload mas a url imagem esta vazia");
+        print("url imagem ${urlImagem}");
+        arquivoSelecionado = convertUint8list();
+        if (arquivoSelecionado != null) {
+          print("deu certo deu certo deu certo **** -> $urlImagem!!!");
+          final usuariosRef = _firestore.collection("usuarios");
+          usuariosRef
+              .doc("${usuario.idUsuario}")
+              .set(usuario.toMap())
+              .then((value) {
+            //Get.to(() => HomeWeb(tipo: usuario.tipoUsuario));
+            //Navigator.pushReplacementNamed(context, "/projetos");
+          });
+        } else {
+          print(
+              "mesmo com a conversao ainda ta nulo o arquivo de imagem selecionado !");
+        }
+      }
     }
 
     //Criar a estrutura de pastas de um determinado usuário
@@ -98,7 +120,8 @@ class AuthService extends GetxController {
   String? registrarUsuarioEmailSenha(String nome, String email, String senha,
       {Uint8List? arquivoImagemSelecionado,
       String tipoUsuario = "cliente",
-      String? gestor}) {
+      String? gestor = "",
+      bool logar = true}) {
     String? idUsuario;
 
     try {
@@ -108,10 +131,12 @@ class AuthService extends GetxController {
         password: senha,
       )
           .then((userCredencial) {
-        _getUser();
+        if (logar == true) {
+          _getUser();
+        }
         print("Usuário criado pelo auth-service: $usuario");
-        //idUsuario = userCredencial.user?.uid;
-        idUsuario = usuario!.uid;
+        idUsuario = userCredencial.user?.uid;
+        //idUsuario = usuario!.uid;
         print("Usuário cadastrado: $idUsuario");
 
         if (idUsuario != null) {
@@ -122,11 +147,42 @@ class AuthService extends GetxController {
         } else {
           print("Id veio nulo pro LoginPage .... :(");
         }
-        // _auth.currentUser
-        //     ?.sendEmailVerification()
-        //     .then((value) => print("enviei um email de verificação ..."));
 
         return idUsuario;
+      }).catchError((onError) {
+        print("Peguei o erro: $onError");
+        String errorFirebase = onError.toString().split(" ")[0].split("/")[1];
+        errorFirebase = errorFirebase.substring(0, errorFirebase.length - 1);
+        print(errorFirebase);
+        if (errorFirebase == "email-already-in-use") {
+          showDialog(
+              context: Get.context!,
+              builder: (ctx) => AlertDialog(
+                    title: Text("Usuário já está cadastrado"),
+                  ));
+        }
+        if (errorFirebase == "weak-password") {
+          showDialog(
+              context: Get.context!,
+              builder: (ctx) => AlertDialog(
+                    title: Text(
+                        "Escolha uma senha mais forte e com no mínimo 6 caracteres!"),
+                  ));
+        }
+        if (errorFirebase == "wrong-password") {
+          showDialog(
+              context: Get.context!,
+              builder: (ctx) => AlertDialog(
+                    title: Text("A senha não confere !"),
+                  ));
+        }
+        if (errorFirebase == "user-not-found") {
+          showDialog(
+              context: Get.context!,
+              builder: (ctx) => AlertDialog(
+                    title: Text("Cadastre-se !"),
+                  ));
+        }
       });
     } on FirebaseAuthException catch (e) {
       print("--------> ${e.code} <---------");
@@ -139,15 +195,18 @@ class AuthService extends GetxController {
       } else if (e.code == "email-already-in-use") {
         print(e.code);
         return e.code;
-
       }
     }
-    //_getUser();
   }
 
   registrar(String nome, String email, String senha) async {
     try {
-      await _auth.createUserWithEmailAndPassword(email: email, password: senha);
+      await _auth
+          .createUserWithEmailAndPassword(email: email, password: senha)
+          .then((value) => null)
+          .catchError((onError) {
+        print("Peguei o erro: $onError");
+      });
       _getUser();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -157,29 +216,46 @@ class AuthService extends GetxController {
       } else if (e.code == "user-not-found") {
         throw AuthException("Email não encontrado. Cadastra-se!");
       } else if (e.code == "email-already-in-use") {
+        print("${e.email}, ${e.tenantId}, ${e.credential}");
         throw AuthException("Este email já está cadastrado !");
       }
     }
   }
 
   void redefinirSenha() {
-    print("Redefina sua senha ...");
     Get.to(() => RedefinicaoSenhaPage());
-    //Navigator.pushReplacementNamed(context, "/redefinicaoSenha");
   }
 
   void logarEmailSenha(String email, String senha) async {
     await _auth
         .signInWithEmailAndPassword(email: email, password: senha)
         .then((value) async {
-      print("Logado como: ${value.user?.uid} de email: ${value.user?.email}");
+      debugPrint(
+          "Logado como: ${value.user?.uid} de email: ${value.user?.email}");
       User? usuarioLogado = value.user;
 
       _getUser();
       verificaTipoUsuario(usuarioLogado);
-    }).catchError((error) {
-      print(error);
+    }).catchError((onError) {
+      print("Peguei o erro: $onError");
       print("Aconteceu algum problema ao logar ...");
+      String errorFirebase = onError.toString().split(" ")[0].split("/")[1];
+      errorFirebase = errorFirebase.substring(0, errorFirebase.length - 1);
+      print(errorFirebase);
+      if (errorFirebase == "wrong-password") {
+        showDialog(
+            context: Get.context!,
+            builder: (ctx) => AlertDialog(
+                  title: Text("A senha não confere !"),
+                ));
+      }
+      if (errorFirebase == "user-not-found") {
+        showDialog(
+            context: Get.context!,
+            builder: (ctx) => AlertDialog(
+                  title: Text("Cadastre-se !"),
+                ));
+      }
     });
   }
 
@@ -193,6 +269,9 @@ class AuthService extends GetxController {
           ?.sendEmailVerification()
           .then((value) => print("enviei um email de verificação 2 ..."));
 
+      //TODO: Login com a conta do Google tá bugado ,
+      //TODO: tem que verificar se o email ta cadastrado e pegar o tipo de usuário.
+      //TODO: Caso não esteja cadastrado  entra como cliente !
       //Upload da imagem
       if (idUsuario != null) {
         Usuario usuario = Usuario(

@@ -220,42 +220,32 @@ class _DashVisualState extends State<DashVisual> {
                       style:
                           TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+                SizedBox(height: 12),
                 Center(
                   child: Text('35',
                       style:
                           TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+                SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () {},
                   child: Text('clique para ver',
                       style:
                           TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
-                SizedBox(
-                  height: 85,
-                ),
+                SizedBox(height: 85),
                 Center(
                   child: Text('Ações',
                       style:
                           TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+                SizedBox(height: 12),
                 Center(
                   child: Text('12',
                       style:
                           TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+                SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () {},
                   child: Text('clique para ver',
@@ -275,17 +265,13 @@ class _DashVisualState extends State<DashVisual> {
                       style:
                           TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+                SizedBox(height: 12),
                 Center(
                   child: Text('123',
                       style:
                           TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+                SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () {},
                   child: Text('clique para ver',
@@ -305,17 +291,13 @@ class _DashVisualState extends State<DashVisual> {
                       style:
                           TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+                SizedBox(height: 12),
                 Center(
                   child: Text('23',
                       style:
                           TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+                SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () {},
                   child: Text('clique para ver',
@@ -335,17 +317,13 @@ class _DashVisualState extends State<DashVisual> {
                       style:
                           TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+                SizedBox(height: 12),
                 Center(
                   child: Text('12',
                       style:
                           TextStyle(color: PaletaCores.corLight, fontSize: 20)),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+                SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () {},
                   child: Text('clique para ver',
@@ -390,9 +368,7 @@ class _DashVisualState extends State<DashVisual> {
               ),
             ),
           ),
-          SizedBox(
-            width: 12,
-          ),
+          SizedBox(width: 12),
           Container(
             decoration: BoxDecoration(
                 border: Border.all(color: PaletaCores.active, width: .5),

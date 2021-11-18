@@ -217,14 +217,21 @@ class _ManipulaResponsaveisState extends State<ManipulaResponsaveis> {
                                   '${mandalaController.listaObjectives[mandalaController.indiceObjective.value].donos![i + 1]}',
                                   style: estiloTextoBotaoDropMenuButton,
                                 ),
-                                // IconButton(
-                                //     color: PaletaCores.corPrimaria,
-                                //     splashRadius: 16,
-                                //     onPressed: () =>
-                                //         mandalaController.adicionarResponsavel(
-                                //             responsavelController.text),
-                                //     icon: Icon(Icons.person_remove, size: 10),
-                                // )
+                                IconButton(
+                                    color: PaletaCores.corPrimaria,
+                                    splashRadius: 16,
+                                    onPressed: () =>
+                                        mandalaController.removeResponsavelPedaco(
+                                            mandalaController
+                                                .listaResultados[mandalaController
+                                                .indiceResult.value]
+                                                .donoResultado![i],
+                                            mandalaController
+                                                .listaResultados[mandalaController
+                                                .indiceResult.value]
+                                                .donoResultado![i + 1]),
+                                    icon: Icon(Icons.person_remove, size: 10),
+                                )
                               ],
                             ),
                       if (mandalaController.ultimoNivelClicado.value == 3)
@@ -248,7 +255,22 @@ class _ManipulaResponsaveisState extends State<ManipulaResponsaveis> {
                                     '${mandalaController.listaResultados[mandalaController.indiceResult.value].donoResultado![i]}', style: estiloTextoBotaoDropMenuButton),
                                 Expanded(child: Container(width: 25)),
                                 Text(
-                                    '${mandalaController.listaResultados[mandalaController.indiceResult.value].donoResultado![i + 1]}', style: estiloTextoBotaoDropMenuButton)
+                                    '${mandalaController.listaResultados[mandalaController.indiceResult.value].donoResultado![i + 1]}', style: estiloTextoBotaoDropMenuButton),
+                                IconButton(
+                                  color: PaletaCores.corPrimaria,
+                                  splashRadius: 16,
+                                  onPressed: () =>
+                                      mandalaController.removeResponsavelPedaco(
+                                          mandalaController
+                                              .listaResultados[mandalaController
+                                              .indiceResult.value]
+                                              .donoResultado![i],
+                                          mandalaController
+                                              .listaResultados[mandalaController
+                                              .indiceResult.value]
+                                              .donoResultado![i + 1]),
+                                  icon: Icon(Icons.person_remove, size: 10),
+                                )
                               ],
                             ),
                     ],

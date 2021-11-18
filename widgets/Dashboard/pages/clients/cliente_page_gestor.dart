@@ -22,7 +22,15 @@ class _ClientsTableGestorState extends State<ClientsTableGestor> {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ControllerProjetoRepository>();
-    final usuarios = Provider.of<List<Usuario>?>(context);
+    final usuariosDoGestor = Provider.of<List<Usuario>?>(context);
+    List<Usuario> usuarios = <Usuario>[].obs;
+    var users =
+    usuariosDoGestor!.where((element) => element.gestor == auth.usuario!.uid);
+
+    for (var user in users) {
+      usuarios.add(user);
+    }
+
     return Container(
       margin: EdgeInsets.only(bottom: 30),
       decoration: BoxDecoration(
@@ -75,7 +83,7 @@ class _ClientsTableGestorState extends State<ClientsTableGestor> {
               ),
             ],
             rows: List<DataRow>.generate(
-              usuarios!.length,
+              usuarios.length,
                   (index) => DataRow(
                 cells: [
                   DataCell(CustomText(text: usuarios[index].nome)),

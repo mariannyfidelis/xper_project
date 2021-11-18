@@ -122,8 +122,14 @@ class _ManipulaExtensoesState extends State<ManipulaExtensoes> {
                                 IconButton(
                                   color: PaletaCores.corPrimaria,
                                   splashRadius: 16,
-                                  onPressed: () {},
-                                  icon: Icon(Icons.person_remove, size: 10),
+                                  onPressed: () {
+                                    mandalaController.removeExtensao(
+                                        mandalaController
+                                            .listaObjectives[mandalaController
+                                                .indiceObjective.value]
+                                            .extensao![i]);
+                                  },
+                                  icon: Icon(Icons.highlight_remove, size: 10),
                                 )
                               ],
                             ),
@@ -151,8 +157,14 @@ class _ManipulaExtensoesState extends State<ManipulaExtensoes> {
                                 IconButton(
                                   color: PaletaCores.corPrimaria,
                                   splashRadius: 16,
-                                  onPressed: () {},
-                                  icon: Icon(Icons.person_remove, size: 10),
+                                  onPressed: () {
+                                    mandalaController.removeExtensao(
+                                        mandalaController
+                                            .listaObjectives[mandalaController
+                                                .indiceObjective.value]
+                                            .extensao![i]);
+                                  },
+                                  icon: Icon(Icons.highlight_remove, size: 10),
                                 )
                               ],
                             ),

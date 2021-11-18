@@ -72,7 +72,13 @@ class _MetricasTableState extends State<MetricasTable> {
               weight: FontWeight.bold),
           SizedBox(height: 20, width: 10),
           DropDownMetrica(),
+          SizedBox(height: 40, width: 10),
+          CustomText(
+              text: "A quem pertence pertence esse resultado ?",
+              color: PaletaCores.corLightGrey,
+              weight: FontWeight.bold),
           SizedBox(height: 20, width: 10),
+          DropDownDonoResultadometrica(),
           SizedBox(height: 30, width: 10),
           Padding(
             padding: const EdgeInsets.only(top: 14.0, bottom: 18.0),

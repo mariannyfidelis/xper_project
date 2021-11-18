@@ -16,7 +16,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  //String erroMsg = "";
   bool cadastrarUsuario = false;
   TextEditingController _controllerEmail = TextEditingController();
   TextEditingController _controllerPassword = TextEditingController();
@@ -50,20 +49,19 @@ class _LoginPageState extends State<LoginPage> {
               controllerAuth.registrarUsuarioEmailSenha(nome, email, senha,
                   arquivoImagemSelecionado: _arquivoImagemSelecionado);
             } else {
-              print("Nome inválido digite 6 ou mais caracteres!");
+              showDialog(context: Get.context!, builder: (ctx) =>AlertDialog(title: Text("Nome inválido digite no mínimo 6 caracteres !"),));
             }
           } else {
-            print("Selecione uma imagem !");
+            showDialog(context: Get.context!, builder: (ctx) =>AlertDialog(title: Text("Selecione uma imagem !"),));
           }
         } else {
-          //logar usuário
           controllerAuth.logarEmailSenha(email, senha);
         }
       } else {
-        print("Senha inválida !");
+        showDialog(context: Get.context!, builder: (ctx) =>AlertDialog(title: Text("Senha inválida !"),));
       }
     } else {
-      print("Preencha os campos de email e senha !");
+      showDialog(context: Get.context!, builder: (ctx) =>AlertDialog(title: Text("Preencha os campos de email e senha !"),));
     }
   }
 

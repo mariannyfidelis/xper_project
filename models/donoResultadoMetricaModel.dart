@@ -2,7 +2,6 @@ class DonosResultadoMetricas {
   String? id;
   String? nome;
   String? email;
-  //TODO: permissão será aqui ? 
 
   DonosResultadoMetricas({this.nome, this.id, this.email});
 

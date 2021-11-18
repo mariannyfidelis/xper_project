@@ -7,21 +7,21 @@ import '/widgets/Dashboard/controller/controllers_dash.dart';
 class DropObjetivoEResultado extends GetxController {
   var obj = "".obs;
   var result = "".obs;
+  var dono = "".obs;
 
   atualizaObjetivoIdentificador(String s) {
-    debugPrint("Valor que veio pro controller objetivo drop: $s");
     this.obj.value = s;
-    debugPrint("Valor que saiu objetivo: ${this.obj.value} - $obj");
     refresh();
-    debugPrint("Valor que saiu depois do refresh: ${this.obj.value} - $obj");
   }
 
   atualizaResultadoIdentificador(String s) {
-    debugPrint("Valor que veio pro controller resultado drop: $s");
     this.result.value = s;
-    debugPrint("Valor que saiu result: ${this.result.value} - $result");
     refresh();
-    debugPrint("Valor que saiu depois do refresh: ${this.result.value} - $result");
+  }
+
+  atualizaDonoResultadoIdentificador(String s) {
+    this.dono.value = s;
+    refresh();
   }
 }
 
@@ -66,10 +66,6 @@ class _DropDownObjetivoState extends State<DropDownObjetivo> {
                     });
                   },
                   value: _objetivoSelecionado,
-                ),
-                Text(
-                  "O objetivo selecionado foi \n${_objetivoSelecionado!.nome} - id [${_objetivoSelecionado!.idObjetivo}]",
-                  style: TextStyle(fontSize: 20.0),
                 ),
               ],
             ),

@@ -1530,7 +1530,43 @@ class ControllerProjetoRepository extends GetxController {
         .update({'resultadosPrincipais': lr, 'objetivosPrincipais': lo});
   }
 
-  void buscarExtensao() {}
+  removeExtensao(String extensao) async {
+    if (ultimoNivelClicado.value == 3) {
+      _listResults[indiceResult.value].extensao!.remove(extensao);
+    }
+    if (ultimoNivelClicado.value == 2) {
+      _listObjects[indiceObjective.value].extensao!.remove(extensao);
+    }
+    DocumentReference reference =
+    db.collection('projetosPrincipais').doc(this.idProjeto.value);
+
+    var lr = _listResults.map((v) => v.toJson()).toList();
+    var lo = _listObjects.map((v) => v.toJson()).toList();
+
+    await reference
+        .update({'resultadosPrincipais': lr, 'objetivosPrincipais': lo});
+  }
+
+  removeResponsavelPedaco(String nome, String email) async {
+    if (ultimoNivelClicado.value == 3) {
+      _listResults[indiceResult.value].donoResultado!.remove(nome);
+      _listResults[indiceResult.value].donoResultado!.remove(email);
+    }
+    if (ultimoNivelClicado.value == 2) {
+      _listObjects[indiceObjective.value].donos!.remove(nome);
+      _listObjects[indiceObjective.value].donos!.remove(email);
+    }
+    DocumentReference reference =
+    db.collection('projetosPrincipais').doc(this.idProjeto.value);
+
+    var lr = _listResults.map((v) => v.toJson()).toList();
+    var lo = _listObjects.map((v) => v.toJson()).toList();
+
+    await reference
+        .update({'resultadosPrincipais': lr, 'objetivosPrincipais': lo}); //[l]
+  }
+
+
 
   String adicionarResponsavel(String? nomeResponsavel) {
     List<String> spli = [""];
