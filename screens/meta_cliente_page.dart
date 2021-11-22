@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import '/utils/paleta_cores.dart';
-import '/screens/anexos_page.dart';
 import '/models/metricasModel.dart';
 import 'package:flutter/material.dart';
 import 'package:data_table_2/data_table_2.dart';
@@ -44,6 +43,8 @@ class _TelaMetaState extends State<TelaMeta> {
                       child: ElevatedButton(
                         child: Icon(Icons.arrow_drop_down),
                         onPressed: () {
+                          mandalaController.esvaziarFiltragem();
+                          mandalaController.filtrarMetricas();
                           Get.to(() => MetaCliente());
                         },
                       ),
@@ -360,16 +361,7 @@ class _MetaClienteState extends State<MetaCliente> {
     var lm = listaMetricas.listaMetricas.where((element) =>
         element.idResultado == listaMetricas.ultimoResultadoClicado.value);
 
-    List<MetricasPrincipais> metricas = <MetricasPrincipais>[].obs;
-    if (listaMetricas.ultimoNivelClicado.value == 3) {
-      for (var m in lm) {
-        metricas.add(m);
-      }
-    } else if (listaMetricas.ultimoNivelClicado.value == 2) {
-      metricas.clear();
-    }
-
-    metricas.forEach((element) {
+    listaMetricas.metricas.forEach((element) {
       controladorRealizado1.add(new TextEditingController());
       controladorRealizado2.add(new TextEditingController());
       controladorRealizado3.add(new TextEditingController());
@@ -387,7 +379,7 @@ class _MetaClienteState extends State<MetaCliente> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(
-                    18.0), //TODO: substituir pela mesma forma do donos
+                    18.0),
                 child: Text(
                   'Adicionar Realizado',
                   style: TextStyle(
@@ -420,7 +412,7 @@ class _MetaClienteState extends State<MetaCliente> {
                           width: 10,
                         ),
                         CustomText(
-                          text: "Metricas",
+                          text: "Métricas",
                           color: PaletaCores.corLightGrey,
                           weight: FontWeight.bold,
                         )
@@ -434,7 +426,7 @@ class _MetaClienteState extends State<MetaCliente> {
                         dataRowHeight: 205,
                         columns: [
                           DataColumn2(
-                            label: Text('Metricas'),
+                            label: Text('Métricas'),
                             size: ColumnSize.L,
                           ),
                           DataColumn2(
@@ -463,11 +455,11 @@ class _MetaClienteState extends State<MetaCliente> {
                           ),
                         ],
                         rows: List<DataRow>.generate(
-                          metricas.length,
+                            listaMetricas.metricas.length,
                           (index) => DataRow(
                             cells: [
                               DataCell(
-                                CustomText(text: metricas[index].nomeMetrica),
+                                CustomText(text: listaMetricas.metricas[index].nomeMetrica),
                               ),
                               DataCell(Row(
                                 children: [
@@ -491,7 +483,7 @@ class _MetaClienteState extends State<MetaCliente> {
 
 
                                       idMetrica.text =
-                                          metricas[index].idMetrica.toString();
+                                          listaMetricas.metricas[index].idMetrica.toString();
                                       Get.find<ControllerProjetoRepository>()
                                           .atualizarRealizado(
                                               1,
@@ -509,7 +501,7 @@ class _MetaClienteState extends State<MetaCliente> {
                                                 .listaMetricas[index].meta1 !=
                                             null) {
                                           controladorRealizado1[index].text =
-                                              metricas[index]
+                                              listaMetricas.metricas[index]
                                                   .realizado1
                                                   .toString();
                                         }
@@ -536,7 +528,7 @@ class _MetaClienteState extends State<MetaCliente> {
                                     icon: Icon(Icons.lock, size: 20),
                                     onPressed: () {
                                       idMetrica.text =
-                                          metricas[index].idMetrica.toString();
+                                          listaMetricas.metricas[index].idMetrica.toString();
                                       Get.find<ControllerProjetoRepository>()
                                           .atualizarRealizado(
                                               2,
@@ -553,9 +545,9 @@ class _MetaClienteState extends State<MetaCliente> {
                                       splashRadius: raioButton,
                                       icon: Icon(Icons.update, size: 20),
                                       onPressed: () {
-                                        if (metricas[index].meta2 != null) {
+                                        if (listaMetricas.metricas[index].meta2 != null) {
                                           controladorRealizado2[index].text =
-                                              metricas[index]
+                                              listaMetricas.metricas[index]
                                                   .realizado2
                                                   .toString();
                                         }
@@ -582,7 +574,7 @@ class _MetaClienteState extends State<MetaCliente> {
                                     icon: Icon(Icons.lock, size: 20),
                                     onPressed: () {
                                       idMetrica.text =
-                                          metricas[index].idMetrica.toString();
+                                          listaMetricas.metricas[index].idMetrica.toString();
                                       Get.find<ControllerProjetoRepository>()
                                           .atualizarRealizado(
                                               3,
@@ -599,9 +591,9 @@ class _MetaClienteState extends State<MetaCliente> {
                                       splashRadius: raioButton,
                                       icon: Icon(Icons.update, size: 20),
                                       onPressed: () {
-                                        if (metricas[index].meta3 != null) {
+                                        if (listaMetricas.metricas[index].meta3 != null) {
                                           controladorRealizado3[index].text =
-                                              metricas[index]
+                                              listaMetricas.metricas[index]
                                                   .realizado3
                                                   .toString();
                                         }
@@ -627,7 +619,7 @@ class _MetaClienteState extends State<MetaCliente> {
                                     icon: Icon(Icons.lock, size: 20),
                                     onPressed: () {
                                       idMetrica.text =
-                                          metricas[index].idMetrica.toString();
+                                          listaMetricas.metricas[index].idMetrica.toString();
                                       Get.find<ControllerProjetoRepository>()
                                           .atualizarRealizado(
                                               4,
@@ -644,9 +636,9 @@ class _MetaClienteState extends State<MetaCliente> {
                                       splashRadius: raioButton,
                                       icon: Icon(Icons.update, size: 20),
                                       onPressed: () {
-                                        if (metricas[index].meta4 != null) {
+                                        if (listaMetricas.metricas[index].meta4 != null) {
                                           controladorRealizado4[index].text =
-                                              metricas[index]
+                                              listaMetricas.metricas[index]
                                                   .realizado4
                                                   .toString();
                                         }
@@ -656,26 +648,21 @@ class _MetaClienteState extends State<MetaCliente> {
                               DataCell(SingleChildScrollView(
                                   child: CustomText(
                                       text:
-                                          '\nQuarter 1 : ${metricas[index].meta1.toString()}\n\nQuarter 2 : ${metricas[index].meta2.toString()}\n\nQuarter 3 : ${metricas[index].meta3.toString()}\n\nQuarter 4 : ${metricas[index].meta4.toString()}\n'))),
+                                          '\nQuarter 1 : ${listaMetricas.metricas[index].meta1.toString()}\n\nQuarter 2 : ${listaMetricas.metricas[index].meta2.toString()}\n\nQuarter 3 : ${listaMetricas.metricas[index].meta3.toString()}\n\nQuarter 4 : ${listaMetricas.metricas[index].meta4.toString()}\n'))),
                               DataCell(SingleChildScrollView(
                                 child: CustomText(
                                     text:
-                                        '\nGeral : ${listaMetricas.gerarProgressoGeral(
-                                  listaMetricas
-                                      .listaMetricas[index].realizado1!,
-                                  listaMetricas
-                                      .listaMetricas[index].realizado2!,
-                                  listaMetricas
-                                      .listaMetricas[index].realizado3!,
-                                  listaMetricas
-                                      .listaMetricas[index].realizado4!,
-                                  listaMetricas.listaMetricas[index].meta1!,
-                                  listaMetricas.listaMetricas[index].meta2!,
-                                  listaMetricas.listaMetricas[index].meta3!,
-                                  listaMetricas.listaMetricas[index].meta4!,
-                                )} %\n\nQuarter 1 : ${listaMetricas.gerarProgresso(listaMetricas.listaMetricas[index].realizado1!, listaMetricas.listaMetricas[index].meta1!)} %\n\nQuarter 2 : ${listaMetricas.gerarProgresso(listaMetricas.listaMetricas[index].realizado2!, listaMetricas.listaMetricas[index].meta2!)} %\n\nQuarter 3 : ${listaMetricas.gerarProgresso(listaMetricas.listaMetricas[index].realizado3!, listaMetricas.listaMetricas[index].meta3!)} %\n\nQuarter 4 : ${listaMetricas.gerarProgresso(listaMetricas.listaMetricas[index].realizado4!, listaMetricas.listaMetricas[index].meta4!)} %\n'),
-                              )),
-                            ],
+                                    '\nGeral : ${listaMetricas.gerarProgressoGeral(
+                                      listaMetricas.metricas[index].realizado1!,
+                                      listaMetricas.metricas[index].realizado2!,
+                                      listaMetricas.metricas[index].realizado3!,
+                                      listaMetricas.metricas[index].realizado4!,
+                                      listaMetricas.metricas[index].meta1!,
+                                      listaMetricas.metricas[index].meta2!,
+                                      listaMetricas.metricas[index].meta3!,
+                                      listaMetricas.metricas[index].meta4!,
+                                    )} %\n\nQuarter 1 : ${listaMetricas.gerarProgresso(listaMetricas.metricas[index].realizado1!, listaMetricas.metricas[index].meta1!)} %\n\nQuarter 2 : ${listaMetricas.gerarProgresso(listaMetricas.metricas[index].realizado2!, listaMetricas.metricas[index].meta2!)} %\n\nQuarter 3 : ${listaMetricas.gerarProgresso(listaMetricas.metricas[index].realizado3!, listaMetricas.metricas[index].meta3!)} %\n\nQuarter 4 : ${listaMetricas.gerarProgresso(listaMetricas.metricas[index].realizado4!, listaMetricas.metricas[index].meta4!)} %\n')),
+                              )],
                           ),
                         ),
                       ),

@@ -1,5 +1,8 @@
 import 'package:get/get.dart';
-import 'package:xper_brasil_projects/utils/paleta_cores.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/provider.dart';
+import '/controllers/controller_clicado.dart';
+import '/utils/paleta_cores.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
 import '/services/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -112,6 +115,7 @@ class WebAppBar extends StatelessWidget {
                                   top: 8.0, bottom: 8.0),
                               child: TextButton(
                                   onPressed: () {
+                                    Provider.of<Controller>(context).mudaClicado(i.idObjetivo.toString());
                                     mandalaController
                                         .indiceObjective.value =
                                         mandalaController

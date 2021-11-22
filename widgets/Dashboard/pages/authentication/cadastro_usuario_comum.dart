@@ -29,69 +29,69 @@ class _CadastroPageeUsuarioState extends State<CadastroPageUsuario> {
 
   Uint8List? _arquivoImagemSelecionado;
 
-  void _verificarUsuarioLogado() async {
-    User? usuarioLogado = await _auth.currentUser;
-    if (usuarioLogado != null) {
-      verificaTipoUsuario(usuarioLogado);
-      //Navigator.pushReplacementNamed(context, "/home");
-    }
-  }
-
-  void verificaTipoUsuario(User? user) async {
-    //Verificar e redirecionar para a tela específica
-    String uidUser = user!.uid;
-    DocumentSnapshot us =
-        await _firestore.collection("usuarios").doc("$uidUser").get();
-
-    String tipo = us.get("tipoUsuario");
-    print("xxx tipo do usuário $tipo");
-
-    //QuerySnapshot snapshot =
-    //  await _firestore.collection("usuarios/$uidUser").get();
-    if (tipo == "admin") {
-      Navigator.pushReplacementNamed(context, "/dashboard");
-    } else if (tipo == "gerenciador") {
-      Navigator.pushReplacementNamed(context, "/gerenciador");
-    } else if (tipo == "cliente") {
-      Navigator.pushReplacementNamed(context, "/projetos");
-    }
-  }
-
-  void _uploadImagem(Usuario usuario) {
-    Uint8List? arquivoSelecionado = _arquivoImagemSelecionado;
-    FirebaseStorage _storage = FirebaseStorage.instance;
-
-    if (arquivoSelecionado != null) {
-      Reference imagePerfilRef = _storage
-          .ref("imagens/perfil/${usuario.idUsuario}/${usuario.idUsuario}.jpg");
-      UploadTask uploadtask = imagePerfilRef.putData(arquivoSelecionado);
-      uploadtask.whenComplete(() async {
-        String urlImagem = await uploadtask.snapshot.ref.getDownloadURL();
-        print("deu certo taí o link $urlImagem!!!");
-        usuario.urlImagem = urlImagem;
-
-        final usuariosRef = _firestore.collection("usuarios");
-        usuariosRef
-            .doc("${usuario.idUsuario}")
-            .set(usuario.toMap())
-            .then((value) {
-          //Rotas para outra tela
-          Navigator.pushReplacementNamed(context, "/projetos");
-        });
-      });
-    } else {
-      String urlImagem = usuario.urlImagem;
-      print("deu certo taí o link $urlImagem!!!");
-      final usuariosRef = _firestore.collection("usuarios");
-      usuariosRef
-          .doc("${usuario.idUsuario}")
-          .set(usuario.toMap())
-          .then((value) {
-        //Rotas para outra tela
-        Navigator.pushReplacementNamed(context, "/projetos");
-      });
-    }
-  }
+  // void _verificarUsuarioLogado() async {
+  //   User? usuarioLogado = await _auth.currentUser;
+  //   if (usuarioLogado != null) {
+  //     verificaTipoUsuario(usuarioLogado);
+  //     //Navigator.pushReplacementNamed(context, "/home");
+  //   }
+  // }
+  //
+  // void verificaTipoUsuario(User? user) async {
+  //   //Verificar e redirecionar para a tela específica
+  //   String uidUser = user!.uid;
+  //   DocumentSnapshot us =
+  //       await _firestore.collection("usuarios").doc("$uidUser").get();
+  //
+  //   String tipo = us.get("tipoUsuario");
+  //   print("xxx tipo do usuário $tipo");
+  //
+  //   //QuerySnapshot snapshot =
+  //   //  await _firestore.collection("usuarios/$uidUser").get();
+  //   if (tipo == "admin") {
+  //     Navigator.pushReplacementNamed(context, "/dashboard");
+  //   } else if (tipo == "gerenciador") {
+  //     Navigator.pushReplacementNamed(context, "/gerenciador");
+  //   } else if (tipo == "cliente") {
+  //     Navigator.pushReplacementNamed(context, "/projetos");
+  //   }
+  // }
+  //
+  // void _uploadImagem(Usuario usuario) {
+  //   Uint8List? arquivoSelecionado = _arquivoImagemSelecionado;
+  //   FirebaseStorage _storage = FirebaseStorage.instance;
+  //
+  //   if (arquivoSelecionado != null) {
+  //     Reference imagePerfilRef = _storage
+  //         .ref("imagens/perfil/${usuario.idUsuario}/${usuario.idUsuario}.jpg");
+  //     UploadTask uploadtask = imagePerfilRef.putData(arquivoSelecionado);
+  //     uploadtask.whenComplete(() async {
+  //       String urlImagem = await uploadtask.snapshot.ref.getDownloadURL();
+  //       print("deu certo taí o link $urlImagem!!!");
+  //       usuario.urlImagem = urlImagem;
+  //
+  //       final usuariosRef = _firestore.collection("usuarios");
+  //       usuariosRef
+  //           .doc("${usuario.idUsuario}")
+  //           .set(usuario.toMap())
+  //           .then((value) {
+  //         //Rotas para outra tela
+  //         Navigator.pushReplacementNamed(context, "/projetos");
+  //       });
+  //     });
+  //   } else {
+  //     String urlImagem = usuario.urlImagem;
+  //     print("deu certo taí o link $urlImagem!!!");
+  //     final usuariosRef = _firestore.collection("usuarios");
+  //     usuariosRef
+  //         .doc("${usuario.idUsuario}")
+  //         .set(usuario.toMap())
+  //         .then((value) {
+  //       //Rotas para outra tela
+  //       Navigator.pushReplacementNamed(context, "/projetos");
+  //     });
+  //   }
+  // }
 
   void _selecionarImagem() async {
     FilePickerResult? resultado = await FilePicker.platform.pickFiles(

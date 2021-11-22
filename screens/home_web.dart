@@ -122,9 +122,11 @@ class _HomeWebState extends State<HomeWeb> {
                               onTap: () {
                                 controllerProjetos.atualizaTudo(
                                     meusProjetos[index].idProjeto!);
-                                //TODO - Enviar dados para a mandala
+
                                 Get.to(
                                     () => ProjetoPage(/*dados do idprojeto*/));
+
+                                //TODO - Enviar dados para a mandala
                               },
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
@@ -148,7 +150,7 @@ class _HomeWebState extends State<HomeWeb> {
                                             .idProjeto
                                             .toString(),
                                         meusProjetos[index].nome.toString(),
-                                        controllerAuth.usuario!.uid);
+                                        controllerAuth.id.value);
                                   },
                                   icon: Icon(Icons.edit, size: 20),
                                 ),
@@ -178,7 +180,7 @@ class _HomeWebState extends State<HomeWeb> {
                                           meusProjetos[index]
                                               .idProjeto
                                               .toString(),
-                                          controllerAuth.usuario!.uid),
+                                          controllerAuth.id.value),
                                     );
 
                                     // controllerProjetos.removeProjeto(

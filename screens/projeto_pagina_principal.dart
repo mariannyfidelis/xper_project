@@ -34,7 +34,7 @@ class _ProjetoPageState extends State<ProjetoPage> {
                   preferredSize: Size(double.infinity, 50))
               : PreferredSize(
                   child: WebAppBar(),
-                  preferredSize: Size(double.infinity, 40),
+                  preferredSize: Size(double.infinity, 34),
                 ),
           drawer: constraints.maxWidth < mobile_breakpoint
               ? DrawerMobile()
@@ -48,7 +48,7 @@ class _ProjetoPageState extends State<ProjetoPage> {
                 maxWidth: 1700, /*maxHeight: 900*/
               ),
               child: Container(
-                color: Color.fromARGB(255,56, 56, 56), //  Colors.blueGrey,
+                color: Color.fromARGB(255, 56, 56, 56), //  Colors.blueGrey,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -66,7 +66,8 @@ class _ProjetoPageState extends State<ProjetoPage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20)),
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 10, left:20 ,bottom: 12.0),
+                              padding: const EdgeInsets.only(
+                                  top: 10, left: 20, bottom: 12.0),
                               child: Column(
                                 children: [
                                   ManipulaNomeObjetivo(),
@@ -74,7 +75,7 @@ class _ProjetoPageState extends State<ProjetoPage> {
                                   ManipulaResponsaveis(),
                                   ManipulaExtensoes(),
                                   TelaCalendario(),
-                                  TelaMeta(),
+                                  Expanded(child: TelaMeta()),
                                   ManipulaCor(),
                                   TelaDetalhes(),
                                   EdicaoNotas(),

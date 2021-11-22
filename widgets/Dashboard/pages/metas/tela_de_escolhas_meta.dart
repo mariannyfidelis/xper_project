@@ -49,7 +49,7 @@ class _TelaEscolhasState extends State<TelaEscolhas> {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) => Meta()));
               },
-              child: Text('Metricas Principais',
+              child: Text('Métricas Principais',
                   style: TextStyle(fontSize: 23, color: PaletaCores.corLight)),
             ),
             SizedBox(height: 12),

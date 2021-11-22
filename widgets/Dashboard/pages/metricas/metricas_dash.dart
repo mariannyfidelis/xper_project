@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import '/utils/paleta_cores.dart';
-import '/models/metricasModel.dart';
 import 'package:flutter/material.dart';
 import 'package:data_table_2/data_table_2.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
@@ -24,9 +23,6 @@ class _MetricasTableState extends State<MetricasTable> {
   Widget build(BuildContext context) {
     ControllerProjetoRepository controllerProjetoRepository =
         Get.find<ControllerProjetoRepository>();
-
-    // var metricasController = controllerProjetoRepository.listaMetricas;
-    // var resultadosController = controllerProjetoRepository.listaResultados;
 
     return Container(
       margin: EdgeInsets.only(bottom: 30),
@@ -89,9 +85,7 @@ class _MetricasTableState extends State<MetricasTable> {
                 adicionaBotao(1, "Adicionar métricas"),
                 SizedBox(width: 20),
                 adicionaBotao(3, "Atualizar métrica"),
-                SizedBox(
-                  width: 20,
-                ),
+                SizedBox(width: 20),
                 adicionaBotao(2, "Sincronizar métricas"),
               ],
             ),

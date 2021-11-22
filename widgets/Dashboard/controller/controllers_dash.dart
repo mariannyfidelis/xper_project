@@ -26,7 +26,7 @@ NavigationControllerDash navigationController =
     NavigationControllerDash.instance;
 
 var auth = Get.find<AuthService>();
-String idUsuario = auth.usuario!.uid;
+String idUsuario = auth.id.value;
 
 class ControllerProjetoRepository extends GetxController {
   List<ProjectModel> _listaProjetos = <ProjectModel>[].obs;
@@ -55,6 +55,10 @@ class ControllerProjetoRepository extends GetxController {
   var nomeResultMandala = ''.obs;
   var progressoResult = 0.0.obs;
   var progressoAtualResult = 0.0.obs;
+
+  //==================Métricas mandala===================
+  List<MetricasPrincipais> _metricasFiltradas = <MetricasPrincipais>[].obs;
+  List<MetricasPrincipais> _responsaveisMetricas = <MetricasPrincipais>[].obs;
 
   //===================Projeto===========================
   var public = false.obs;
@@ -85,7 +89,7 @@ class ControllerProjetoRepository extends GetxController {
   List<ACL> _listAcl = <ACL>[].obs;
 
   Uint8List? _arquivoImagemSelecionado;
-  var  _nomeArquivoSelecionado = "".obs;
+  var _nomeArquivoSelecionado = "".obs;
 
   late FirebaseFirestore db;
 
@@ -174,6 +178,7 @@ class ControllerProjetoRepository extends GetxController {
     proj.acl!.forEach((element) {
       _listAcl.add(element);
     });
+    acl();
   }
 
   //======================= CRUD objetivos =====================================
@@ -212,17 +217,17 @@ class ControllerProjetoRepository extends GetxController {
     double sweepFatia = 360 / _listObjects.length;
     double startAngle = 0;
 
-    ultimoNivelClicado.value = 2;
-    nomeObjMandala.value = objetivo.nome!;
-    progressoObj.value = 0.0;
-    progressoAtualObj.value = 0.0;
-    data.value = Timestamp.fromDate(DateTime.now());
-    ultimoObjetivoClicado.value = objetivo.idObjetivo!;
+    //TODO: Removido para tratar o erro do clique !
+    // ultimoNivelClicado.value = 2;
+    // nomeObjMandala.value = objetivo.nome!;
+    // progressoObj.value = 0.0;
+    // progressoAtualObj.value = 0.0;
+    // data.value = Timestamp.fromDate(DateTime.now());
+    // ultimoObjetivoClicado.value = objetivo.idObjetivo!;
 
     for (var objetivo in _listObjects) {
       objetivo.setStartAngle(startAngle);
       objetivo.setSweepAngle(sweepFatia);
-      //TODO - falta configurar aqui o progresso e a importância
       startAngle += sweepFatia;
 
       var l_resultados = _listResults
@@ -251,7 +256,6 @@ class ControllerProjetoRepository extends GetxController {
     if (indice != -1) {
       _listObjects[indice].nome = nomeObjetivoAtualizado;
       var reference = await db
-          //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
           .collection('projetosPrincipais')
           .doc(this.idProjeto.value);
 
@@ -395,11 +399,12 @@ class ControllerProjetoRepository extends GetxController {
       double sweepFatia = (fatiaResult / tamanhoPedacoResultado);
       double startAngle = startPai;
 
-      ultimoNivelClicado.value = 3;
-      ultimoResultadoClicado.value = resultadosPrincipais.idResultado!;
-      nomeResultMandala.value = resultadosPrincipais.nomeResultado!;
-      progressoResult.value = 0.0;
-      progressoAtualResult.value = 0.0;
+      //TODO: Removido para tratar o erro do resultado selecionado
+      // ultimoNivelClicado.value = 3;
+      // ultimoResultadoClicado.value = resultadosPrincipais.idResultado!;
+      // nomeResultMandala.value = resultadosPrincipais.nomeResultado!;
+      // progressoResult.value = 0.0;
+      // progressoAtualResult.value = 0.0;
 
       for (var result in _listResults) {
         if (result.idObjetivoPai == idObjetivoPai) {
@@ -536,7 +541,6 @@ class ControllerProjetoRepository extends GetxController {
     String? cor/*= "255-242-242-242"*/,
   }) async {
     var reference = await db
-        //.collection('objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
         .collection('projetosPrincipais')
         .doc(this.idProjeto.value);
     int indice = _listResults
@@ -1107,14 +1111,14 @@ class ControllerProjetoRepository extends GetxController {
         snapshot = await db
             .collection('projetosPrincipais')
             //.where('tipoProj', isEqualTo: tipo)
-            .where("proprietario", isEqualTo: auth.usuario!.uid)
+            .where("proprietario", isEqualTo: auth.id.value)
             .get();
       } else if (tipo == "compartilhado") {
         snapshot = await db
             .collection('projetosPrincipais')
             .where('acl', arrayContainsAny: [
-          {'identificador': auth.usuario!.email, 'permissao': 'pode ler'},
-          {'identificador': auth.usuario!.email, 'permissao': 'pode editar'}
+          {'identificador': auth.email.value, 'permissao': 'pode ler'},
+          {'identificador': auth.email.value, 'permissao': 'pode editar'}
         ]).get();
       } else if (tipo == "publico") {
         snapshot = await db
@@ -1151,7 +1155,6 @@ class ControllerProjetoRepository extends GetxController {
         print('$i-.1');
         await db
             .collection(
-                //'objetivoUsuario/${auth.usuario!.uid}/objetivosPrincipais')
                 'projetosPrincipais')
             .doc(project.idProjeto.toString())
             .set(project.toJson());
@@ -1174,7 +1177,7 @@ class ControllerProjetoRepository extends GetxController {
       metricasPrincipais: [],
       listaDonos: [],
       idProjeto: idProjeto,
-      proprietario: auth.usuario!.uid,
+      proprietario: auth.id.value,
       tipoProj: 'privado',
       acl: [],
     );
@@ -1447,29 +1450,31 @@ class ControllerProjetoRepository extends GetxController {
     _objetivoController.value.text = nomeAtualizado;
   }
 
-  gerarProgressoGeral(
-      double realizado1,
-      double realizado2,
-      double realizado3,
-      double realizado4,
-      double meta1,
-      double meta2,
-      double meta3,
-      double meta4) {
+  gerarProgressoGeral(double realizado1, double realizado2, double realizado3,
+      double realizado4, double meta1, double meta2, double meta3, double meta4,
+      {bool grafico = false}) {
     if (meta1 + meta2 + meta3 + meta4 != 0) {
       double progresso = ((realizado1 + realizado2 + realizado3 + realizado4) /
               (meta1 + meta2 + meta3 + meta4)) *
           100;
-      return progresso;
+      if (grafico == false) {
+        return double.parse(progresso.toStringAsFixed(2));
+      } else {
+        return progresso.toInt();
+      }
     } else {
       return 0;
     }
   }
 
-  gerarProgresso(double realizado, double meta) {
+  gerarProgresso(double realizado, double meta, {bool grafico = false}) {
     if (meta != 0) {
       double progresso = (realizado / meta) * 100;
-      return progresso;
+      if (grafico == false) {
+        return double.parse(progresso.toStringAsFixed(2));
+      } else {
+        return progresso.toInt();
+      }
     } else {
       return 0.0;
     }
@@ -1482,7 +1487,7 @@ class ControllerProjetoRepository extends GetxController {
       (tipo == 'cliente')
           ? (_listaProjetos
                       .where((element) =>
-                          element.proprietario == auth.usuario!.uid)
+                          element.proprietario == auth.id.value)
                       .length ==
                   0)
               ? botaoProjeto.value = true
@@ -1490,8 +1495,6 @@ class ControllerProjetoRepository extends GetxController {
           : botaoProjeto.value = true;
     }
 
-    print(
-        'BBB ${listaProjetos.where((element) => element.proprietario == auth.usuario!.uid).length}');
     return botaoProjeto.value;
   }
 
@@ -1505,7 +1508,6 @@ class ControllerProjetoRepository extends GetxController {
   }
 
   adicionarExtensao(String nomeExtensao) async {
-
     if (ultimoNivelClicado.value == 3) {
       if (_listResults[indiceResult.value].extensao!.contains(nomeExtensao) ==
           false) {
@@ -1514,14 +1516,14 @@ class ControllerProjetoRepository extends GetxController {
     }
     if (ultimoNivelClicado.value == 2) {
       if (_listObjects[indiceObjective.value]
-          .extensao!
-          .contains(nomeExtensao) ==
+              .extensao!
+              .contains(nomeExtensao) ==
           false) {
         _listObjects[indiceObjective.value].extensao!.add(nomeExtensao);
       } else {}
     }
     DocumentReference reference =
-    db.collection('projetosPrincipais').doc(this.idProjeto.value);
+        db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     var lr = _listResults.map((v) => v.toJson()).toList();
     var lo = _listObjects.map((v) => v.toJson()).toList();
@@ -1538,7 +1540,7 @@ class ControllerProjetoRepository extends GetxController {
       _listObjects[indiceObjective.value].extensao!.remove(extensao);
     }
     DocumentReference reference =
-    db.collection('projetosPrincipais').doc(this.idProjeto.value);
+        db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     var lr = _listResults.map((v) => v.toJson()).toList();
     var lo = _listObjects.map((v) => v.toJson()).toList();
@@ -1557,7 +1559,7 @@ class ControllerProjetoRepository extends GetxController {
       _listObjects[indiceObjective.value].donos!.remove(email);
     }
     DocumentReference reference =
-    db.collection('projetosPrincipais').doc(this.idProjeto.value);
+        db.collection('projetosPrincipais').doc(this.idProjeto.value);
 
     var lr = _listResults.map((v) => v.toJson()).toList();
     var lo = _listObjects.map((v) => v.toJson()).toList();
@@ -1565,8 +1567,6 @@ class ControllerProjetoRepository extends GetxController {
     await reference
         .update({'resultadosPrincipais': lr, 'objetivosPrincipais': lo}); //[l]
   }
-
-
 
   String adicionarResponsavel(String? nomeResponsavel) {
     List<String> spli = [""];
@@ -1619,9 +1619,7 @@ class ControllerProjetoRepository extends GetxController {
         int indiceAcl = -1;
 
         if (_listaProjetos[indice].acl != null) {
-
           if (_listaProjetos[indice].acl!.length > 0) {
-
             for (int a = 0; a < _listaProjetos[indice].acl!.length; a++) {
               var acl = _listaProjetos[indice].acl![a];
 
@@ -1633,9 +1631,7 @@ class ControllerProjetoRepository extends GetxController {
                 }
               }
             }
-          } else if (_listaProjetos[indice].acl!.length == 0) {
-
-          }
+          } else if (_listaProjetos[indice].acl!.length == 0) {}
           if (jaEstaNaLista == false) {
             ACL aclObject =
                 ACL(identificador: identificadorEmail, permissao: permissao);
@@ -1716,7 +1712,20 @@ class ControllerProjetoRepository extends GetxController {
               false) {
         _listResults[indiceResult.value].donoResultado!.add(nome);
         _listResults[indiceResult.value].donoResultado!.add(email);
-      } else {}
+        for (var metric in _responsaveisMetricas) {
+          var indice = _listMetrics
+              .indexWhere((element) => element.idMetrica == metric.idMetrica);
+          _listMetrics[indice].donos!.add(email);
+        }
+      } else {
+        for (var metric in _responsaveisMetricas) {
+          var indice = _listMetrics
+              .indexWhere((element) => element.idMetrica == metric.idMetrica);
+          if (_listMetrics[indice].donos!.contains(email) == false) {
+            _listMetrics[indice].donos!.add(email);
+          }
+        }
+      }
     }
     if (ultimoNivelClicado.value == 2) {
       if (_listObjects[indiceObjective.value].donos!.contains(nome) == false &&
@@ -1730,14 +1739,15 @@ class ControllerProjetoRepository extends GetxController {
 
     var lr = _listResults.map((v) => v.toJson()).toList();
     var lo = _listObjects.map((v) => v.toJson()).toList();
+    var lm = _listMetrics.map((v) => v.toJson()).toList();
 
     await reference
-        .update({'resultadosPrincipais': lr, 'objetivosPrincipais': lo}); //[l]
+        .update({'resultadosPrincipais': lr, 'objetivosPrincipais': lo, 'metricasPrincipais': lm}); //[l]
   }
 
   acl() {
     var indice = _listAcl
-        .indexWhere((element) => element.identificador == auth.usuario!.email);
+        .indexWhere((element) => element.identificador == auth.email.value);
 
     if (indice != -1) {
       if (_listAcl[indice].permissao == 'pode editar') {
@@ -1746,11 +1756,11 @@ class ControllerProjetoRepository extends GetxController {
         editor.value = false;
       }
     } else {
-
-      if(auth.usuario!.uid == proprietario.string){
+      if (auth.id.value == proprietario.string) {
         editor.value = true;
-      }else{
+      } else {
         debugPrint("Não encontrei projeto com ACL");
+        editor.value = false;
       }
     }
 
@@ -1778,7 +1788,7 @@ class ControllerProjetoRepository extends GetxController {
 
     if (arquivoSelecionado != null) {
       Reference imagePerfilRef = _storage.ref(
-          "usuario/id_usuario_${usuario!.uid}/projeto_${usuario.uid}/image/${imageId.v4()}.jpg");//_${_nomeArquivoSelecionado.string}
+          "usuario/id_usuario_${usuario!.uid}/projeto_${usuario.uid}/image/${imageId.v4()}.jpg"); //_${_nomeArquivoSelecionado.string}
       UploadTask uploadtask = imagePerfilRef.putData(arquivoSelecionado);
       uploadtask.whenComplete(() async {
         String urlImagem = await uploadtask.snapshot.ref.getDownloadURL();
@@ -1833,5 +1843,140 @@ class ControllerProjetoRepository extends GetxController {
     } else {
       debugPrint('Não é possivel fazer o download');
     }
+  }
+
+  realizadosDono(double? periodoAtual, String? emailDono) {
+    final vinculoMetric =
+    _listMetrics.where((element) => element.donos!.contains(emailDono));
+    final vinculoObj =
+    _listObjects.where((element) => element.donos!.contains(emailDono));
+
+    double realizadoResult = 0;
+    double realizado1 = 0;
+    double realizado2 = 0;
+    double realizado3 = 0;
+    double realizado4 = 0;
+
+    for (final vin in vinculoMetric) {
+      print(vin.nomeMetrica);
+      realizadoResult +=
+          vin.realizado1! + vin.realizado2! + vin.realizado3! + vin.realizado4!;
+      realizado1 += vin.realizado1!;
+      realizado2 += vin.realizado2!;
+      realizado3 += vin.realizado3!;
+      realizado4 += vin.realizado4!;
+    }
+    for (final vin in vinculoObj) {
+      realizadoResult += realizadoObjetivos(0.0, vin.idObjetivo!);
+      realizado1 += realizadoObjetivos(1.0, vin.idObjetivo!);
+      realizado2 += realizadoObjetivos(2.0, vin.idObjetivo!);
+      realizado3 += realizadoObjetivos(3.0, vin.idObjetivo!);
+      realizado4 += realizadoObjetivos(4.0, vin.idObjetivo!);
+    }
+
+    if (periodoAtual == 0.0) {
+      return realizadoResult;
+    } else if (periodoAtual == 1.0) {
+      return realizado1;
+    } else if (periodoAtual == 2.0) {
+      return realizado2;
+    } else if (periodoAtual == 3.0) {
+      return realizado3;
+    } else if (periodoAtual == 4.0) {
+      return realizado4;
+    } else {
+      return '\nGeral : $realizadoResult\n\nQuarter 1 : $realizado1\n\nQuarter 2 : $realizado2\n\nQuarter 3 : $realizado3\n\nQuarter 4 : $realizado4\n';
+    }
+  }
+
+  metasDono(double? periodoAtual, String? emailDono) {
+    final vinculoMetric =
+    _listMetrics.where((element) => element.donos!.contains(emailDono));
+    final vinculoObj =
+    _listObjects.where((element) => element.donos!.contains(emailDono));
+
+    double metasResult = 0;
+
+    double metas1 = 0;
+    double metas2 = 0;
+    double metas3 = 0;
+    double metas4 = 0;
+
+    for (final vin in vinculoMetric) {
+      print(vin.nomeMetrica);
+      metasResult += vin.meta1! + vin.meta2! + vin.meta3! + vin.meta4!;
+      metas1 += vin.meta1!;
+      metas2 += vin.meta2!;
+      metas3 += vin.meta3!;
+      metas4 += vin.meta4!;
+    }
+    for (final vin in vinculoObj) {
+      metasResult += metaObjetivos(0.0, vin.idObjetivo!);
+      metas1 += metaObjetivos(1.0, vin.idObjetivo!);
+      metas2 += metaObjetivos(2.0, vin.idObjetivo!);
+      metas3 += metaObjetivos(3.0, vin.idObjetivo!);
+      metas4 += metaObjetivos(4.0, vin.idObjetivo!);
+    }
+
+    if (periodoAtual == 0.0) {
+      return metasResult;
+    } else if (periodoAtual == 1.0) {
+      return metas1;
+    } else if (periodoAtual == 2.0) {
+      return metas2;
+    } else if (periodoAtual == 3.0) {
+      return metas3;
+    } else if (periodoAtual == 4.0) {
+      return metas4;
+    } else {
+      return '\nGeral : $metasResult\n\nQuarter 1 : $metas1\n\nQuarter 2 : $metas2\n\nQuarter 3 : $metas3\n\nQuarter 4 : $metas4\n';
+    }
+  }
+
+  UnmodifiableListView<MetricasPrincipais> get metricas =>
+      UnmodifiableListView(_metricasFiltradas);
+
+  filtrarMetricas() {
+    var lm = _listMetrics.where(
+            (element) => element.idResultado == ultimoResultadoClicado.value);
+
+    if (proprietario.value == auth.id.value) {
+      if (ultimoNivelClicado.value == 3) {
+        for (var m in lm) {
+          _metricasFiltradas.add(m);
+        }
+      } else if (ultimoNivelClicado.value == 2) {
+        _metricasFiltradas.clear();
+      }
+    } else {
+      if (ultimoNivelClicado.value == 3) {
+        var metricResponsavel =
+        lm.where((element) => element.donos!.contains(auth.email.string));
+        for (var m in metricResponsavel) {
+          _metricasFiltradas.add(m);
+        }
+      } else if (ultimoNivelClicado.value == 2) {
+        _metricasFiltradas.clear();
+      }
+    }
+  }
+
+  esvaziarFiltragem() {
+    _metricasFiltradas.clear();
+  }
+
+  UnmodifiableListView<MetricasPrincipais> get selecionadasMetric =>
+      UnmodifiableListView(_responsaveisMetricas);
+
+  limpaResponsaveisMetrica() {
+    _responsaveisMetricas.clear();
+  }
+
+  addDonoMetrics(MetricasPrincipais metric) {
+    _responsaveisMetricas.add(metric);
+  }
+
+  removeDonoMetrics(MetricasPrincipais metric) {
+    _responsaveisMetricas.remove(metric);
   }
 }

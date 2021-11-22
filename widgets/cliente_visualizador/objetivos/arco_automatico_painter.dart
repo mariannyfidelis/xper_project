@@ -1,7 +1,9 @@
-import 'dart:math';
 import 'dart:ui';
+import 'dart:math';
 import 'package:get/get.dart';
-import 'package:xper_brasil_projects/utils/paleta_cores.dart';
+import 'package:provider/provider.dart';
+import 'package:xper_brasil_projects/controllers/controller_clicado.dart';
+import '/utils/paleta_cores.dart';
 import '/models/project_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -10,9 +12,10 @@ import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class ArcoAutomatico extends CustomPainter {
   BuildContext context;
+  final Controller controller;
   //ProjectModel? modeloProjeto;
 
-  ArcoAutomatico(this.context);
+  ArcoAutomatico(this.context): controller = Provider.of<Controller>(context, listen: false);
 
   double degToRad(double deg) => deg * (pi / 180.0);
 
@@ -23,6 +26,7 @@ class ArcoAutomatico extends CustomPainter {
     double height = size.height / 2;
     final c = Offset(width, height);
     final radius = size.width * 0.8;
+    var controlador_clicado = Provider.of<Controller>(context, listen: false);
 
     final linePaint = Paint()
       ..color = Colors.black87
@@ -102,13 +106,17 @@ class ArcoAutomatico extends CustomPainter {
         fontSize: 40.0,
       );
 
-      canvas.drawShadow(p, Colors.black87, 10, true);
-
+      // if(controlador_clicado.clicado == mandalaController.idProjeto.value) {
+      //   canvas.drawShadow(p, Colors.white, 15, true);
+      // }
       canvas.drawPath(p, paint, onTapDown: (evento) {
         mandalaController.indiceObjective.value = -1;
         mandalaController.indiceResult.value = -1;
+        controlador_clicado.mudaClicado(mandalaController.idProjeto.value);
       });
-
+      if(controlador_clicado.clicado == mandalaController.idProjeto.value) {
+        canvas.drawShadow(p, Colors.white, 15, true);
+      }
       drawTextCentered(
           cv, c, mandalaController.nome.string, styleText3, radius * 0.5, 1);
       //drawTextArc(cv, Offset(size.width/2, size.height/2), 300, 0, "Projeto Mandala", styleText);
@@ -163,12 +171,16 @@ class ArcoAutomatico extends CustomPainter {
           Paint? paint2 = mandalaController.criaPaintObjective(
               converteCor: listaObjetivos[o].paint);
 
-          listPathObjetivos.add(path);
+          Path pedacoObjetivo = Path.combine(
+              PathOperation.difference, path, p);
+          //listPathObjetivos.add(path);
+          listPathObjetivos.add(pedacoObjetivo);
           listaLines.add(p2);
           listPaintObjetivos.add(paint2);
         }
 
         for (int o = 0; o < numeroDeObjetivos; o++) {
+
           canvas.drawPath(listPathObjetivos[o], listPaintObjetivos[o],
               onTapDown: (tapDownDetails) {
             mandalaController.ultimoNivelClicado.value = 2;
@@ -182,11 +194,15 @@ class ArcoAutomatico extends CustomPainter {
                 mandalaController.listaObjectives[o].dataVencimento!;
             mandalaController.listaObjectives[o].dataVencimento!;
             mandalaController.indiceObjective.value = o;
+
+            controller.mudaClicado(mandalaController.listaObjectives[o].idObjetivo.toString());
             print(
                 "xx pedaço clicado - ${mandalaController.ultimoObjetivoClicado.value}");
             print("xx Ultimo nivel clicado - 2");
           });
-
+          if(controller.clicado == mandalaController.listaObjectives[o].idObjetivo.toString()){
+            canvas.drawShadow(listPathObjetivos[o], Colors.grey.shade300, 14, true);
+          }
           drawLabels(
               cv,
               c,
@@ -205,15 +221,19 @@ class ArcoAutomatico extends CustomPainter {
         //Desenha o nível mais interno
         canvas.drawPath(p, paint, onTapDown: (evento) {
           mandalaController.ultimoNivelClicado.value = 1;
+          controller.mudaClicado(mandalaController.idProjeto.value);
         });
         // canvas.drawArc(
         //     oval, degToRad(0), degToRad(360), true, linePaint);
 
-        canvas.drawShadow(p, Colors.white10, 5, true);
-
+        if(controller.clicado == mandalaController.idProjeto.value) {
+          canvas.drawShadow(p, Colors.grey.shade300, 5, true);
+        }
         drawTextCentered(
             cv, c, mandalaController.nome.string, styleText2, radius * 0.5, 1);
-      } else if (numeroDeResultados > 0) {
+      }
+
+      else if (numeroDeResultados > 0) {
         anguloInicio = degToRad(0);
         anguloFinal = degToRad(360);
 
@@ -234,32 +254,6 @@ class ArcoAutomatico extends CustomPainter {
         rectResultados = Rect.fromCenter(
             center: c, width: (radius / 0.9), height: (radius / 0.9));
 
-        var sweepResult; // = degToRad(360 / numeroDeResultados);
-
-        var listaResultados = mandalaController.listaResultados;
-
-        for (int r = 0; r < listaResultados.length; r++) {
-          anguloInicio = degToRad(listaResultados[r].startAngle);
-          sweepResult = degToRad(listaResultados[r].sweepAngle);
-
-          Path path = Path();
-          path.moveTo(width, height);
-          path.addArc(rectResultados, anguloInicio, sweepResult);
-          path.lineTo(width, height);
-          path.close();
-
-          final dx = radius / 1.8 * cos(anguloInicio);
-          final dy = radius / 1.8 * sin(anguloInicio);
-          final p2 = c + Offset(dx, dy);
-
-          Paint? paint = mandalaController.criaPaintObjective(
-              converteCor: listaResultados[r].paint);
-
-          listPathResultados.add(path);
-          listaLinesResults.add(p2);
-          listPaintResultados.add(paint);
-        }
-
         var sweepObjetivo;
 
         for (int o = 0; o < numeroDeObjetivos; o++) {
@@ -279,12 +273,58 @@ class ArcoAutomatico extends CustomPainter {
           Paint? paint2 = mandalaController.criaPaintObjective(
               converteCor: listaObjetivos[o].paint);
 
-          listPathObjetivos.add(path);
+          Path pedacoObjetivo = Path.combine(
+              PathOperation.difference, path, p);
+
+          // Path pedacoInterseccao = Path.combine(PathOperation.intersect, path, p);
+          //
+          // Path pedacoUnido = Path.combine(PathOperation.union, pedacoInterseccao, pedacoObjetivo);
+          //
+          //
+
+          //listPathObjetivos.add(path);
+          listPathObjetivos.add(pedacoObjetivo);
           listaLines.add(p2);
           listPaintObjetivos.add(paint2);
+
+        }
+
+        var sweepResult; // = degToRad(360 / numeroDeResultados);
+
+        var listaResultados = mandalaController.listaResultados;
+
+        for (int r = 0; r < listaResultados.length; r++) {
+          anguloInicio = degToRad(listaResultados[r].startAngle);
+          sweepResult = degToRad(listaResultados[r].sweepAngle);
+
+          Path pathExtra = Path();
+          pathExtra.moveTo(width, height);
+          pathExtra.addArc(rectObjetivos, degToRad(0), degToRad(360));
+          pathExtra.lineTo(width, height);
+          pathExtra.close();
+
+          Path path = Path();
+          path.moveTo(width, height);
+          path.addArc(rectResultados, anguloInicio, sweepResult);
+          path.lineTo(width, height);
+          path.close();
+
+          final dx = radius / 1.8 * cos(anguloInicio);
+          final dy = radius / 1.8 * sin(anguloInicio);
+          final p2 = c + Offset(dx, dy);
+
+          Paint? paint = mandalaController.criaPaintObjective(
+              converteCor: listaResultados[r].paint);
+
+          Path pathResultado = Path.combine(PathOperation.difference, path, pathExtra);
+          // listPathResultados.add(path);
+          listPathResultados.add(pathResultado);
+          listaLinesResults.add(p2);
+          listPaintResultados.add(paint);
         }
 
         for (int r = 0; r < numeroDeResultados; r++) {
+
           canvas.drawPath(listPathResultados[r], listPaintResultados[r],
               onTapDown: (tapDownDetails) {
             mandalaController.ultimoNivelClicado.value = 3;
@@ -313,10 +353,15 @@ class ArcoAutomatico extends CustomPainter {
                     mandalaController.listaResultados[r].meta!);
             mandalaController.indiceResult.value = r;
 
+            controller.mudaClicado(mandalaController.listaResultados[r].idResultado.toString());
             print(
                 "xx pedaço clicado - ${mandalaController.ultimoResultadoClicado}");
             print("xx Ultimo nivel clicado - 3");
           }, paintStyleForTouch: PaintingStyle.stroke);
+
+          if(controller.clicado == mandalaController.listaResultados[r].idResultado.toString()){
+            canvas.drawShadow(listPathResultados[r], Colors.grey.shade300, 10, true);
+          }
 
           double? fontS = listaResultados.length < 8 ? 30 : 30;
           final styleTextResult = TextStyle(
@@ -368,12 +413,14 @@ class ArcoAutomatico extends CustomPainter {
             mandalaController.data.value =
                 mandalaController.listaObjectives[o].dataVencimento!;
             mandalaController.indiceObjective.value = o;
-
+            controller.mudaClicado(mandalaController.listaObjectives[o].idObjetivo.toString());
             print(
                 "xx pedaço clicado - ${mandalaController.ultimoObjetivoClicado.value}");
             print("xx Ultimo nivel clicado - 2");
           });
-
+          if(controller.clicado == mandalaController.listaObjectives[o].idObjetivo.toString()){
+            canvas.drawShadow(listPathObjetivos[o], Colors.grey.shade300, 10, true);
+          }
           drawLabels(
               cv,
               c,
@@ -394,17 +441,16 @@ class ArcoAutomatico extends CustomPainter {
         });
 
         //Desenha o nível mais interno
-        canvas.drawPath(p, paint, onSecondaryTapDown: (evento) {
-          print(evento);
-          print("cliquei secondary");
-        }, onTapDown: (evento) {
+        canvas.drawPath(p, paint, onTapDown: (evento) {
           mandalaController.ultimoNivelClicado.value = 1;
-        }, onPanDown: (tapdetail) {
-          print("orange circle swiped");
+          controller.mudaClicado(mandalaController.idProjeto.value);
         });
 
         //canvas.drawShadow(p, Colors.black87, 10, true);
-        canvas.drawShadow(p, Colors.white24, 10, true);
+        if(controller.clicado == mandalaController.idProjeto.value){
+          canvas.drawShadow(p, Colors.grey.shade300, 10, true);
+        }
+
         drawTextCentered(
             cv, c, mandalaController.nome.string, styleText2, radius * 0.5, 1);
       }

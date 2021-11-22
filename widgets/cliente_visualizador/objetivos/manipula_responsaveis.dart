@@ -83,8 +83,12 @@ class _ManipulaResponsaveisState extends State<ManipulaResponsaveis> {
   }
 
   buildAlertDialog(TextEditingController responsavel) {
+    var mandalaController = Get.find<ControllerProjetoRepository>();
     TextEditingController controllerNome = TextEditingController();
     TextEditingController controllerEmail = TextEditingController();
+
+    mandalaController.esvaziarFiltragem();
+    mandalaController.filtrarMetricas();
 
     if (responsavel.text.contains("@")) {
       controllerEmail = responsavel;
@@ -116,7 +120,91 @@ class _ManipulaResponsaveisState extends State<ManipulaResponsaveis> {
                           labelText: "Email",
                           suffixIcon: Icon(Icons.email),
                         ),
-                      )
+                      ),
+                      SizedBox(height: 25),
+                      if (mandalaController.ultimoNivelClicado.value == 3)
+                        TextButton(
+                            onPressed: () {
+                              mandalaController.limpaResponsaveisMetrica();
+                              showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                      title: Text("Selecione as métricas"),
+                                      content: Container(
+                                          height: 100,
+                                          child: Obx(
+                                                () => SingleChildScrollView(
+                                                child: Column(children: [
+                                                  if (mandalaController
+                                                      .metricas.length >
+                                                      0)
+                                                    for (int i = 0;
+                                                    i <
+                                                        mandalaController
+                                                            .metricas.length;
+                                                    i++)
+                                                      Row(
+                                                        children: [
+                                                          //Checkbox(value: value, onChanged: onChanged),
+
+                                                          TextButton(
+                                                              child: Text(
+                                                                  '${mandalaController.metricas[i].nomeMetrica}'),
+                                                              onPressed: () {
+                                                                mandalaController
+                                                                    .addDonoMetrics(
+                                                                    mandalaController
+                                                                        .metricas[i]);
+                                                              }),
+                                                          Expanded(
+                                                              child: Container(
+                                                                  width: 25)),
+                                                          if (mandalaController
+                                                              .selecionadasMetric
+                                                              .contains(
+                                                              mandalaController
+                                                                  .metricas[i]))
+                                                            IconButton(
+                                                                color: PaletaCores
+                                                                    .corPrimaria,
+                                                                splashRadius: 16,
+                                                                onPressed: () {
+                                                                  mandalaController
+                                                                      .removeDonoMetrics(
+                                                                      mandalaController
+                                                                          .metricas[i]);
+                                                                },
+                                                                icon: Icon(
+                                                                    Icons
+                                                                        .highlight_remove,
+                                                                    size: 10))
+                                                        ],
+                                                      ),
+                                                ])),
+                                          )),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            mandalaController
+                                                .limpaResponsaveisMetrica();
+                                            Get.back();
+                                          },
+                                          child: Text("Cancelar",
+                                              style:
+                                              estiloTextoBotaoAlertDialog)),
+                                      TextButton(
+                                          onPressed: () {
+                                            Get.back();
+                                          },
+                                          child: Text("OK",
+                                              style:
+                                              estiloTextoBotaoAlertDialog))
+                                    ],
+                                  ));
+                            },
+                            child: Text(
+                                'Clique Aqui Para Selecionar Uma Métrica',
+                                style: estiloTextoBotaoAlertDialog))
                     ],
                   ),
                 ),

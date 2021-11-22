@@ -33,105 +33,112 @@ class _MetaResultadosState extends State<MetaResultados> {
     editavel.obs;
 
     return Scaffold(
-      body: Center(
-        child: Container(
-          margin: EdgeInsets.only(bottom: 30),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  offset: Offset(0, 6),
-                  color: PaletaCores.corLightGrey.withOpacity(.1),
-                  blurRadius: 12,
-                ),
-              ],
-              border: Border.all(color: PaletaCores.corLightGrey, width: .5)),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  SizedBox(
-                    width: 10,
+      body: Padding(
+        padding: const EdgeInsets.only(top: 40.0),
+        child: Center(
+          child: Container(
+            margin: EdgeInsets.only(bottom: 30),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(0, 6),
+                    color: PaletaCores.corLightGrey.withOpacity(.1),
+                    blurRadius: 12,
                   ),
-                  CustomText(
-                    text: "Resultados",
-                    color: PaletaCores.corLightGrey,
-                    weight: FontWeight.bold,
-                  )
                 ],
-              ),
-              Obx(
-                () => DataTable2(
-                  columnSpacing: 12,
-                  horizontalMargin: 12,
-                  minWidth: 600,
-                  dataRowHeight: 205,
-                  //headingRowHeight: ,
-                  columns: [
-                    DataColumn2(
-                      label: Text('Resultados'),
-                      size: ColumnSize.L,
-                    ),
-                    DataColumn2(
-                      label: Text('Realizado'),
-                      size: ColumnSize.M,
-                    ),
-                    DataColumn2(
-                      label: Text('Meta (Prevista)'),
-                      size: ColumnSize.M,
-                    ),
-                    DataColumn2(
-                      label: Text('Progresso'),
-                      size: ColumnSize.M,
-                    ),
-                  ],
-                  rows: List<DataRow>.generate(
-                    listaResultados.listaResultados.length,
-                    (index) => DataRow(
-                      cells: [
-                        DataCell(
-                          CustomText(
-                              text: listaResultados
-                                  .listaResultados[index].nomeResultado),
+                border: Border.all(color: PaletaCores.corLightGrey, width: .5)),
+            padding: const EdgeInsets.all(16),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 10,
+                      ),
+                      CustomText(
+                        text: "Resultados",
+                        color: PaletaCores.corLightGrey,
+                        weight: FontWeight.bold,
+                      )
+                    ],
+                  ),
+                  Obx(
+                    () => DataTable2(
+                      columnSpacing: 12,
+                      horizontalMargin: 12,
+                      minWidth: 600,
+                      dataRowHeight: 205,
+                      //headingRowHeight: ,
+                      columns: [
+                        DataColumn2(
+                          label: Text('Resultados'),
+                          size: ColumnSize.L,
                         ),
-                        DataCell(
-                          SingleChildScrollView(
-                            child: CustomText(
-                                text: listaResultados
-                                    .realizadoResulMetric(
-                                    5.0,
-                                    listaResultados.listaResultados[index]
-                                        .idResultado!)
-                                    .toString()),
-                          ),
+                        DataColumn2(
+                          label: Text('Realizado'),
+                          size: ColumnSize.M,
                         ),
-                        DataCell(
-                          SingleChildScrollView(
-                            child: CustomText(
-                                text: listaResultados
-                                    .metasResulMetric(
-                                        5.0,
-                                        listaResultados.listaResultados[index]
-                                            .idResultado!)
-                                    .toString()),
-                          ),
+                        DataColumn2(
+                          label: Text('Meta (Prevista)'),
+                          size: ColumnSize.M,
                         ),
-                        DataCell(
-                          SingleChildScrollView(
-                            child: CustomText(
-                                text:
-                                    '\nGeral : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(0.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(0.0, listaResultados.listaResultados[index].idResultado!))} %\n\nQuarter 1 : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(1.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(1.0, listaResultados.listaResultados[index].idResultado!))} %\n\nQuarter 2 : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(2.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(2.0, listaResultados.listaResultados[index].idResultado!))} %\n\nQuarter 3 : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(3.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(3.0, listaResultados.listaResultados[index].idResultado!))} %\n\nQuarter 4 : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(4.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(4.0, listaResultados.listaResultados[index].idResultado!))} %\n'),
-                          ),
+                        DataColumn2(
+                          label: Text('Progresso'),
+                          size: ColumnSize.M,
                         ),
                       ],
+                      rows: List<DataRow>.generate(
+                        listaResultados.listaResultados.length,
+                        (index) => DataRow(
+                          cells: [
+                            DataCell(
+                              CustomText(
+                                  text: listaResultados
+                                      .listaResultados[index].nomeResultado),
+                            ),
+                            DataCell(
+                              SingleChildScrollView(
+                                child: CustomText(
+                                    text: listaResultados
+                                        .realizadoResulMetric(
+                                            5.0,
+                                            listaResultados
+                                                .listaResultados[index]
+                                                .idResultado!)
+                                        .toString()),
+                              ),
+                            ),
+                            DataCell(
+                              SingleChildScrollView(
+                                child: CustomText(
+                                    text: listaResultados
+                                        .metasResulMetric(
+                                            5.0,
+                                            listaResultados
+                                                .listaResultados[index]
+                                                .idResultado!)
+                                        .toString()),
+                              ),
+                            ),
+                            DataCell(
+                              SingleChildScrollView(
+                                child: CustomText(
+                                    text:
+                                        '\nGeral : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(0.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(0.0, listaResultados.listaResultados[index].idResultado!))} %\n\nQuarter 1 : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(1.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(1.0, listaResultados.listaResultados[index].idResultado!))} %\n\nQuarter 2 : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(2.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(2.0, listaResultados.listaResultados[index].idResultado!))} %\n\nQuarter 3 : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(3.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(3.0, listaResultados.listaResultados[index].idResultado!))} %\n\nQuarter 4 : ${listaResultados.gerarProgresso(listaResultados.realizadoResulMetric(4.0, listaResultados.listaResultados[index].idResultado!), listaResultados.metasResulMetric(4.0, listaResultados.listaResultados[index].idResultado!))} %\n'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

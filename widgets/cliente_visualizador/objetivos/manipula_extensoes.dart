@@ -160,8 +160,8 @@ class _ManipulaExtensoesState extends State<ManipulaExtensoes> {
                                   onPressed: () {
                                     mandalaController.removeExtensao(
                                         mandalaController
-                                            .listaObjectives[mandalaController
-                                                .indiceObjective.value]
+                                            .listaResultados[mandalaController
+                                                .indiceResult.value]
                                             .extensao![i]);
                                   },
                                   icon: Icon(Icons.highlight_remove, size: 10),

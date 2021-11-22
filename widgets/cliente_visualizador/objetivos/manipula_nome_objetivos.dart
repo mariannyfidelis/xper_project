@@ -42,31 +42,34 @@ class _ManipulaNomeObjetivoState extends State<ManipulaNomeObjetivo> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
-              child: Container(
+            //Expanded(     child:
+              Container(
+                padding: EdgeInsets.only(right: 30),
                 width: 360,
-                child: Obx(() => TextField(
-                  enabled: mandalaController.acl(),
-                  enableInteractiveSelection: mandalaController.acl(),
-                  cursorColor: PaletaCores.textColor,
-                  style: TextStyle(color: PaletaCores.textColor),
-                  cursorWidth: 3.0,
-                  cursorHeight: 5,
-                  controller: mandalaController.objetivoController,
-                  onChanged: (text) {
-                    if(mandalaController.acl() == true){
-                    mandalaController.atualizarNome(text);
-                    }
-                  },
-                  decoration: InputDecoration(
-                    focusColor: PaletaCores.textColor,
-                      border: OutlineInputBorder(
+                child: Obx(
+                  ()=> TextField(
+                    enabled: mandalaController.editor.value,
+                    enableInteractiveSelection: mandalaController.editor.value,
+                    cursorColor: PaletaCores.textColor,
+                    style: TextStyle(color: PaletaCores.textColor),
+                    cursorWidth: 3.0,
+                    cursorHeight: 5,
+                    controller: mandalaController.objetivoController,
+                    onChanged: (text) {
+                      if(mandalaController.acl() == true){
+                      mandalaController.atualizarNome(text);
+                      }
+                    },
+                    decoration: InputDecoration(
+                      focusColor: PaletaCores.textColor,
+                        border: OutlineInputBorder(
 
-                          borderRadius: BorderRadius.circular(15))),
-                )),
+                            borderRadius: BorderRadius.circular(15))),
+                  ),
+                ),
               ),
-            ),
-            SizedBox(width: 30),
+            //),
+            //SizedBox(width: 30),
           ],
         ),
       ),

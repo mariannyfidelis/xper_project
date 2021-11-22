@@ -15,7 +15,7 @@ class RevenueSectionLargeDash extends StatelessWidget {
 
     return Column(
       children: [
-        Text("${mandalaController.nome.string==""? "Seleciona Projeto": mandalaController.nome.string}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25) ,),
+        Text("${mandalaController.nome.string==""? "Selecione um Modelo": mandalaController.nome.string}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25) ,),
         Container(
             //height: 600,
             padding: EdgeInsets.all(24),
@@ -68,7 +68,7 @@ class RevenueSectionLargeDash extends StatelessWidget {
                         Container(
                           width: 600,
                           height: 200,
-                          child: HorizontalBarChart.withSampleData(),
+                          child: HorizontalBarChart.withSampleData('Por Objetivo', context),
                         )
                       ],
                     ),
@@ -87,7 +87,7 @@ class RevenueSectionLargeDash extends StatelessWidget {
                         Container(
                           width: 600,
                           height: 200,
-                          child: HorizontalBarChart.withSampleData(),
+                          child: HorizontalBarChart.withSampleData('Por Dono', context),
                         )
                       ],
                     ),
@@ -109,7 +109,7 @@ class RevenueSectionLargeDash extends StatelessWidget {
                         Container(
                           width: 600,
                           height: 200,
-                          child: HorizontalBarChart.withSampleData(),
+                          child: HorizontalBarChart.withSampleData('Por Resultados', context),
                         )
                       ],
                     ),
@@ -150,7 +150,7 @@ class RevenueSectionLargeDash extends StatelessWidget {
                         Container(
                           width: 600,
                           height: 200,
-                          child: HorizontalBarChart.withSampleData(),
+                          child: HorizontalBarChart.withSampleData('Por Métrica', context),
                         )
                       ],
                     ),

@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:typed_data';
 import 'package:get/get.dart';
 import '/models/usuario.dart';
@@ -14,9 +13,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
 
-//TODO: errado !!! Configurar para salvar os dados dentro do número correto do projeto
-String id_projeto = "01"; //
-
 class AuthException implements Exception {
   String message;
   AuthException(this.message);
@@ -28,6 +24,9 @@ class AuthService extends GetxController {
   bool isLoging = false.obs.value;
   FirebaseFirestore _firestore = DBFirestore.get();
   FirebaseStorage _storage = FirebaseStorage.instance;
+
+  var id = ''.obs;
+  var email = ''.obs;
 
   AuthService() {
     _authCheck();
@@ -52,7 +51,13 @@ class AuthService extends GetxController {
 
   _getUser() {
     usuario = _auth.currentUser;
+    id.value = FirebaseAuth.instance.currentUser!.uid;
+    email.value = FirebaseAuth.instance.currentUser!.email!;
     isLoging = true;
+  }
+
+  FirebaseAuth getUser() {
+    return _auth;
   }
 
   void _uploadImagem(Usuario usuario, Uint8List imagem) {
@@ -84,7 +89,7 @@ class AuthService extends GetxController {
     } else {
       String urlImagem = usuario.urlImagem;
       if (urlImagem != null || urlImagem != "") {
-        print("deu certo taí o link $urlImagem!!!");
+        print("else -- deu certo taí o link $urlImagem!!!");
         final usuariosRef = _firestore.collection("usuarios");
         usuariosRef
             .doc("${usuario.idUsuario}")
@@ -103,8 +108,6 @@ class AuthService extends GetxController {
               .doc("${usuario.idUsuario}")
               .set(usuario.toMap())
               .then((value) {
-            //Get.to(() => HomeWeb(tipo: usuario.tipoUsuario));
-            //Navigator.pushReplacementNamed(context, "/projetos");
           });
         } else {
           print(
@@ -121,7 +124,7 @@ class AuthService extends GetxController {
       {Uint8List? arquivoImagemSelecionado,
       String tipoUsuario = "cliente",
       String? gestor = "",
-      bool logar = true}) {
+      bool logar = false}) {
     String? idUsuario;
 
     try {
@@ -133,10 +136,11 @@ class AuthService extends GetxController {
           .then((userCredencial) {
         if (logar == true) {
           _getUser();
+          String? id = FirebaseAuth.instance.currentUser!.uid;
+          debugPrint("ZZZZ MUDEI ID $id");
         }
-        print("Usuário criado pelo auth-service: $usuario");
+        //print("Usuário gerenciado pelo auth-service: $usuario");
         idUsuario = userCredencial.user?.uid;
-        //idUsuario = usuario!.uid;
         print("Usuário cadastrado: $idUsuario");
 
         if (idUsuario != null) {
@@ -329,10 +333,6 @@ class AuthService extends GetxController {
     }
   }
 
-  FirebaseAuth getUser() {
-    return _auth;
-  }
-
   String? getTipoUsuario() {
     if (usuario == null) {
       return null;
@@ -378,13 +378,13 @@ class AuthService extends GetxController {
     print("entrei para criar uma pasta para um usuário");
 
     Reference estruturaUser = _storage
-        .ref("dados_usuarios/${usuario!.uid}/projetos/$id_projeto/audio/.data");
+        .ref("dados_usuarios/$idUsuario/projetos/$id_projeto/audio/.data");
 
     Reference estruturaUser2 = _storage.ref(
-        "dados_usuarios/${usuario!.uid}/projetos/$id_projeto/images/.data");
+        "dados_usuarios/$idUsuario/projetos/$id_projeto/images/.data");
 
     Reference estruturaUser3 = _storage.ref(
-        "dados_usuarios/${usuario!.uid}/projetos/$id_projeto/documents/.data");
+        "dados_usuarios/$idUsuario/projetos/$id_projeto/documents/.data");
 
     UploadTask upload = estruturaUser.putString("data");
     UploadTask upload2 = estruturaUser2.putString("data");
@@ -417,14 +417,25 @@ class AuthService extends GetxController {
 
         if (idUsuario != null) {
           Usuario usuario = Usuario(idUsuario!, nome, email,
-              tipoUsuario: tipoUsuario, ativo: true);
+              tipoUsuario: tipoUsuario, ativo: true, gestor: id.value, editor: true);
 
+          final usuariosRef = _firestore.collection("usuarios");
+          usuariosRef
+              .doc("${usuario.idUsuario}")
+              .set(usuario.toMap())
+              .then((value) {
+            showDialog(
+                context: Get.context!,
+                builder: (ctx) => AlertDialog(
+                  title: Text("Dono Cadastrado!"),
+                ));
+          });
           criaEstruturaPasta(idUsuario!);
 
           var cont = Get.find<ControllerProjetoRepository>();
           cont.addOneDono(nome, email);
         } else {
-          print("Nao foi possivel a criacao de um Dono  .... :(");
+          print("Não foi possível a criação de um Dono  .... :(");
         }
 
         return idUsuario;
@@ -444,7 +455,13 @@ class AuthService extends GetxController {
           erroCode = e.code;
           return erroCode;
         } else if (e.code == "email-already-in-use") {
+          print("Já tem dono cadastrado");
+          //TODO: Verificar aqui a inserção de um Dono na Lista
+          var indice =
+          //usuarios!.indexWhere((element) => element.email == auth.usuario!.email);
+          //usuarios[indice].idUsuario
           erroCode = e.code;
+
           return erroCode;
         }
       });
@@ -493,6 +510,5 @@ class AuthService extends GetxController {
         throw AuthException("Este email já está cadastrado !");
       }
     }
-    //_getUser();
   }
 }

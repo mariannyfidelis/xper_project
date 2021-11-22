@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '/controllers/controller_clicado.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class ManipulaOKR extends StatefulWidget {
@@ -13,6 +15,7 @@ class _ManipulaOKRState extends State<ManipulaOKR> {
 
   @override
   Widget build(BuildContext context) {
+
     return Visibility(
       visible: true,
       child: Row(
@@ -182,17 +185,19 @@ class _ManipulaOKRState extends State<ManipulaOKR> {
   }
 
   void adicionaObjetivo() {
-    debugPrint("||| Adicionando um novo objetivo ...");
+
     mandalaController.addOneObjective(
         "Novo objetivo ${mandalaController.listaObjectives.length + 1}");
+
   }
 
   void adicionaResultado() {
     if (mandalaController.ultimoObjetivoClicado.value != '') {
-      debugPrint("||| Adicionando um novo resultado ...");
+
       mandalaController.addOneResultado(
           "Novo resultado ${mandalaController.listaResultados.length + 1}",
           idObjetivoPai: mandalaController.ultimoObjetivoClicado.value);
+
     } else {
       showDialog(
           context: context,
