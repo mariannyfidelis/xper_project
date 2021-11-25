@@ -1,7 +1,9 @@
+import 'package:get/get.dart';
 import '/utils/paleta_cores.dart';
+import '/services/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
+import '/widgets/Dashboard/controller/controllers_dash.dart';
 import '/widgets/Dashboard/responsividade/reposinvidade_dash.dart';
 
 AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) =>
@@ -86,7 +88,8 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) =>
                     icon:
                         Icon(Icons.person_outline, color: PaletaCores.corDark),
                     onPressed: () {
-                      FirebaseAuth.instance.signOut();
+                      Get.find<ControllerProjetoRepository>().limpaTudo();
+                      Get.find<AuthService>().logout();
                       Navigator.popAndPushNamed(context, "/");
                     },
                   ) //Icons.person_outline, color: PaletaCores.corDark),

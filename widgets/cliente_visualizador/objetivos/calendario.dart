@@ -20,48 +20,106 @@ class _TelaCalendarioState extends State<TelaCalendario> {
     return Obx(
       () => Visibility(
         visible: mandalaController.visivel.value,
-        child: Row(
+        child: Column(
           children: [
-            Text("Vencimento      ", style: TextStyle(color: PaletaCores.textColor),),
-            IconButton(
-              splashRadius: 15,
-              iconSize: 20,
-              onPressed: () {
-                //Mudança de estado da data de Vencimento
-                (mandalaController.indiceObjective.value != -1)
-                    ? showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime(2025, 12, 25))
-                        .then((value) {
-                        //print("Data vencimento - ${value!.day.toString()}");
-                        _dataVencimento =
-                            "${value!.day}/${value.month}/${value.year}";
-                        print("Data vencimento - $_dataVencimento");
-                        mandalaController.changeDataVencimento(
-                            Timestamp.fromDate(value),
-                            mandalaController.listaObjectives[
-                                mandalaController.indiceObjective.value]);
-                      })
-                    // ignore: unnecessary_statements
-                    : () {};
-              },
-              icon: Icon(Icons.date_range, color: PaletaCores.textColor,
-                  //size: 15
-                  ),
+            Row(
+              children: [
+                Text("Data inicial      ", style: TextStyle(color: PaletaCores.textColor),),
+                IconButton(
+                  splashRadius: 15,
+                  iconSize: 20,
+                  onPressed: () {
+                    //Mudança de estado da data de Vencimento
+                    (mandalaController.indiceObjective.value != -1)
+                        ? showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime(2025, 12, 25))
+                            .then((value) {
+                            //print("Data vencimento - ${value!.day.toString()}");
+                            _dataVencimento =
+                                "${value!.day}/${value.month}/${value.year}";
+
+                            mandalaController.dataInicio.value = value;
+
+                            print("Data vencimento - $_dataVencimento");
+                            mandalaController.changeDataVencimento(
+                                Timestamp.fromDate(value),
+                                mandalaController.listaObjectives[
+                                    mandalaController.indiceObjective.value]);
+                          })
+                        // ignore: unnecessary_statements
+                        : () {};
+                  },
+                  icon: Icon(Icons.date_range, color: PaletaCores.textColor,
+                      //size: 15
+                      ),
+                ),
+                SizedBox(width: 12),
+                Obx(() => Text(
+                      (mandalaController.listaObjectives.length > 0 &&
+                              mandalaController.indiceObjective.value != -1)
+                          ? "${mandalaController.listaObjectives[mandalaController.indiceObjective.value].dataFormatada}"
+                          : "",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ))
+              ],
             ),
-            SizedBox(width: 12),
-            Obx(() => Text(
+            Row(
+              children: [
+                Text(
+                  "Vencimento Final      ",
+                  style: TextStyle(color: PaletaCores.textColor),
+                ),
+                IconButton(
+                  splashRadius: 15,
+                  iconSize: 20,
+                  onPressed: () {
+                    //Mudança de estado da data de Vencimento
+                    (mandalaController.indiceObjective.value != -1)
+                        ? showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2025, 12, 25))
+                        .then((value) {
+                      //print("Data vencimento - ${value!.day.toString()}");
+                      _dataVencimento =
+                      "${value!.day}/${value.month}/${value.year}";
+
+                      value.difference(mandalaController.dataInicio.value);
+                      print("Data vencimento - $_dataVencimento");
+                      mandalaController.changeDataVencimento(
+                          Timestamp.fromDate(value),
+                          mandalaController.listaObjectives[
+                          mandalaController.indiceObjective.value]);
+                    })
+                    // ignore: unnecessary_statements
+                        : () {};
+                  },
+                  icon: Icon(
+                    Icons.date_range, color: PaletaCores.textColor,
+                    //size: 15
+                  ),
+                ),
+                SizedBox(width: 12),
+                Obx(() => Text(
                   (mandalaController.listaObjectives.length > 0 &&
-                          mandalaController.indiceObjective.value != -1)
+                      mandalaController.indiceObjective.value != -1)
                       ? "${mandalaController.listaObjectives[mandalaController.indiceObjective.value].dataFormatada}"
                       : "",
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
                   ),
-                ))
+                )),
+              ],
+            ),
+
           ],
         ),
       ),

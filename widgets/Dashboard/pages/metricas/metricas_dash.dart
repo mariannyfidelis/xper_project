@@ -226,7 +226,9 @@ class _MetricasTableState extends State<MetricasTable> {
                         idResultado: resultadoPai)
                     : controlador.addOneMetric(newMetrica.text,
                         idResultado: resultadoPai, unidade: unidade.text);
-              newMetrica.text = "";
+              newMetrica.text = '';
+              idMetrica.text = '';
+              unidade.text = '';
             } else if (operacao == 2) {
               controlador.atualizaTudo(controlador.idProjeto.string);
             } else if (operacao == 3) {

@@ -18,11 +18,37 @@ class _EditorNotasState extends State<EditorNotas> {
       color: Colors.white38,
       child: Column(
         children: [
-          ZefyrToolbar.basic(controller: _controller),
+          Container(child: ZefyrToolbar.basic(controller: _controller)),
+          Wrap(
+            children: [
+              OutlinedButton.icon(
+                  onPressed: () {
+                    print("${_controller.document}");
+                  },
+                  icon: Icon(
+                    Icons.save,
+                    color: Colors.black,
+                  ),
+                  label: Text(
+                    "Save document  ",
+                    style: TextStyle(color: Colors.black),
+                  )),
+              SizedBox(width: 30),
+              OutlinedButton.icon(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.insert_drive_file,
+                    color: Colors.black,
+                  ),
+                  label: Text(
+                    "  New document",
+                    style: TextStyle(color: Colors.black),
+                  )),
+            ],
+          ),
           Expanded(
             child: ZefyrEditor(
               padding: const EdgeInsets.all(12.0),
-
               //clipboardController: ClipboardController(),
               controller: _controller,
             ),

@@ -55,15 +55,12 @@ class SideMenuGestor extends StatelessWidget {
                           ? "Plano de Ação"
                           : itemName,
                       onTap: () {
-                        if (itemName == PlanodeAcaoPageRouteGestor) {
-                          //TODO: ir para authenticação
-                        }
+                        if (itemName == PlanodeAcaoPageRouteGestor) {}
                         if (!menuControllerDash.isActive(itemName)) {
                           menuControllerDash.changeActiveitemTo(itemName);
                           if (ResponsiveWidget.isSmallScreen(context))
                             Get.back();
                           navigationController.navigateTo(itemName);
-                          //TODO: go to item name Route
                         }
                       },
                     ))

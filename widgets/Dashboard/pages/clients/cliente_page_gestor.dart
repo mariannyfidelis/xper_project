@@ -19,13 +19,14 @@ class ClientsTableGestor extends StatefulWidget {
 
 class _ClientsTableGestorState extends State<ClientsTableGestor> {
   var auth = Get.find<AuthService>();
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ControllerProjetoRepository>();
     final usuariosDoGestor = Provider.of<List<Usuario>?>(context);
     List<Usuario> usuarios = <Usuario>[].obs;
     var users =
-    usuariosDoGestor!.where((element) => element.gestor == auth.usuario!.uid);
+    usuariosDoGestor!.where((element) => element.gestor == auth.id.value);
 
     for (var user in users) {
       usuarios.add(user);

@@ -30,42 +30,44 @@ class _ManipulaExtensoesState extends State<ManipulaExtensoes> {
                 SizedBox(width: 20),
                 Container(
                   width: 250,
-                  child: TextField(
-                    //enabled: mandalaController.acl(),
-                    //enableInteractiveSelection: mandalaController.acl(),
-                    style: estilo_teste,
-                    controller: extensaoController,
-                    textAlign: TextAlign.justify,
-                    textAlignVertical: TextAlignVertical.center,
-                    decoration: InputDecoration(
-                        hintStyle: estilo_teste,
-                        hintText: "Adicione uma extensão",
-                        focusColor: PaletaCores.textColor,
-                        prefixIcon: Icon(
-                          Icons.extension,
-                          size: 20,
-                          color: PaletaCores.textColor,
-                        ),
-                        suffixIcon: IconButton(
+                  child: Obx(
+                    () => TextField(
+                      enabled: mandalaController.editor.value,
+                      enableInteractiveSelection: mandalaController.editor.value,
+                      style: estilo_teste,
+                      controller: extensaoController,
+                      textAlign: TextAlign.justify,
+                      textAlignVertical: TextAlignVertical.center,
+                      decoration: InputDecoration(
+                          hintStyle: estilo_teste,
+                          hintText: "Adicione uma extensão",
+                          focusColor: PaletaCores.textColor,
+                          prefixIcon: Icon(
+                            Icons.extension,
+                            size: 20,
                             color: PaletaCores.textColor,
-                            splashRadius: 16,
-                            onPressed: () {
-                              if (extensaoController.text.trim() != "") {
-                                mandalaController.adicionarExtensao(
-                                    extensaoController.text
-                                        .trim()
-                                        .toLowerCase());
-                              }
-                              extensaoController.text = "";
-                            },
-                            icon: Icon(Icons.add_box, size: 14)),
-                        border: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.white, width: 32.0),
-                          borderRadius: BorderRadius.circular(10),
-                        )),
-                    maxLength: 450,
-                    keyboardType: TextInputType.text,
+                          ),
+                          suffixIcon: IconButton(
+                              color: PaletaCores.textColor,
+                              splashRadius: 16,
+                              onPressed: () {
+                                if (extensaoController.text.trim() != "") {
+                                  mandalaController.adicionarExtensao(
+                                      extensaoController.text
+                                          .trim()
+                                          .toLowerCase());
+                                }
+                                extensaoController.text = "";
+                              },
+                              icon: Icon(Icons.add_box, size: 14)),
+                          border: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.white, width: 32.0),
+                            borderRadius: BorderRadius.circular(10),
+                          )),
+                      maxLength: 450,
+                      keyboardType: TextInputType.text,
+                    ),
                   ),
                 ),
                 IconButton(

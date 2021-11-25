@@ -15,7 +15,6 @@ import '/models/objetivosPrincipaisModel.dart';
 import '/models/donoResultadoMetricaModel.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '/widgets/Dashboard/controller/menu_controller_dash.dart';
@@ -34,6 +33,13 @@ class ControllerProjetoRepository extends GetxController {
   double degToRad(double deg) => deg * (pi / 180.0);
 
   double radToDeg(double rad) => rad * (180.0 / pi);
+
+  String? tipoArquivo="";
+  var uploading = false.obs;
+  var total = 0.0.obs;
+
+  var dataInicio = DateTime.now().obs;
+  var dataFinal  = DateTime.now().obs;
 
   var responsaveis = "".obs;
   var ultimoNivelClicado = 1.obs;
@@ -217,7 +223,6 @@ class ControllerProjetoRepository extends GetxController {
     double sweepFatia = 360 / _listObjects.length;
     double startAngle = 0;
 
-    //TODO: Removido para tratar o erro do clique !
     // ultimoNivelClicado.value = 2;
     // nomeObjMandala.value = objetivo.nome!;
     // progressoObj.value = 0.0;
@@ -460,7 +465,7 @@ class ControllerProjetoRepository extends GetxController {
 
       int indiceObjetivo = _listObjects
           .indexWhere((element) => element.idObjetivo == idObjetivoPai);
-      //Se não tiver irmão ganhará um pedaço todo!
+      //Se não tiver irmão ganhará toda a fatia disponínel!
       var tamanhoPedacoResultado =
           (vinculoresult.length == 0) ? 1 : vinculoresult.length;
 
@@ -496,43 +501,10 @@ class ControllerProjetoRepository extends GetxController {
     }
   }
 
-  // void atualizaResultado(String idResultado,
-  //     {String? nomeResultaAtualizado,
-  //     String? idObjetivoPai,
-  //     String? idMetrica = "",
-  //     String? cor = "255-242-242-242",
-  //     List<DonosResultadoMetricas>? dono}) async {
-  //   int indice = _listResults
-  //       .indexWhere((element) => element.idResultado == idResultado);
-  //
-  //   if (indice != -1) {
-  //     _listResults[indice].idObjetivoPai = idObjetivoPai;
-  //     // _listResults[indice].idMetrica = idMetrica;
-  //
-  //     if (nome != null) {
-  //       _listResults[indice].nomeResultado = nomeResultaAtualizado;
-  //     }
-  //
-  //     if (cor != null) {
-  //       _listResults[indice].paint = cor;
-  //     }
-  //
-  //     var reference =
-  //         await db.collection('projetosPrincipais').doc(this.idProjeto.value);
-  //
-  //     var l = _listResults.map((v) => v.toJson()).toList();
-  //
-  //     await reference.update({'resultadosPrincipais': l});
-  //     atualizaTudo(this.idProjeto.value);
-  //   } else {
-  //     debugPrint("Não encontrei o resultado !");
-  //   }
-  // }
   void atualizaResultado(
     String idResultado, {
     String? idObjetivoPai,
     String? nomeResultado,
-    //TODO: mudar de importancia para progresso geral
     int? importancia,
     double? progresso,
     double? metaObj = 0.0,
@@ -579,7 +551,7 @@ class ControllerProjetoRepository extends GetxController {
 
         await reference.update({'resultadosPrincipais': l});
       }
-      //TODO
+
       var l = _listResults.map((v) => v.toJson()).toList();
 
       await reference.update({'resultadosPrincipais': l});
@@ -1103,7 +1075,7 @@ class ControllerProjetoRepository extends GetxController {
   UnmodifiableListView<ProjectModel> get listaProjetos =>
       UnmodifiableListView(_listaProjetos);
 
-  readProjects(String? tipo) async {
+  Future<List<ProjectModel>> readProjects(String? tipo) async {
     _listaProjetos.clear();
     var snapshot;
     if (tipo != "todos") {
@@ -1134,11 +1106,13 @@ class ControllerProjetoRepository extends GetxController {
         }
       }
     }
+
+    return _listaProjetos;
   }
 
-  sincronizaListaProjects(String tipoProjeto) {
+  Future sincronizaListaProjects(String tipoProjeto) async {
     _listaProjetos.clear();
-    readProjects(tipoProjeto);
+    return readProjects(tipoProjeto);
   }
 
   saveProjetoALl(List<ProjectModel> projectModel) {
@@ -1269,7 +1243,7 @@ class ControllerProjetoRepository extends GetxController {
     }
   }
 
-  void atualizaTudo(String idProjeto) {
+  atualizaTudo(String idProjeto) async {
     _readProjeto(idProjeto);
   }
 
@@ -1300,7 +1274,7 @@ class ControllerProjetoRepository extends GetxController {
     return this.niveis - 1;
   }
 
-  Paint criaPaintObjective({String? converteCor}) {
+  Paint criaPaintObjective({String? converteCor, Offset? c, double? diametro_Cinterno,}) {
     var r, g, b, a;
     if (converteCor == null) {
       r = Random().nextInt(40) + 215;
@@ -1315,12 +1289,22 @@ class ControllerProjetoRepository extends GetxController {
       b = int.parse(listaRGB[3]);
     }
 
-    //TODO - Como colocar sombra e elevação
     Paint p = Paint()
       ..strokeWidth = 30
       ..color = Color.fromARGB(a, r, g, b) //RGBO(r, g, b, a)
       ..style = PaintingStyle.fill
-      ..strokeJoin = StrokeJoin.round;
+      ..strokeJoin = StrokeJoin.round
+      ..shader = RadialGradient(colors: [
+        Color.fromARGB(a, r, g, b).withAlpha(200),
+        Color.fromARGB(a, r, g, b),
+      ], stops: [
+        0.97,
+        1
+      ]).createShader(Rect.fromCenter(
+          center: c!,
+          width: diametro_Cinterno!,
+          height: diametro_Cinterno!)
+      );
     return p;
   }
 
@@ -1328,7 +1312,6 @@ class ControllerProjetoRepository extends GetxController {
   void atualizaObjetivoMandala(
     String idObjetivo, {
     String? nomeObjetivo,
-    //TODO: mudar de importancia para progresso geral
     int? importancia,
     double? progresso,
     double? metaObj = 0.0,
@@ -1553,6 +1536,11 @@ class ControllerProjetoRepository extends GetxController {
     if (ultimoNivelClicado.value == 3) {
       _listResults[indiceResult.value].donoResultado!.remove(nome);
       _listResults[indiceResult.value].donoResultado!.remove(email);
+      for (var metric in _metricasFiltradas) {
+        var indice = _listMetrics
+            .indexWhere((element) => element.idMetrica == metric.idMetrica);
+        _listMetrics[indice].donos!.remove(email);
+      }
     }
     if (ultimoNivelClicado.value == 2) {
       _listObjects[indiceObjective.value].donos!.remove(nome);
@@ -1563,9 +1551,10 @@ class ControllerProjetoRepository extends GetxController {
 
     var lr = _listResults.map((v) => v.toJson()).toList();
     var lo = _listObjects.map((v) => v.toJson()).toList();
+    var lm = _listMetrics.map((v) => v.toJson()).toList();
 
     await reference
-        .update({'resultadosPrincipais': lr, 'objetivosPrincipais': lo}); //[l]
+        .update({'resultadosPrincipais': lr, 'objetivosPrincipais': lo,  'metricasPrincipais': lm}); //[l]
   }
 
   String adicionarResponsavel(String? nomeResponsavel) {
@@ -1664,7 +1653,7 @@ class ControllerProjetoRepository extends GetxController {
 
   removerACL(
       String idProjeto, String identificadorEmail, String permissao) async {
-    var listAcl;
+    //var listAcl;
     var val = <Map<String, dynamic>>[];
     DocumentReference reference =
         await db.collection('projetosPrincipais').doc(idProjeto);
@@ -1745,7 +1734,14 @@ class ControllerProjetoRepository extends GetxController {
         .update({'resultadosPrincipais': lr, 'objetivosPrincipais': lo, 'metricasPrincipais': lm}); //[l]
   }
 
-  acl() {
+  acl() async {
+    DocumentSnapshot us = await DBFirestore.get()
+        .collection("usuarios")
+        .doc("${auth.id.value}")
+        .get();
+
+    bool somenteLeitura = us.get('editor');
+
     var indice = _listAcl
         .indexWhere((element) => element.identificador == auth.email.value);
 
@@ -1757,7 +1753,11 @@ class ControllerProjetoRepository extends GetxController {
       }
     } else {
       if (auth.id.value == proprietario.string) {
-        editor.value = true;
+        if (somenteLeitura == false) {
+          editor.value = false;
+        } else {
+          editor.value = true;
+        }
       } else {
         debugPrint("Não encontrei projeto com ACL");
         editor.value = false;
@@ -1778,18 +1778,34 @@ class ControllerProjetoRepository extends GetxController {
     // });
 
     //Recuperar arquivo
-    _arquivoImagemSelecionado = resultado?.files.single.bytes;
+    tipoArquivo = resultado!.files.single.extension;
+    _arquivoImagemSelecionado = resultado.files.single.bytes;
+
   }
 
-  void uploadImagem(User? usuario) {
+  void uploadImagem(String? usuario) {
     Uint8List? arquivoSelecionado = _arquivoImagemSelecionado;
     FirebaseStorage _storage = FirebaseStorage.instance;
     var imageId = Uuid();
 
     if (arquivoSelecionado != null) {
       Reference imagePerfilRef = _storage.ref(
-          "usuario/id_usuario_${usuario!.uid}/projeto_${usuario.uid}/image/${imageId.v4()}.jpg"); //_${_nomeArquivoSelecionado.string}
+          "dados_usuarios/$usuario/projetos/${nome.value}/images/${imageId.v4()}.$tipoArquivo");
+
       UploadTask uploadtask = imagePerfilRef.putData(arquivoSelecionado);
+
+      uploadtask.snapshotEvents.listen((TaskSnapshot snapshot) async{
+        if(snapshot.state == TaskState.running){
+          uploading.value = true;
+          total.value = (snapshot.bytesTransferred/snapshot.totalBytes) * 100;
+          print("Uploading: ${uploading.value}");
+          print("Total: ${total.value}");
+        }else if(snapshot.state == TaskState.success){
+          uploading.value = false;
+        }
+      });
+
+
       uploadtask.whenComplete(() async {
         String urlImagem = await uploadtask.snapshot.ref.getDownloadURL();
         debugPrint("deu certo taí o link $urlImagem!!!");
@@ -1811,17 +1827,21 @@ class ControllerProjetoRepository extends GetxController {
     );
 
     //Recuperar arquivo
-    _arquivoImagemSelecionado = resultado?.files.single.bytes;
+    tipoArquivo = resultado!.files.single.extension;
+    _arquivoImagemSelecionado = resultado.files.single.bytes;
   }
 
-  void uploadPDF(User? usuario) {
+  void uploadPDF(String? usuario) {
     Uint8List? arquivoSelecionado = _arquivoImagemSelecionado;
     FirebaseStorage _storage = FirebaseStorage.instance;
     var pdfId = Uuid();
 
     if (arquivoSelecionado != null) {
       Reference imagePerfilRef = _storage.ref(
-          "usuario/id_usuario_${usuario!.uid}/projeto_${usuario.uid}/PDF/${pdfId.v4()}.pdf");
+          "dados_usuarios/$usuario/projetos/${nome.value}/documents/${pdfId.v4()}.$tipoArquivo");
+
+      //UploadTask deletetask = _storage.ref("dados_usuarios/$usuario/projetos/${nome.value}/documents/arquivoClicado").delete();
+
       UploadTask uploadtask = imagePerfilRef.putData(arquivoSelecionado);
       uploadtask.whenComplete(() async {
         String urlPDF = await uploadtask.snapshot.ref.getDownloadURL();
@@ -1833,7 +1853,9 @@ class ControllerProjetoRepository extends GetxController {
         if (ultimoNivelClicado.value == 2) {
           atualizaObjetivoMandala(ultimoObjetivoClicado.value, arquivo: urlPDF);
         }
+        return uploadtask;
       });
+
     } else {}
   }
 
@@ -1978,5 +2000,24 @@ class ControllerProjetoRepository extends GetxController {
 
   removeDonoMetrics(MetricasPrincipais metric) {
     _responsaveisMetricas.remove(metric);
+  }
+
+  limpaTudo() {
+    _listaProjetos.clear();
+
+    idProjeto.value = "";
+    nome.value = "";
+    proprietario.value = "";
+    tipoProj.value = "";
+
+    _listObjects.clear();
+
+    _listDonos.clear();
+
+    _listResults.clear();
+
+    _listMetrics.clear();
+
+    _listAcl.clear();
   }
 }

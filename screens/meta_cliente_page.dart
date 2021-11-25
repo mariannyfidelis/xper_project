@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import '/utils/paleta_cores.dart';
-import '/models/metricasModel.dart';
 import 'package:flutter/material.dart';
 import 'package:data_table_2/data_table_2.dart';
 import '/widgets/Dashboard/app_bar/custom_text.dart';
@@ -132,7 +131,7 @@ class _TelaMetaState extends State<TelaMeta> {
                                                   onPressed: () {
                                                     mandalaController
                                                         .uploadImagem(
-                                                            auth.usuario);
+                                                            auth.id.value);
                                                   },
                                                   child: CustomText(
                                                     text: "Upload imagem",
@@ -204,7 +203,7 @@ class _TelaMetaState extends State<TelaMeta> {
                                                   ),
                                                   onPressed: () {
                                                     mandalaController.uploadPDF(
-                                                        auth.usuario);
+                                                        auth.id.value);
                                                   },
                                                   child: CustomText(
                                                     text: "Upload PDF",
@@ -226,6 +225,26 @@ class _TelaMetaState extends State<TelaMeta> {
                                         () => SingleChildScrollView(
                                           child: Column(
                                             children: [
+                                              mandalaController
+                                                          .uploading.value ==
+                                                      true
+                                                  ? Container(
+
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        value: mandalaController
+                                                            .total.value
+                                                            .roundToDouble(),
+                                                        color: PaletaCores
+                                                            .corPrimaria,
+                                                        backgroundColor:
+                                                            PaletaCores
+                                                                .corLightGrey,
+                                                        strokeWidth: 4.0,
+                                                      ),
+                                                padding: EdgeInsets.only(bottom: 10.0),
+                                                    )
+                                                  : Container(),
                                               if (mandalaController
                                                       .ultimoNivelClicado
                                                       .value ==
@@ -292,7 +311,7 @@ class _TelaMetaState extends State<TelaMeta> {
                                                                       .value]
                                                               .arquivos!
                                                               .length;
-                                                      i += 2)
+                                                      i++)
                                                     TextButton.icon(
                                                         onPressed: () {
                                                           mandalaController.baixarAnexo(
@@ -358,8 +377,9 @@ class _MetaClienteState extends State<MetaCliente> {
 
     ControllerProjetoRepository listaMetricas =
         Get.find<ControllerProjetoRepository>();
-    var lm = listaMetricas.listaMetricas.where((element) =>
-        element.idResultado == listaMetricas.ultimoResultadoClicado.value);
+
+    // var lm = listaMetricas.listaMetricas.where((element) =>
+    //     element.idResultado == listaMetricas.ultimoResultadoClicado.value);
 
     listaMetricas.metricas.forEach((element) {
       controladorRealizado1.add(new TextEditingController());
@@ -378,8 +398,7 @@ class _MetaClienteState extends State<MetaCliente> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(
-                    18.0),
+                padding: const EdgeInsets.all(18.0),
                 child: Text(
                   'Adicionar Realizado',
                   style: TextStyle(
@@ -455,11 +474,13 @@ class _MetaClienteState extends State<MetaCliente> {
                           ),
                         ],
                         rows: List<DataRow>.generate(
-                            listaMetricas.metricas.length,
+                          listaMetricas.metricas.length,
                           (index) => DataRow(
                             cells: [
                               DataCell(
-                                CustomText(text: listaMetricas.metricas[index].nomeMetrica),
+                                CustomText(
+                                    text: listaMetricas
+                                        .metricas[index].nomeMetrica),
                               ),
                               DataCell(Row(
                                 children: [
@@ -475,15 +496,9 @@ class _MetaClienteState extends State<MetaCliente> {
                                     splashRadius: raioButton,
                                     icon: Icon(Icons.lock, size: 20),
                                     onPressed: () {
-
-                                      String asdas = "Maria";
-                                      int tamanho = asdas.length;
-
-                                      asdas.substring(0, (tamanho ~/4));
-
-
-                                      idMetrica.text =
-                                          listaMetricas.metricas[index].idMetrica.toString();
+                                      idMetrica.text = listaMetricas
+                                          .metricas[index].idMetrica
+                                          .toString();
                                       Get.find<ControllerProjetoRepository>()
                                           .atualizarRealizado(
                                               1,
@@ -491,6 +506,9 @@ class _MetaClienteState extends State<MetaCliente> {
                                               double.parse(
                                                   controladorRealizado1[index]
                                                       .text));
+
+                                      listaMetricas.esvaziarFiltragem();
+                                      listaMetricas.filtrarMetricas();
                                     },
                                   ),
                                   IconButton(
@@ -501,8 +519,8 @@ class _MetaClienteState extends State<MetaCliente> {
                                                 .listaMetricas[index].meta1 !=
                                             null) {
                                           controladorRealizado1[index].text =
-                                              listaMetricas.metricas[index]
-                                                  .realizado1
+                                              listaMetricas
+                                                  .metricas[index].realizado1
                                                   .toString();
                                         }
                                       }),
@@ -527,8 +545,9 @@ class _MetaClienteState extends State<MetaCliente> {
                                     splashRadius: raioButton,
                                     icon: Icon(Icons.lock, size: 20),
                                     onPressed: () {
-                                      idMetrica.text =
-                                          listaMetricas.metricas[index].idMetrica.toString();
+                                      idMetrica.text = listaMetricas
+                                          .metricas[index].idMetrica
+                                          .toString();
                                       Get.find<ControllerProjetoRepository>()
                                           .atualizarRealizado(
                                               2,
@@ -536,19 +555,21 @@ class _MetaClienteState extends State<MetaCliente> {
                                               double.parse(
                                                   controladorRealizado2[index]
                                                       .text));
-                                      // (idMetrica.text,
-                                      //     double.parse(controladorMeta[index].text));
-                                      // editavel = false;
+
+                                      listaMetricas.esvaziarFiltragem();
+                                      listaMetricas.filtrarMetricas();
                                     },
                                   ),
                                   IconButton(
                                       splashRadius: raioButton,
                                       icon: Icon(Icons.update, size: 20),
                                       onPressed: () {
-                                        if (listaMetricas.metricas[index].meta2 != null) {
+                                        if (listaMetricas
+                                                .metricas[index].meta2 !=
+                                            null) {
                                           controladorRealizado2[index].text =
-                                              listaMetricas.metricas[index]
-                                                  .realizado2
+                                              listaMetricas
+                                                  .metricas[index].realizado2
                                                   .toString();
                                         }
                                       }),
@@ -573,8 +594,9 @@ class _MetaClienteState extends State<MetaCliente> {
                                     splashRadius: raioButton,
                                     icon: Icon(Icons.lock, size: 20),
                                     onPressed: () {
-                                      idMetrica.text =
-                                          listaMetricas.metricas[index].idMetrica.toString();
+                                      idMetrica.text = listaMetricas
+                                          .metricas[index].idMetrica
+                                          .toString();
                                       Get.find<ControllerProjetoRepository>()
                                           .atualizarRealizado(
                                               3,
@@ -582,19 +604,21 @@ class _MetaClienteState extends State<MetaCliente> {
                                               double.parse(
                                                   controladorRealizado3[index]
                                                       .text));
-                                      // (idMetrica.text,
-                                      //     double.parse(controladorMeta[index].text));
-                                      // editavel = false;
+                                      listaMetricas.esvaziarFiltragem();
+                                      listaMetricas.filtrarMetricas();
+
                                     },
                                   ),
                                   IconButton(
                                       splashRadius: raioButton,
                                       icon: Icon(Icons.update, size: 20),
                                       onPressed: () {
-                                        if (listaMetricas.metricas[index].meta3 != null) {
+                                        if (listaMetricas
+                                                .metricas[index].meta3 !=
+                                            null) {
                                           controladorRealizado3[index].text =
-                                              listaMetricas.metricas[index]
-                                                  .realizado3
+                                              listaMetricas
+                                                  .metricas[index].realizado3
                                                   .toString();
                                         }
                                       }),
@@ -618,8 +642,9 @@ class _MetaClienteState extends State<MetaCliente> {
                                     splashRadius: raioButton,
                                     icon: Icon(Icons.lock, size: 20),
                                     onPressed: () {
-                                      idMetrica.text =
-                                          listaMetricas.metricas[index].idMetrica.toString();
+                                      idMetrica.text = listaMetricas
+                                          .metricas[index].idMetrica
+                                          .toString();
                                       Get.find<ControllerProjetoRepository>()
                                           .atualizarRealizado(
                                               4,
@@ -627,19 +652,20 @@ class _MetaClienteState extends State<MetaCliente> {
                                               double.parse(
                                                   controladorRealizado4[index]
                                                       .text));
-                                      // (idMetrica.text,
-                                      //     double.parse(controladorMeta[index].text));
-                                      // editavel = false;
+                                      listaMetricas.esvaziarFiltragem();
+                                      listaMetricas.filtrarMetricas();
                                     },
                                   ),
                                   IconButton(
                                       splashRadius: raioButton,
                                       icon: Icon(Icons.update, size: 20),
                                       onPressed: () {
-                                        if (listaMetricas.metricas[index].meta4 != null) {
+                                        if (listaMetricas
+                                                .metricas[index].meta4 !=
+                                            null) {
                                           controladorRealizado4[index].text =
-                                              listaMetricas.metricas[index]
-                                                  .realizado4
+                                              listaMetricas
+                                                  .metricas[index].realizado4
                                                   .toString();
                                         }
                                       }),
@@ -649,20 +675,22 @@ class _MetaClienteState extends State<MetaCliente> {
                                   child: CustomText(
                                       text:
                                           '\nQuarter 1 : ${listaMetricas.metricas[index].meta1.toString()}\n\nQuarter 2 : ${listaMetricas.metricas[index].meta2.toString()}\n\nQuarter 3 : ${listaMetricas.metricas[index].meta3.toString()}\n\nQuarter 4 : ${listaMetricas.metricas[index].meta4.toString()}\n'))),
-                              DataCell(SingleChildScrollView(
-                                child: CustomText(
-                                    text:
-                                    '\nGeral : ${listaMetricas.gerarProgressoGeral(
-                                      listaMetricas.metricas[index].realizado1!,
-                                      listaMetricas.metricas[index].realizado2!,
-                                      listaMetricas.metricas[index].realizado3!,
-                                      listaMetricas.metricas[index].realizado4!,
-                                      listaMetricas.metricas[index].meta1!,
-                                      listaMetricas.metricas[index].meta2!,
-                                      listaMetricas.metricas[index].meta3!,
-                                      listaMetricas.metricas[index].meta4!,
-                                    )} %\n\nQuarter 1 : ${listaMetricas.gerarProgresso(listaMetricas.metricas[index].realizado1!, listaMetricas.metricas[index].meta1!)} %\n\nQuarter 2 : ${listaMetricas.gerarProgresso(listaMetricas.metricas[index].realizado2!, listaMetricas.metricas[index].meta2!)} %\n\nQuarter 3 : ${listaMetricas.gerarProgresso(listaMetricas.metricas[index].realizado3!, listaMetricas.metricas[index].meta3!)} %\n\nQuarter 4 : ${listaMetricas.gerarProgresso(listaMetricas.metricas[index].realizado4!, listaMetricas.metricas[index].meta4!)} %\n')),
-                              )],
+                              DataCell(
+                                SingleChildScrollView(
+                                    child: CustomText(
+                                        text:
+                                            '\nGeral : ${listaMetricas.gerarProgressoGeral(
+                                  listaMetricas.metricas[index].realizado1!,
+                                  listaMetricas.metricas[index].realizado2!,
+                                  listaMetricas.metricas[index].realizado3!,
+                                  listaMetricas.metricas[index].realizado4!,
+                                  listaMetricas.metricas[index].meta1!,
+                                  listaMetricas.metricas[index].meta2!,
+                                  listaMetricas.metricas[index].meta3!,
+                                  listaMetricas.metricas[index].meta4!,
+                                )} %\n\nQuarter 1 : ${listaMetricas.gerarProgresso(listaMetricas.metricas[index].realizado1!, listaMetricas.metricas[index].meta1!)} %\n\nQuarter 2 : ${listaMetricas.gerarProgresso(listaMetricas.metricas[index].realizado2!, listaMetricas.metricas[index].meta2!)} %\n\nQuarter 3 : ${listaMetricas.gerarProgresso(listaMetricas.metricas[index].realizado3!, listaMetricas.metricas[index].meta3!)} %\n\nQuarter 4 : ${listaMetricas.gerarProgresso(listaMetricas.metricas[index].realizado4!, listaMetricas.metricas[index].meta4!)} %\n')),
+                              )
+                            ],
                           ),
                         ),
                       ),

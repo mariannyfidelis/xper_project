@@ -38,7 +38,9 @@ class HorizontalBarChart extends StatelessWidget {
 
       for (var obj in objs) {
         data.add(OrdinalProgresso(
-            obj.nome.toString(),
+            (obj.nome!.length <= 20)
+                ? obj.nome.toString()
+                : obj.nome.toString().substring(0, 20) + '...',
             mandalaController.gerarProgresso(
                 mandalaController.realizadoObjetivos(0.0, obj.idObjetivo!),
                 mandalaController.metaObjetivos(0.0, obj.idObjetivo!),
@@ -57,7 +59,9 @@ class HorizontalBarChart extends StatelessWidget {
       double metasGeral = 0;
       for (var result in results) {
         data.add(OrdinalProgresso(
-            result.nomeResultado.toString(),
+            (result.nomeResultado!.length <= 20)
+                ? result.nomeResultado.toString()
+                : result.nomeResultado.toString().substring(0, 20) + '...',
             mandalaController.gerarProgresso(
                 mandalaController.realizadoResulMetric(
                     0.0, result.idResultado!),
@@ -78,7 +82,9 @@ class HorizontalBarChart extends StatelessWidget {
       double metasGeral = 0;
       for (var metric in metrics) {
         data.add(OrdinalProgresso(
-          metric.nomeMetrica.toString(),
+          (metric.nomeMetrica!.length <= 20)
+              ? metric.nomeMetrica.toString()
+              : metric.nomeMetrica.toString().substring(0, 20) + '...',
           mandalaController.gerarProgressoGeral(
               metric.realizado1!,
               metric.realizado2!,
@@ -108,7 +114,9 @@ class HorizontalBarChart extends StatelessWidget {
 
       for (var dono in donos) {
         data.add(OrdinalProgresso(
-            dono.nome.toString(),
+            (dono.nome!.length <= 20)
+                ? dono.nome.toString()
+                : dono.nome.toString().substring(0, 20) + '...',
             mandalaController.gerarProgresso(
                 mandalaController.realizadosDono(0.0, dono.email),
                 mandalaController.metasDono(0.0, dono.email),

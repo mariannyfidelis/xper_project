@@ -50,7 +50,6 @@ class SobrePage extends StatelessWidget {
                           Center(
                               child: ListTile(
                             title: Text('Dados da empresa'),
-                            //subtitle: Text(''),
                           )),
                           Padding(
                             padding: const EdgeInsets.all(32.0),
@@ -84,7 +83,6 @@ class SobrePage extends StatelessWidget {
                       ),
                     ),
 
-                    //TODO: quando tiver uma logo colocar aqui
                     //Image(image: AssetImage('')),
                     SizedBox(width: 20, height: 20),
                     TextButton(

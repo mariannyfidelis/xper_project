@@ -35,8 +35,8 @@ class _ManipulaResponsaveisState extends State<ManipulaResponsaveis> {
                     width: 250,
                     child: Obx(
                           () => TextField(
-                        enabled: mandalaController.acl(),
-                        enableInteractiveSelection: mandalaController.acl(),
+                        enabled: mandalaController.editor.value,
+                        enableInteractiveSelection: mandalaController.editor.value,
                         style: estilo_teste,
                         controller: responsavelController,
                         textAlign: TextAlign.justify,

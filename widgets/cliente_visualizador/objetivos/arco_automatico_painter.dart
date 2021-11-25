@@ -1,19 +1,16 @@
 import 'dart:ui';
 import 'dart:math';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
-import 'package:xper_brasil_projects/controllers/controller_clicado.dart';
 import '/utils/paleta_cores.dart';
-import '/models/project_model.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:touchable/touchable.dart';
+import '/controllers/controller_clicado.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
 
 class ArcoAutomatico extends CustomPainter {
   BuildContext context;
   final Controller controller;
-  //ProjectModel? modeloProjeto;
 
   ArcoAutomatico(this.context): controller = Provider.of<Controller>(context, listen: false);
 
@@ -25,7 +22,7 @@ class ArcoAutomatico extends CustomPainter {
     double width = size.width / 2;
     double height = size.height / 2;
     final c = Offset(width, height);
-    final radius = size.width * 0.8;
+    final radius = size.width * 0.67;
     var controlador_clicado = Provider.of<Controller>(context, listen: false);
 
     final linePaint = Paint()
@@ -153,9 +150,25 @@ class ArcoAutomatico extends CustomPainter {
         rectObjetivos = Rect.fromCenter(
             center: c, width: (radius / 0.9), height: (radius / 0.9));
 
+
+        double prog;
+        double diametro_Cinterno;
+        double diametro_CMenor = oval.width;
+        double diametro_CMaior = rectObjetivos.width;
+
         for (int o = 0; o < numeroDeObjetivos; o++) {
           anguloInicio = degToRad(listaObjetivos[o].startAngle);
           sweep = degToRad(listaObjetivos[o].sweepAngle);
+
+          //Calcular progresso do objetivo
+          prog = mandalaController.gerarProgresso(
+              mandalaController.realizadoObjetivos(0.0,
+                  mandalaController.listaObjectives[o].idObjetivo!),
+              mandalaController.metaObjetivos(0.0,
+                  mandalaController.listaObjectives[o].idObjetivo!))/100;
+
+          diametro_Cinterno =
+              diametro_CMenor + (diametro_CMaior - diametro_CMenor) * prog;
 
           Path path = Path();
           path.moveTo(width, height);
@@ -169,7 +182,7 @@ class ArcoAutomatico extends CustomPainter {
           final p2 = c + Offset(dx, dy);
 
           Paint? paint2 = mandalaController.criaPaintObjective(
-              converteCor: listaObjetivos[o].paint);
+              converteCor: listaObjetivos[o].paint, c:c, diametro_Cinterno: diametro_Cinterno);
 
           Path pedacoObjetivo = Path.combine(
               PathOperation.difference, path, p);
@@ -183,23 +196,33 @@ class ArcoAutomatico extends CustomPainter {
 
           canvas.drawPath(listPathObjetivos[o], listPaintObjetivos[o],
               onTapDown: (tapDownDetails) {
-            mandalaController.ultimoNivelClicado.value = 2;
-            mandalaController.ultimoObjetivoClicado.value =
-                mandalaController.listaObjectives[o].idObjetivo.toString();
-            mandalaController.nomeObjMandala.value =
-                mandalaController.listaObjectives[o].nome.toString();
-            mandalaController.progressoObj.value =
-                mandalaController.listaObjectives[o].progresso!.toDouble();
-            mandalaController.data.value =
-                mandalaController.listaObjectives[o].dataVencimento!;
-            mandalaController.listaObjectives[o].dataVencimento!;
-            mandalaController.indiceObjective.value = o;
+                if (mandalaController.editor.value == true ||
+                    mandalaController.listaObjectives[o].donos!
+                        .contains(auth.email.value)) {
+                  mandalaController.ultimoNivelClicado.value = 2;
+                  mandalaController.ultimoObjetivoClicado.value =
+                      mandalaController.listaObjectives[o].idObjetivo
+                          .toString();
+                  mandalaController.nomeObjMandala.value =
+                      mandalaController.listaObjectives[o].nome.toString();
+                  mandalaController.progressoObj.value =
+                      // mandalaController.listaObjectives[o].progresso!
+                      //     .toDouble();
+                  mandalaController.gerarProgresso(
+                      mandalaController.realizadoObjetivos(0.0,
+                          mandalaController.listaObjectives[o].idObjetivo!),
+                      mandalaController.metaObjetivos(0.0,
+                          mandalaController.listaObjectives[o].idObjetivo!));
 
-            controller.mudaClicado(mandalaController.listaObjectives[o].idObjetivo.toString());
-            print(
-                "xx pedaço clicado - ${mandalaController.ultimoObjetivoClicado.value}");
-            print("xx Ultimo nivel clicado - 2");
-          });
+                  mandalaController.data.value =
+                  mandalaController.listaObjectives[o].dataVencimento!;
+                  mandalaController.listaObjectives[o].dataVencimento!;
+                  mandalaController.indiceObjective.value = o;
+
+                  controller.mudaClicado(
+                      mandalaController.listaObjectives[o].idObjetivo
+                          .toString());
+                }});
           if(controller.clicado == mandalaController.listaObjectives[o].idObjetivo.toString()){
             canvas.drawShadow(listPathObjetivos[o], Colors.grey.shade300, 14, true);
           }
@@ -229,6 +252,7 @@ class ArcoAutomatico extends CustomPainter {
         if(controller.clicado == mandalaController.idProjeto.value) {
           canvas.drawShadow(p, Colors.grey.shade300, 5, true);
         }
+
         drawTextCentered(
             cv, c, mandalaController.nome.string, styleText2, radius * 0.5, 1);
       }
@@ -254,11 +278,28 @@ class ArcoAutomatico extends CustomPainter {
         rectResultados = Rect.fromCenter(
             center: c, width: (radius / 0.9), height: (radius / 0.9));
 
+        double prog;
+        double diametro_Cinterno;
+        double diametro_CMenorObjetivo = oval.width;
+        double diametro_CMaiorObjetivo = rectObjetivos.width;
+
+        double diametro_CMenorResultado = rectObjetivos.width;
+        double diametro_CMaiorResultado = rectResultados.width;
+
         var sweepObjetivo;
 
         for (int o = 0; o < numeroDeObjetivos; o++) {
           anguloInicio = degToRad(listaObjetivos[o].startAngle);
           sweepObjetivo = degToRad(listaObjetivos[o].sweepAngle);
+
+          prog = mandalaController.gerarProgresso(
+              mandalaController.realizadoObjetivos(0.0,
+                  mandalaController.listaObjectives[o].idObjetivo!),
+              mandalaController.metaObjetivos(0.0,
+                  mandalaController.listaObjectives[o].idObjetivo!))/100;
+
+          diametro_Cinterno =
+              diametro_CMenorObjetivo + (diametro_CMaiorObjetivo - diametro_CMenorObjetivo) * prog;
 
           Path path = Path();
           path.moveTo(width, height);
@@ -271,7 +312,7 @@ class ArcoAutomatico extends CustomPainter {
           final p2 = c + Offset(dx, dy);
 
           Paint? paint2 = mandalaController.criaPaintObjective(
-              converteCor: listaObjetivos[o].paint);
+              converteCor: listaObjetivos[o].paint, c:c, diametro_Cinterno: diametro_Cinterno);
 
           Path pedacoObjetivo = Path.combine(
               PathOperation.difference, path, p);
@@ -313,8 +354,16 @@ class ArcoAutomatico extends CustomPainter {
           final dy = radius / 1.8 * sin(anguloInicio);
           final p2 = c + Offset(dx, dy);
 
+          //Calcula progresso de resultado
+          prog = mandalaController.gerarProgresso(
+              mandalaController.listaResultados[r].realizado!,
+              mandalaController.listaResultados[r].meta!)/100;
+
+          diametro_Cinterno =
+              diametro_CMenorResultado + (diametro_CMaiorResultado - diametro_CMenorResultado) * prog;
+
           Paint? paint = mandalaController.criaPaintObjective(
-              converteCor: listaResultados[r].paint);
+              converteCor: listaResultados[r].paint, c: c, diametro_Cinterno: diametro_Cinterno);
 
           Path pathResultado = Path.combine(PathOperation.difference, path, pathExtra);
           // listPathResultados.add(path);
@@ -327,37 +376,43 @@ class ArcoAutomatico extends CustomPainter {
 
           canvas.drawPath(listPathResultados[r], listPaintResultados[r],
               onTapDown: (tapDownDetails) {
-            mandalaController.ultimoNivelClicado.value = 3;
-            mandalaController.ultimoResultadoClicado.value = mandalaController
-                .listaResultados
-                .elementAt(r)
-                .idResultado
-                .toString();
-            mandalaController.nomeResultMandala.value =
-                mandalaController.listaResultados[r].nomeResultado.toString();
-            mandalaController.progressoResult.value =
-                mandalaController.listaResultados[r].progresso!.toDouble();
-            mandalaController.indiceResult.value = r;
+                if (mandalaController.editor.value == true ||
+                    mandalaController.listaResultados[r].donoResultado!
+                        .contains(auth.email.value)) {
+                  mandalaController.ultimoNivelClicado.value = 3;
+                  mandalaController.ultimoResultadoClicado.value =
+                      mandalaController
+                          .listaResultados
+                          .elementAt(r)
+                          .idResultado
+                          .toString();
+                  mandalaController.nomeResultMandala.value =
+                      mandalaController.listaResultados[r].nomeResultado
+                          .toString();
+                  mandalaController.indiceResult.value = r;
 
-            mandalaController.progressoAtualResult.value =
-                mandalaController.gerarProgresso(
-                    mandalaController.realizadoResulMetric(
-                        mandalaController.periodo.value,
-                        mandalaController.listaResultados[r].idResultado),
-                    mandalaController.metasResulMetric(
-                        mandalaController.periodo.value,
-                        mandalaController.listaResultados[r].idResultado));
-            mandalaController.progressoResult.value =
-                mandalaController.gerarProgresso(
-                    mandalaController.listaResultados[r].realizado!,
-                    mandalaController.listaResultados[r].meta!);
-            mandalaController.indiceResult.value = r;
+                  mandalaController.progressoAtualResult.value =
+                      mandalaController.gerarProgresso(
+                          mandalaController.realizadoResulMetric(
+                              mandalaController.periodo.value,
+                              mandalaController.listaResultados[r].idResultado),
+                          mandalaController.metasResulMetric(
+                              mandalaController.periodo.value,
+                              mandalaController.listaResultados[r]
+                                  .idResultado));
+                  mandalaController.progressoResult.value =
+                      mandalaController.gerarProgresso(
+                          mandalaController.listaResultados[r].realizado!,
+                          mandalaController.listaResultados[r].meta!);
+                  mandalaController.indiceResult.value = r;
 
-            controller.mudaClicado(mandalaController.listaResultados[r].idResultado.toString());
-            print(
-                "xx pedaço clicado - ${mandalaController.ultimoResultadoClicado}");
-            print("xx Ultimo nivel clicado - 3");
-          }, paintStyleForTouch: PaintingStyle.stroke);
+                  controller.mudaClicado(
+                      mandalaController.listaResultados[r].idResultado
+                          .toString());
+                  mandalaController.esvaziarFiltragem();
+                  mandalaController.filtrarMetricas();
+                }
+            }, paintStyleForTouch: PaintingStyle.stroke);
 
           if(controller.clicado == mandalaController.listaResultados[r].idResultado.toString()){
             canvas.drawShadow(listPathResultados[r], Colors.grey.shade300, 10, true);
@@ -380,8 +435,14 @@ class ArcoAutomatico extends CustomPainter {
               styleTextResult,
               3,
               nivel: 3);
+
         }
         listaLinesResults.forEach((element) {
+          // final dxInit = radius / 2.5 * cos(anguloInicio);
+          // final dyInit = radius / 2.5 * sin(anguloInicio);
+          // canvas.drawLine(Offset(dxInit, dyInit), element, linePaint);
+
+
           canvas.drawLine(c, element, linePaint);
         });
 
@@ -389,34 +450,44 @@ class ArcoAutomatico extends CustomPainter {
             rectObjetivos, degToRad(0), degToRad(360), true, linePaint);
 
         for (int o = 0; o < numeroDeObjetivos; o++) {
+
+
           canvas.drawPath(listPathObjetivos[o], listPaintObjetivos[o],
               onTapDown: (tapDownDetails) {
-            mandalaController.ultimoNivelClicado.value = 2;
-            mandalaController.ultimoObjetivoClicado.value =
-                mandalaController.listaObjectives[o].idObjetivo.toString();
-            mandalaController.nomeObjMandala.value =
-                mandalaController.listaObjectives[o].nome.toString();
-            mandalaController.progressoObj.value =
-                mandalaController.gerarProgresso(
-                    mandalaController.realizadoObjetivos(
-                        0.0, mandalaController.listaObjectives[o].idObjetivo!),
-                    mandalaController.metaObjetivos(
-                        0.0, mandalaController.listaObjectives[o].idObjetivo!));
-            mandalaController.progressoAtualObj.value =
-                mandalaController.gerarProgresso(
-                    mandalaController.realizadoObjetivos(
-                        mandalaController.periodo.value,
-                        mandalaController.listaObjectives[o].idObjetivo!),
-                    mandalaController.metaObjetivos(
-                        mandalaController.periodo.value,
-                        mandalaController.listaObjectives[o].idObjetivo!));
-            mandalaController.data.value =
-                mandalaController.listaObjectives[o].dataVencimento!;
-            mandalaController.indiceObjective.value = o;
-            controller.mudaClicado(mandalaController.listaObjectives[o].idObjetivo.toString());
-            print(
-                "xx pedaço clicado - ${mandalaController.ultimoObjetivoClicado.value}");
-            print("xx Ultimo nivel clicado - 2");
+                if (mandalaController.editor.value == true ||
+                    mandalaController.listaObjectives[o].donos!
+                        .contains(auth.email.value)) {
+                  mandalaController.ultimoNivelClicado.value = 2;
+                  mandalaController.ultimoObjetivoClicado.value =
+                      mandalaController.listaObjectives[o].idObjetivo
+                          .toString();
+                  mandalaController.nomeObjMandala.value =
+                      mandalaController.listaObjectives[o].nome.toString();
+                  mandalaController.progressoObj.value =
+                      mandalaController.gerarProgresso(
+                          mandalaController.realizadoObjetivos(
+                              0.0,
+                              mandalaController.listaObjectives[o].idObjetivo!),
+                          mandalaController.metaObjetivos(
+                              0.0, mandalaController.listaObjectives[o]
+                              .idObjetivo!));
+                  mandalaController.progressoAtualObj.value =
+                      mandalaController.gerarProgresso(
+                          mandalaController.realizadoObjetivos(
+                              mandalaController.periodo.value,
+                              mandalaController.listaObjectives[o].idObjetivo!),
+                          mandalaController.metaObjetivos(
+                              mandalaController.periodo.value,
+                              mandalaController.listaObjectives[o]
+                                  .idObjetivo!));
+                  mandalaController.data.value =
+                  mandalaController.listaObjectives[o].dataVencimento!;
+                  mandalaController.indiceObjective.value = o;
+                  controller.mudaClicado(
+                      mandalaController.listaObjectives[o].idObjetivo
+                          .toString());
+
+                }
           });
           if(controller.clicado == mandalaController.listaObjectives[o].idObjetivo.toString()){
             canvas.drawShadow(listPathObjetivos[o], Colors.grey.shade300, 10, true);
@@ -455,8 +526,7 @@ class ArcoAutomatico extends CustomPainter {
             cv, c, mandalaController.nome.string, styleText2, radius * 0.5, 1);
       }
     } else {
-      // Nenhum objetivo ou nulo
-      print("Tenho $numeroDeObjetivos de objetivos para desenhar");
+
     }
   }
 

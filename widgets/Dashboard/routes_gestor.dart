@@ -19,5 +19,5 @@ List sideMenuItemsGestor = [
   DonosPageRouteGestor,
   MetasPageRouteGestor,
   ClientsPageRouteGestor,
-  PlanodeAcaoPageRouteGestor,
+  //PlanodeAcaoPageRouteGestor,
 ];

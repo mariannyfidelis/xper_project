@@ -21,5 +21,5 @@ List sideMenuItems = [
   MetasPageRouteDash,
   ClientsPageRouteDash,
   CadastroADMRouteDash,
-  PlanodeAcaoPageRouteDash,
+  //PlanodeAcaoPageRouteDash,
 ];

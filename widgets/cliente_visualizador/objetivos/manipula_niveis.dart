@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
+import '/utils/paleta_cores.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '/controllers/controller_clicado.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class ManipulaOKR extends StatefulWidget {
   ManipulaOKR({Key? key}) : super(key: key);
@@ -12,6 +12,8 @@ class ManipulaOKR extends StatefulWidget {
 
 class _ManipulaOKRState extends State<ManipulaOKR> {
   var mandalaController = Get.find<ControllerProjetoRepository>();
+  Color color = Colors.red;
+  Color currentColor = Colors.limeAccent;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +53,9 @@ class _ManipulaOKRState extends State<ManipulaOKR> {
                         mandalaController.ultimoObjetivoClicado.value)
                     : mandalaController.removeResultado(
                         mandalaController.ultimoResultadoClicado.value);
+              }
+              if (value == 3) {
+                escolhaCorObjetivoResultado2();
               }
             }),
             child: Center(child: Icon(Icons.arrow_drop_down)),
@@ -236,5 +241,58 @@ class _ManipulaOKRState extends State<ManipulaOKR> {
                         child: Text("OK")),
                   ]));
     }
+  }
+
+  escolhaCorObjetivoResultado2() {
+    var mandalaController = Get.find<ControllerProjetoRepository>();
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Escolha uma cor"),
+            elevation: 10,
+            scrollable: false,
+            titlePadding: const EdgeInsets.only(top: 20.0, left: 20.0),
+            contentPadding: const EdgeInsets.all(0.0),
+            actionsPadding: const EdgeInsets.all(0.0),
+            buttonPadding: const EdgeInsets.all(0.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25.0),
+            ),
+            content: Container(
+              height: 300,
+              width: 600,
+              child: Column(children: [
+                ColorPicker(
+                    colorPickerWidth: 400,
+                    portraitOnly: false,
+                    pickerAreaHeightPercent: 0.6,
+                    pickerColor: color,
+                    onColorChanged: (Color color) {
+                      setState(() {
+                        this.color = color;
+                      });
+                    }),
+                SizedBox(height: 26),
+                Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: PaletaCores.active, width: .5),
+                      color: PaletaCores.corLight,
+                      borderRadius: BorderRadius.circular(20)),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: TextButton(
+                      child:
+                      Text('Salvar', style: TextStyle(color: Colors.white)),
+                      onPressed: () {
+                        mandalaController.atualizaCor(
+                            "${color.alpha}-${color.red}-${color.green}-${color.blue}");
+                        Get.back();
+                      }),
+                )
+              ]),
+            ),
+          );
+        });
   }
 }

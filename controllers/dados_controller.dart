@@ -401,9 +401,7 @@ class ObjectiveController extends ChangeNotifier {
     for (ObjetivoModel objetivo in objetivosDoNivel) {
       objetivo.setStartAngle(startAngle);
       objetivo.setSweepAngle(sweepFatia);
-      //TODO - falta configurar aqui o progresso e a importância
       startAngle += sweepFatia;
-      //sweep += sweep_fatia
     }
 
     //objeto.adicionaObjetivoFilho();

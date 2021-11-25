@@ -197,14 +197,8 @@ class _ResultadosTableState extends State<ResultadosTable> {
         onPressed: () {
           var resultadoController2 = Get.find<ControllerProjetoRepository>();
           var objetivoPai = Get.find<DropObjetivoEResultado>().obj.string;
-          //TODO: Corrigir para pegar os dados de Donos
-          //var donoController = Get.find<ControllerProjetoRepository>().listaDonos;
-          //var objetivoController = Get.find<ControllerProjetoRepository>().listaObjectives;
           if (resultadoController2.idProjeto.value != "") {
             if (operacao == 1) {
-              debugPrint(objetivoPai);
-              debugPrint("${Get.find<DropObjetivoEResultado>().obj.string}");
-              //TODO: Aqui será feito o link entre Objetivos Resultados e Donos
               var donos = <DonosResultadoMetricas>[];
 
               if (newResultadoController.text != "") {
@@ -214,7 +208,7 @@ class _ResultadosTableState extends State<ResultadosTable> {
                     donos: donos);
               }
               newResultadoController.text = "";
-              //objetivoPaiController.text = "";
+
             } else if (operacao == 2) {
               resultadoController2.atualizaTudo(idProjeto);
             } else if (operacao == 3) {

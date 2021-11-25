@@ -79,7 +79,7 @@ class _PlanosTableState extends State<PlanosTable> {
                   ),
                 ),
                 onPressed: () {
-                  //TODO - Realizar a validação dos textFields
+
 
                   if (objetivoController.text.isNotEmpty &&
                       resultadoController.text.isNotEmpty &&
@@ -108,7 +108,6 @@ class _PlanosTableState extends State<PlanosTable> {
                         resultadoController.text,
                         idObjetivoPai: idObjetivoPai.text);
 
-                    //TODO - Onde métrica fica vinculada
                     controllerProjetoRepository.addOneMetric(metricasController.text);
 
                     metricasController.text = "";

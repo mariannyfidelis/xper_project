@@ -61,7 +61,6 @@ class AuthService extends GetxController {
   }
 
   void _uploadImagem(Usuario usuario, Uint8List imagem) {
-    print("entrei no upload de imagem ....");
     Uint8List? arquivoSelecionado = imagem;
 
     if (arquivoSelecionado != null) {
@@ -339,6 +338,7 @@ class AuthService extends GetxController {
     } else {
       DBFirestore.get()
           .collection("usuarios")
+      //TODO: verificar se esse identificador está correto ou se usamo o auth.id.value !
           .doc(usuario!.uid)
           .get()
           .then((value) {
@@ -456,7 +456,6 @@ class AuthService extends GetxController {
           return erroCode;
         } else if (e.code == "email-already-in-use") {
           print("Já tem dono cadastrado");
-          //TODO: Verificar aqui a inserção de um Dono na Lista
           var indice =
           //usuarios!.indexWhere((element) => element.email == auth.usuario!.email);
           //usuarios[indice].idUsuario

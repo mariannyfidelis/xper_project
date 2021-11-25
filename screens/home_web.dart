@@ -99,6 +99,7 @@ class _HomeWebState extends State<HomeWeb> {
           ),
           OutlinedButton.icon(
             onPressed: () {
+              controllerProjetos.limpaTudo();
               Get.find<AuthService>().logout();
               Get.to(() => LoginPage(title: "XPER"), routeName: "/");
             },
@@ -119,14 +120,12 @@ class _HomeWebState extends State<HomeWeb> {
                         children: [
                           Expanded(
                             child: InkWell(
-                              onTap: () {
-                                controllerProjetos.atualizaTudo(
+                              onTap: () async {
+                                await controllerProjetos.atualizaTudo(
                                     meusProjetos[index].idProjeto!);
 
                                 Get.to(
                                     () => ProjetoPage(/*dados do idprojeto*/));
-
-                                //TODO - Enviar dados para a mandala
                               },
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
@@ -145,6 +144,9 @@ class _HomeWebState extends State<HomeWeb> {
                                 child: IconButton(
                                   splashRadius: 14,
                                   onPressed: () {
+                                    controllerProjetos.atualizaTudo(
+                                        meusProjetos[index].idProjeto!);
+
                                     alteraNomeProjeto(
                                         meusProjetos[index]
                                             .idProjeto
@@ -161,7 +163,9 @@ class _HomeWebState extends State<HomeWeb> {
                               child: IconButton(
                                 splashRadius: 14,
                                 onPressed: () {
-                                  //TODO - Tem que ser no controller para compartilhar o projeto
+                                  controllerProjetos.atualizaTudo(
+                                      meusProjetos[index].idProjeto!);
+
                                   compartilharProjeto(
                                       meusProjetos[index].idProjeto.toString(),
                                       index);
@@ -182,12 +186,6 @@ class _HomeWebState extends State<HomeWeb> {
                                               .toString(),
                                           controllerAuth.id.value),
                                     );
-
-                                    // controllerProjetos.removeProjeto(
-                                    //     meusProjetos[index]
-                                    //         .idProjeto
-                                    //         .toString(),
-                                    //     controllerAuth.usuario!.uid);
                                   },
                                   icon: Icon(Icons.delete)))),
                         ],
@@ -340,7 +338,6 @@ class _HomeWebState extends State<HomeWeb> {
             ));
   }
 
-  //TODO - Implementar compartilharProjeto
   void compartilharProjeto(String idProjeto, int index) {
     var controladorMandala = Get.find<ControllerProjetoRepository>();
     var listaPermissoes = controladorMandala.listaACLs;

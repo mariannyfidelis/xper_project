@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import 'package:xper_brasil_projects/models/donoResultadoMetricaModel.dart';
 import '/utils/paleta_cores.dart';
 import 'package:flutter/material.dart';
 import '/models/resultadoPrincipalModel.dart';
+import '/models/donoResultadoMetricaModel.dart';
 import '/widgets/Dashboard/controller/controllers_dash.dart';
 import '/widgets/Dashboard/pages/resultados/dropDownObjetivo.dart';
 
@@ -14,14 +14,13 @@ class DropDownMetrica extends StatefulWidget {
 class _DropDownMetricaState extends State<DropDownMetrica> {
 
   var controllerProjeto = Get.find<ControllerProjetoRepository>();
-  var _resultadoSelecionado = (Get.find<ControllerProjetoRepository>()
-          .listaResultados
-          .isEmpty)
-      ? null
-      : Get.find<ControllerProjetoRepository>().listaResultados.elementAt(0);
+  var _resultadoSelecionado;
 
   @override
   Widget build(BuildContext context) {
+
+    setResultadoSelecionado();
+
     var _resultados = Get.find<ControllerProjetoRepository>().listaResultados;
     var testeDrop = Get.find<DropObjetivoEResultado>();
 
@@ -63,6 +62,16 @@ class _DropDownMetricaState extends State<DropDownMetrica> {
                   color: PaletaCores.corPrimaria, fontWeight: FontWeight.bold),
             ),
           ));
+  }
+
+  void setResultadoSelecionado() {
+    setState(() {
+      _resultadoSelecionado = (Get.find<ControllerProjetoRepository>()
+          .listaResultados
+          .isEmpty)
+          ? null
+          : Get.find<ControllerProjetoRepository>().listaResultados.elementAt(0);
+    });
   }
 
   void _dropDownItemSelected(ResultadosPrincipais novoItem) {

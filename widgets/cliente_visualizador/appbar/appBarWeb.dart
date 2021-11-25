@@ -1,11 +1,10 @@
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
-import 'package:provider/provider.dart';
-import '/controllers/controller_clicado.dart';
 import '/utils/paleta_cores.dart';
-import '/widgets/Dashboard/controller/controllers_dash.dart';
 import '/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '/controllers/controller_clicado.dart';
+import '/widgets/Dashboard/controller/controllers_dash.dart';
 import '/widgets/cliente_visualizador/objetivos/manipula_niveis.dart';
 
 class WebAppBar extends StatelessWidget {
@@ -14,6 +13,7 @@ class WebAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    var controllerProjeto = Get.find<ControllerProjetoRepository>();
     var controllerAuth = Get.find<AuthService>();
     TextEditingController busca = TextEditingController();
 
@@ -73,6 +73,7 @@ class WebAppBar extends StatelessWidget {
                   backgroundColor: Colors.red),
               onPressed: () {
                 //FirebaseAuth.instance.signOut();
+                controllerProjeto.limpaTudo();
                 controllerAuth.logout();
                 //Get.offAll("/");
                 Navigator.popAndPushNamed(context, "/");

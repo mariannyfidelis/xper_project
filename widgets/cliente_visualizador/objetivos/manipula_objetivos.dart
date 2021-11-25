@@ -16,28 +16,35 @@ class _ObjetivosState extends State<Objetivos> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
-
+    print("$width, $height");
     return Expanded(
       child: SafeArea(
-          minimum: EdgeInsets.all(10),
-          child: Padding(
-            padding: const EdgeInsets.all(80.0),
-            child: ChangeNotifierProvider<Controller>(
-                create: (context) => Controller(),
-                child: Consumer<Controller>(
-                    builder: (context, controller, child) => CanvasTouchDetector(
-
-                          builder: (context) => CustomPaint(
-                            isComplex: true,
-                            willChange: true,
-                            //foregroundPainter: CustomPainter(),
-                            //child: Container(),
-                            size: Size(width, height),
-                            painter: ArcoAutomatico(context),
-                          ),
-                        ))),
-          ),
-
+        minimum: EdgeInsets.all(10),
+        child: LayoutBuilder(
+          builder: (ctx, constraints) {
+            print("${constraints.maxWidth}, ${constraints.maxHeight - kToolbarHeight}");
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 0.0),
+              child: ChangeNotifierProvider<Controller>(
+                  create: (ctx) => Controller(),
+                  child: Consumer<Controller>(
+                      builder: (ctx, controller, child) =>
+                          CanvasTouchDetector(
+                            builder: (context) => CustomPaint(
+                              isComplex: true,
+                              willChange: true,
+                              //foregroundPainter: CustomPainter(),
+                              child: Container(
+                                width: width,
+                                height: height,
+                                color: Colors.transparent,),
+                              size: Size(width, height),
+                              painter: ArcoAutomatico(context),
+                            ),
+                          ))),
+            );
+          },
+        ),
       ),
     );
   }

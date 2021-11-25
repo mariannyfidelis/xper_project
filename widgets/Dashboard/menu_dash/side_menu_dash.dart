@@ -56,14 +56,12 @@ class SideMenuDash extends StatelessWidget {
                           : itemName,
                       onTap: () {
                         if (itemName == PlanodeAcaoPageRouteDash) {
-                          //TODO: ir para authenticação
                         }
                         if (!menuControllerDash.isActive(itemName)) {
                           menuControllerDash.changeActiveitemTo(itemName);
                           if (ResponsiveWidget.isSmallScreen(context))
                             Get.back();
                           navigationController.navigateTo(itemName);
-                          //TODO: go to item name Route
                         }
                       },
                     ))

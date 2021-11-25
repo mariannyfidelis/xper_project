@@ -45,7 +45,6 @@ class ObjetivoModel {
     this.oval,
   });
 
-  //TODO: Ainda precisa melhorar esse Map
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -61,7 +60,6 @@ class ObjetivoModel {
     };
   }
 
-  //TODO: Ainda precisa melhorar esse Map
   ObjetivoModel.fromFirestore(Map<String, dynamic> firestore)
       : name = firestore['name'],
         nivel = firestore['nivel'],

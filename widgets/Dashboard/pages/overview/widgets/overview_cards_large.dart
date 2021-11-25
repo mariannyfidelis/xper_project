@@ -9,9 +9,8 @@ class OverviewCardsLargeScreenDash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double _width = MediaQuery.of(context).size.width;
-    //TODO: Provider deve ser substituído !!!!!!!!
+
     final usuarios = Provider.of<List<Usuario>?>(context);
-    //final projetos = Provider.of<List<ObjetivoModel>?>(context);
 
     return (usuarios != null)
         ? Column(
